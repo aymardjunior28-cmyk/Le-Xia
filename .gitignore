@@ -1,0 +1,22 @@
+# Dépendances
+node_modules/
+
+# Données persistées (générées à l'exécution)
+data/
+
+# Fichiers de test temporaires
+*.test.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Variables d'environnement
+.env
+.env.local
+
+# Systèmes d'exploitation / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

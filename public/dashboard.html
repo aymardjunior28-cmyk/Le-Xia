@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- Fond aurora animé (glassmorphism Clair Lumineux). -->
+    <div class="aurora" aria-hidden="true">
+      <span class="b1"></span>
+      <span class="b2"></span>
+      <span class="b3"></span>
+      <span class="b4"></span>
+    </div>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-mark">D</div>
+          <div>
+            <div class="brand-name">Douala Discovery</div>
+            <small>Dashboard</small>
+          </div>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+          <a href="/dashboard">Dashboard</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page dashboard-page">
+      <section class="metrics" id="metrics"></section>
+
+      <section class="panel">
+        <h2>Performance par verticale</h2>
+        <div id="verticals" class="table-wrap"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Rentabilité par établissement</h2>
+        <div id="establishments" class="table-wrap"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Performance par quartier</h2>
+        <div id="quartiers" class="table-wrap"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Évolution du trafic (par jour)</h2>
+        <div id="traffic" class="table-wrap"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Blocs de facturation</h2>
+        <div id="blocks" class="table-wrap"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Derniers clics attribués</h2>
+        <div id="clicks" class="table-wrap"></div>
+      </section>
+    </main>
+
+    <script src="/dashboard.js"></script>
+    <script src="/ui.js"></script>
+    <script src="/scramble.js"></script>
+  </body>
+</html>

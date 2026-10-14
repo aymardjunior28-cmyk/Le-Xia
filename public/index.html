@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- Fond aurora animé (glassmorphism Clair Lumineux). -->
+    <div class="aurora" aria-hidden="true">
+      <span class="b1"></span>
+      <span class="b2"></span>
+      <span class="b3"></span>
+      <span class="b4"></span>
+    </div>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-mark">D</div>
+          <div>
+            <div class="brand-name">Douala Discovery</div>
+            <small>Restaurants & meublés</small>
+          </div>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+          <a href="/dashboard">Dashboard</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page">
+      <section class="hero reveal" data-reveal-index="0">
+        <div>
+          <span class="eyebrow">Découverte locale</span>
+          <h1>Retrouvez une meilleure façon de se détendre, à Douala.</h1>
+          <p>
+            Profitez de la conviviabilité dans sa forme la plus simple.
+          </p>
+        </div>
+        <div class="hero-card">
+          <div class="hero-offer hero-offer--restaurant">
+            <span class="hero-offer-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                <path d="M7 2v20" />
+                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" />
+              </svg>
+            </span>
+            <div>
+              <small>Restaurants</small>
+              <p>Mangez &amp; buvez à partir de</p>
+              <strong><span id="hero-price-restaurant" data-count="350">350</span> FCFA</strong>
+            </div>
+          </div>
+          <div class="hero-offer hero-offer--meuble">
+            <span class="hero-offer-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 4v16" />
+                <path d="M2 8h10a2 2 0 0 1 2 2v10" />
+                <path d="M2 17h20" />
+                <path d="M18 8h2a2 2 0 0 1 2 2v10" />
+              </svg>
+            </span>
+            <div>
+              <small>Meublés</small>
+              <p>Profitez de votre intimité à partir de</p>
+              <strong><span id="hero-price-meuble" data-count="1500">1 500</span> FCFA</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar reveal" data-reveal-index="1">
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">Tout</button>
+          <button class="filter-btn" data-filter="restaurant">Restaurants</button>
+          <button class="filter-btn" data-filter="meuble">Meublés</button>
+        </div>
+        <div class="filters filters-advanced">
+          <label>
+            Quartier
+            <select id="quartier-filter">
+              <option value="all">Tous les quartiers</option>
+            </select>
+          </label>
+          <label>
+            Prix max
+            <select id="price-filter">
+              <option value="all">Tous les prix</option>
+              <option value="500">≤ 500 FCFA</option>
+              <option value="1000">≤ 1 000 FCFA</option>
+              <option value="1500">≤ 1 500 FCFA</option>
+              <option value="2000">≤ 2 000 FCFA</option>
+              <option value="2500">≤ 2 500 FCFA</option>
+            </select>
+          </label>
+          <button class="search-btn" id="search-btn" type="button">Rechercher</button>
+        </div>
+      </section>
+
+      <section id="establishments" class="card-grid"></section>
+    </main>
+
+    <template id="card-template">
+      <article class="card">
+        <img class="card-image" alt="" />
+        <div class="card-body">
+          <div class="meta-row">
+            <span class="badge"></span>
+            <span class="pricing"></span>
+          </div>
+          <h3 class="title"></h3>
+          <p class="location"></p>
+          <p class="description"></p>
+          <div class="score">
+            <span class="score-box"></span>
+            <span class="score-verdict">
+              <span class="score-word"></span>
+              <small>basé sur l'activité</small>
+            </span>
+          </div>
+          <div class="cta-row">
+            <button class="primary-btn">Découvrir plus</button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js"></script>
+    <script src="/ui.js"></script>
+    <script src="/scramble.js"></script>
+  </body>
+</html>

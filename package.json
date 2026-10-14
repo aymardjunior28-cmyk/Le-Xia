@@ -1,0 +1,23 @@
+{
+  "name": "douala-discovery-mvp",
+  "version": "1.0.0",
+  "description": "MVP Douala Discovery — feed local restaurants & meublés avec attribution WhatsApp et facturation par blocs prépayés.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "keywords": [
+    "douala",
+    "discovery",
+    "whatsapp",
+    "attribution",
+    "mvp"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
+
