@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion — Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="aurora" aria-hidden="true">
+      <span class="b1"></span>
+      <span class="b2"></span>
+      <span class="b3"></span>
+      <span class="b4"></span>
+    </div>
+
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-mark">D</div>
+          <div>
+            <div class="brand-name">Douala Discovery</div>
+            <small>Espace administrateur</small>
+          </div>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page auth-page">
+      <form class="auth-card reveal" id="login-form" data-reveal-index="0" autocomplete="on">
+        <span class="eyebrow">Connexion</span>
+        <h1>Accéder au tableau de bord</h1>
+        <p class="auth-sub">Réservé aux administrateurs de la plateforme.</p>
+
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="email" name="email" placeholder="vous@exemple.cm" required />
+        </label>
+
+        <label class="field">
+          <span>Mot de passe</span>
+          <input type="password" id="password" name="password" placeholder="••••••••" required />
+        </label>
+
+        <p class="auth-error" id="login-error" hidden></p>
+
+        <button class="primary-btn" type="submit" id="login-btn">Se connecter</button>
+
+        <p class="auth-hint">
+          Compte super-admin par défaut :
+          <code>superadmin@douala.cm</code> / <code>Admin@2026</code>
+          (à changer après la première connexion).
+        </p>
+      </form>
+    </main>
+
+    <script src="/ui.js"></script>
+    <script src="/login.js"></script>
+  </body>
+</html>

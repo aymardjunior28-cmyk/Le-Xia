@@ -136,6 +136,10 @@ function renderTable(container, headers, rows) {
 
 async function loadDashboard() {
   const response = await fetch('/api/dashboard');
+  if (response.status === 401) {
+    window.location.href = '/login';
+    return;
+  }
   const data = await response.json();
   const view = computeDashboard(data);
 
@@ -236,6 +240,63 @@ async function loadDashboard() {
       new Date(c.timestamp).toLocaleString('fr-FR'),
     ])
   );
+
+  renderCharts(view);
+}
+
+/**
+ * Dessine les 3 graphiques (rôles distincts) via charts.js.
+ * Chaque appel est protégé : si la lib n'est pas chargée, on n'affiche rien.
+ */
+function renderCharts(view) {
+  if (!window.DDCharts) return;
+
+  // 1) Tendance temporelle : clics vs conversations attribuées par jour.
+  const trafficEl = document.getElementById('chart-traffic');
+  if (trafficEl) {
+    if (view.traffic.length === 0) {
+      trafficEl.innerHTML = '<p class="empty-state">Aucune donnée de trafic pour le moment.</p>';
+    } else {
+      window.DDCharts.lineChart(trafficEl, {
+        labels: view.traffic.map((t) => t.jour.slice(5)),
+        series: [
+          { name: 'Clics', color: '#2f6df6', values: view.traffic.map((t) => t.clicks), area: true },
+          { name: 'Conversations', color: '#10a37f', values: view.traffic.map((t) => t.attributed) },
+        ],
+      });
+    }
+  }
+
+  // 2) Comparaison par verticale : clics + conversations (restaurant vs meublé).
+  const verticalEl = document.getElementById('chart-vertical');
+  if (verticalEl) {
+    const verticals = Object.values(view.byVertical);
+    window.DDCharts.groupedBar(verticalEl, {
+      categories: verticals.map((v) => v.label),
+      series: [
+        { name: 'Clics', color: '#2f6df6', values: verticals.map((v) => v.clicks) },
+        { name: 'Conversations', color: '#ff7a2f', values: verticals.map((v) => v.attributed) },
+      ],
+    });
+  }
+
+  // 3) Classement géographique : top quartiers par clics attribués.
+  const quartierEl = document.getElementById('chart-quartiers');
+  if (quartierEl) {
+    const top = view.byQuartier.slice().sort((a, b) => b.clicks - a.clicks).slice(0, 8);
+    if (top.length === 0) {
+      quartierEl.innerHTML = '<p class="empty-state">Aucune donnée par quartier pour le moment.</p>';
+    } else {
+      window.DDCharts.rankedBar(quartierEl, {
+        items: top.map((q) => ({
+          label: q.quartier,
+          value: q.clicks,
+          sub: `${q.attributed} conversations`,
+          color: '#2f6df6',
+        })),
+      });
+    }
+  }
 }
 
 loadDashboard();
