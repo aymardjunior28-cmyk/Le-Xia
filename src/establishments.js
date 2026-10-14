@@ -104,7 +104,7 @@ function generateId(type) {
   return `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
 }
 
-module.exports = {
+const __api = {
   VALID_TYPES,
   str,
   cleanPhone,
@@ -114,3 +114,9 @@ module.exports = {
   buildEstablishment,
   generateId,
 };
+
+// Double export : CommonJS (serveur Node) + global navigateur (app offline/Capacitor).
+(function (root) {
+  if (typeof module !== 'undefined' && module.exports) module.exports = __api;
+  root.DDestablishments = __api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);

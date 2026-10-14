@@ -126,7 +126,7 @@ function consumeConversation(blocks, establishmentId) {
   return { ok: true, block };
 }
 
-module.exports = {
+const __api = {
   TARIFFS,
   BLOCK_VALIDITY_DAYS,
   resolveUnitPrice,
@@ -134,3 +134,9 @@ module.exports = {
   findActiveBlock,
   consumeConversation,
 };
+
+// Double export : CommonJS (serveur Node) + global navigateur (app offline/Capacitor).
+(function (root) {
+  if (typeof module !== 'undefined' && module.exports) module.exports = __api;
+  root.DDbilling = __api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);

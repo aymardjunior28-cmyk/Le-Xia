@@ -345,6 +345,12 @@ const seedEstablishments = [
   },
 ];
 
-module.exports = {
+const __api = {
   seedEstablishments,
 };
+
+// Double export : CommonJS (serveur Node) + global navigateur (app offline/Capacitor).
+(function (root) {
+  if (typeof module !== 'undefined' && module.exports) module.exports = __api;
+  root.DDseed = __api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Douala Discovery</string>
+    <string name="title_activity_main">Douala Discovery</string>
+    <string name="package_name">cm.douala.discovery</string>
+    <string name="custom_url_scheme">cm.douala.discovery</string>
+</resources>

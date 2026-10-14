@@ -22,6 +22,12 @@ function buildWhatsappUrl(phone, clickId, establishmentName = 'la plateforme Dou
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 }
 
-module.exports = {
+const __api = {
   buildWhatsappUrl,
 };
+
+// Double export : CommonJS (serveur Node) + global navigateur (app offline/Capacitor).
+(function (root) {
+  if (typeof module !== 'undefined' && module.exports) module.exports = __api;
+  root.DDwhatsapp = __api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);

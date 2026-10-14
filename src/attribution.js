@@ -111,9 +111,15 @@ function markAttributed(click) {
   };
 }
 
-module.exports = {
+const __api = {
   generateClickId,
   generateConversationId,
   createClickEvent,
   markAttributed,
 };
+
+// Double export : CommonJS (serveur Node) + global navigateur (app offline/Capacitor).
+(function (root) {
+  if (typeof module !== 'undefined' && module.exports) module.exports = __api;
+  root.DDattribution = __api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
