@@ -1391,3 +1391,127 @@ tbody tr:hover {
   background: #fff;
   width: 100%;
 }
+
+/* --- Responsive petits écrans (ex. Tecno Pop 8 : viewport ~360 px) --- */
+@media (max-width: 560px) {
+  .container {
+    width: calc(100% - 24px);
+  }
+  .topbar .nav {
+    gap: 8px;
+  }
+  .topbar .nav nav {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    row-gap: 6px;
+  }
+  .hero {
+    padding: 22px 18px;
+    gap: 18px;
+  }
+  .hero h1 {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+  .hero-card {
+    padding: 16px;
+  }
+  .toolbar {
+    padding: 14px;
+  }
+  .filters-advanced label {
+    flex: 1 1 130px;
+  }
+  .filters-advanced select {
+    width: 100%;
+    min-width: 0;
+  }
+  .search-btn {
+    flex: 1 1 100%;
+  }
+  .card-grid {
+    gap: 14px;
+  }
+  .card-image {
+    height: 170px;
+  }
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .metric {
+    padding: 12px;
+  }
+  .metric-value {
+    font-size: 1.25rem;
+  }
+  .panel {
+    padding: 16px 14px;
+  }
+  .table-wrap,
+  .chart-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    font-size: 0.8rem;
+  }
+  th,
+  td {
+    padding: 8px 10px;
+  }
+  .product-row {
+    grid-template-columns: 1fr;
+  }
+  .product-row .p-remove {
+    width: 100%;
+    height: 40px;
+  }
+  .form-actions {
+    flex-wrap: wrap;
+  }
+  .form-actions .primary-btn,
+  .form-actions .ghost-btn {
+    flex: 1 1 140px;
+    text-align: center;
+  }
+  .manage-item-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .manage-item-actions .ghost-btn,
+  .manage-item-actions .danger-btn {
+    flex: 1 1 120px;
+    text-align: center;
+  }
+  .auth-card {
+    padding: 24px 20px;
+  }
+  .product-page-card {
+    padding: 18px;
+  }
+  .cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .primary-btn {
+    text-align: center;
+  }
+  .chart {
+    height: 200px;
+  }
+}
+
+@media (max-width: 380px) {
+  .metrics {
+    gap: 8px;
+  }
+  .metric-value {
+    font-size: 1.1rem;
+  }
+  .filter-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  .hero h1 {
+    font-size: 1.45rem;
+  }
+}
