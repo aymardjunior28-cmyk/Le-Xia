@@ -29,6 +29,21 @@ function scoreFor(id) {
 }
 
 /**
+ * Verdict associé à une note réelle (0-10) saisie par le super-admin.
+ */
+function noteVerdict(note) {
+  const value = Number(note);
+  const score = value.toFixed(1);
+  let word = 'Correct';
+  if (value >= 9) word = 'Excellent';
+  else if (value >= 8) word = 'Très bien';
+  else if (value >= 7) word = 'Bien';
+  else if (value >= 5) word = 'Moyen';
+  else word = 'Faible';
+  return { score, word };
+}
+
+/**
  * Aplati les établissements en une liste de produits pour le feed.
  * Chaque carte du feed représente un produit (photo, prix, dispo propres).
  */
@@ -47,6 +62,7 @@ function flattenProducts(establishments) {
         availability: product.disponibilite,
         photo: product.photo,
         description: product.description,
+        note: establishment.note != null ? establishment.note : null,
       });
     });
   });
@@ -139,8 +155,9 @@ function renderEstablishments() {
     clone.querySelector('.location').textContent = `${item.quartier} • ${item.availability}`;
     clone.querySelector('.description').textContent = item.description;
 
-    // Score cosmétique façon comparateur (stable, dérivé de l'id produit).
-    const { score, word } = scoreFor(item.productId);
+    // Note réelle saisie par le super-admin si elle existe, sinon score cosmétique.
+    const { score, word } =
+      item.note != null ? noteVerdict(item.note) : scoreFor(item.productId);
     clone.querySelector('.score-box').textContent = score;
     clone.querySelector('.score-word').textContent = word;
 

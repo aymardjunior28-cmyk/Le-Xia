@@ -142,3 +142,98 @@ test('super-admin crée un admin, qui peut se connecter', async () => {
   });
   assert.strictEqual(del.status, 200);
 });
+
+test('super-admin : CRUD complet d un établissement', async () => {
+  const login = await fetch(`${BASE}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'Admin@2026' }),
+  });
+  const cookie = login.headers.get('set-cookie');
+
+  // Création (restaurant) avec un produit
+  const create = await fetch(`${BASE}/api/establishments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', cookie },
+    body: JSON.stringify({
+      nom: 'Test Grill',
+      type: 'restaurant',
+      quartier: 'Bonapriso',
+      whatsapp: '237655999999',
+      note: 8.5,
+      photo: 'https://exemple.cm/photo.jpg',
+      description: 'Un super restaurant de test.',
+      products: [{ nom: 'Poulet DG', prix: 3500, description: 'Le classique.' }],
+    }),
+  });
+  assert.strictEqual(create.status, 201);
+  const est = await create.json();
+  assert.strictEqual(est.note, 8.5);
+  assert.strictEqual(est.whatsapp, '237655999999');
+  assert.strictEqual(est.products.length, 1);
+  assert.strictEqual(est.products[0].nom, 'Poulet DG');
+  assert.strictEqual(est.products[0].id_etablissement, est.id);
+
+  // Modification (nom + note + type meublé)
+  const update = await fetch(`${BASE}/api/establishments/${est.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', cookie },
+    body: JSON.stringify({
+      nom: 'Test Grill Pro',
+      type: 'meuble',
+      quartier: 'Bonapriso',
+      whatsapp: '237655999999',
+      note: 9,
+    }),
+  });
+  assert.strictEqual(update.status, 200);
+  const updated = await update.json();
+  assert.strictEqual(updated.nom, 'Test Grill Pro');
+  assert.strictEqual(updated.type, 'meuble');
+  assert.strictEqual(updated.note, 9);
+
+  // Suppression
+  const del = await fetch(`${BASE}/api/establishments/${est.id}`, {
+    method: 'DELETE',
+    headers: { cookie },
+  });
+  assert.strictEqual(del.status, 200);
+
+  const check = await fetch(`${BASE}/api/establishment/${est.id}`);
+  assert.strictEqual(check.status, 404);
+});
+
+test('un admin simple ne peut PAS gérer les établissements (403)', async () => {
+  // Crée un admin
+  const superLogin = await fetch(`${BASE}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'Admin@2026' }),
+  });
+  const superCookie = superLogin.headers.get('set-cookie');
+  const created = await fetch(`${BASE}/api/admin/users`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', cookie: superCookie },
+    body: JSON.stringify({ nom: 'Admin B', email: 'b@test.cm', password: 'secret1' }),
+  });
+  const adminId = (await created.json()).id;
+
+  // Se connecte en admin
+  const adminLogin = await fetch(`${BASE}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'b@test.cm', password: 'secret1' }),
+  });
+  const adminCookie = adminLogin.headers.get('set-cookie');
+
+  // Tente de créer un établissement -> 403
+  const forbidden = await fetch(`${BASE}/api/establishments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', cookie: adminCookie },
+    body: JSON.stringify({ nom: 'X', type: 'restaurant', quartier: 'Q', whatsapp: '237655000000' }),
+  });
+  assert.strictEqual(forbidden.status, 403);
+
+  // Nettoyage
+  await fetch(`${BASE}/api/admin/users/${adminId}`, { method: 'DELETE', headers: { cookie: superCookie } });
+});

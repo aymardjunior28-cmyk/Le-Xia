@@ -9,6 +9,7 @@ const { buildWhatsappUrl } = require('./src/whatsapp');
 const antifraud = require('./src/antifraud');
 const billing = require('./src/billing');
 const auth = require('./src/auth');
+const establishmentsLib = require('./src/establishments');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -228,53 +229,63 @@ app.get('/api/establishment/:id', (req, res) => {
   return res.json(establishment);
 });
 
-app.post('/api/establishments', (req, res) => {
+app.post('/api/establishments', requireSuperAdmin, (req, res) => {
   const body = req.body || {};
 
-  // Validation minimale conforme à la fiche établissement (§8.1).
-  const required = ['nom', 'type', 'quartier', 'whatsapp'];
-  const missing = required.filter((field) => !body[field] || typeof body[field] !== 'string');
-  if (missing.length > 0) {
-    return res.status(400).json({ error: `Champs requis manquants : ${missing.join(', ')}` });
-  }
-  if (!['restaurant', 'meuble'].includes(body.type)) {
-    return res.status(400).json({ error: 'type doit être "restaurant" ou "meuble"' });
+  const error = establishmentsLib.validateEstablishmentInput(body);
+  if (error) {
+    return res.status(400).json({ error });
   }
 
-  const now = new Date().toISOString();
-  const establishment = {
-    id: body.id || `${body.type === 'restaurant' ? 'rest' : 'meuble'}_${Date.now()}`,
-    nom: body.nom.trim(),
-    type: body.type,
-    statut: 'actif',
-    quartier: body.quartier.trim(),
-    adresse: body.adresse || '',
-    whatsapp: String(body.whatsapp).replace(/[^\d]/g, ''),
-    categorie: body.categorie || '',
-    visibilites: body.visibilites || ['home_feed'],
-    date_ajout: now,
-    date_maj: now,
-    products: Array.isArray(body.products) ? body.products : [],
-  };
+  const id = establishmentsLib.str(body.id) || establishmentsLib.generateId(body.type);
+  if (establishments.some((item) => item.id === id)) {
+    return res.status(409).json({ error: 'Cet identifiant existe déjà' });
+  }
 
-  // Rattache chaque produit à son établissement.
-  establishment.products = establishment.products.map((product, index) => ({
-    id: product.id || `prod_${establishment.id}_${index + 1}`,
-    id_etablissement: establishment.id,
-    type_produit: product.type_produit || 'plat',
-    nom: product.nom || 'Produit',
-    prix: Number(product.prix) || 0,
-    disponibilite: product.disponibilite || '',
-    photo: product.photo || '',
-    description: product.description || '',
-    tags: product.tags || [],
-    statut: 'actif',
-  }));
+  const establishment = establishmentsLib.buildEstablishment(body, id);
 
   establishments.push(establishment);
   persistEstablishments();
 
   return res.status(201).json(establishment);
+});
+
+// Modification d'un établissement (réservé au super-admin).
+app.put('/api/establishments/:id', requireSuperAdmin, (req, res) => {
+  const index = establishments.findIndex((item) => item.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+
+  const error = establishmentsLib.validateEstablishmentInput(req.body);
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const existing = establishments[index];
+  // On conserve la date d'ajout d'origine et le statut si non fourni.
+  const updated = establishmentsLib.buildEstablishment(
+    { ...req.body, date_ajout: existing.date_ajout, statut: req.body.statut || existing.statut },
+    existing.id
+  );
+
+  establishments[index] = updated;
+  persistEstablishments();
+
+  return res.json(updated);
+});
+
+// Suppression d'un établissement (réservé au super-admin).
+app.delete('/api/establishments/:id', requireSuperAdmin, (req, res) => {
+  const index = establishments.findIndex((item) => item.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+
+  establishments.splice(index, 1);
+  persistEstablishments();
+
+  return res.json({ ok: true });
 });
 
 app.post('/api/blocks', (req, res) => {
@@ -411,6 +422,10 @@ app.get('/dashboard', requirePageAuth, (req, res) => {
 // ---------------------------------------------------------------------------
 app.get('/admins', requirePageSuperAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admins.html'));
+});
+
+app.get('/manage', requirePageSuperAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'manage.html'));
 });
 
 // GET  /api/admin/users          -> liste des comptes (super-admin)

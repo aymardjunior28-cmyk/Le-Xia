@@ -20,6 +20,21 @@ function scoreFor(id) {
 }
 
 /**
+ * Verdict associé à une note réelle (0-10) saisie par le super-admin.
+ */
+function noteVerdict(note) {
+  const value = Number(note);
+  const score = value.toFixed(1);
+  let word = 'Correct';
+  if (value >= 9) word = 'Excellent';
+  else if (value >= 8) word = 'Très bien';
+  else if (value >= 7) word = 'Bien';
+  else if (value >= 5) word = 'Moyen';
+  else word = 'Faible';
+  return { score, word };
+}
+
+/**
  * Extrait les paramètres de route /produit/:establishmentId/:productId
  */
 function parseRoute() {
@@ -48,7 +63,8 @@ async function loadProduct() {
 
   const data = await response.json();
   const { establishment, product } = data;
-  const { score, word } = scoreFor(product.id);
+  const { score, word } =
+    establishment.note != null ? noteVerdict(establishment.note) : scoreFor(product.id);
 
   container.innerHTML = `
     <article class="product-page-card">

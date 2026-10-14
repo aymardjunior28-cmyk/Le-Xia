@@ -1201,3 +1201,167 @@ tbody tr:hover {
   font-size: 0.9rem;
   color: var(--muted);
 }
+
+
+/* ===========================================================================
+   Page de gestion des établissements (super-admin)
+   =========================================================================== */
+.manage-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.manage-head h1 {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  margin: 4px 0 6px;
+}
+.manage-head .panel-sub {
+  max-width: 560px;
+}
+
+/* --- Formulaire --- */
+.manage-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 18px;
+  margin-top: 14px;
+}
+.manage-form .field span {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.manage-form input,
+.manage-form select,
+.manage-form textarea {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.manage-form textarea {
+  resize: vertical;
+}
+.manage-form input:focus,
+.manage-form select:focus,
+.manage-form textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.15);
+}
+.manage-form .field-full {
+  grid-column: 1 / -1;
+}
+@media (max-width: 700px) {
+  .manage-form {
+    grid-template-columns: 1fr;
+  }
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* --- Éditeur de produits --- */
+.products-editor {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+.products-editor legend {
+  padding: 0 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.product-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 1fr 1.2fr 1.4fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.product-row input {
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  width: 100%;
+}
+.product-row .p-remove {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  line-height: 1;
+  font-size: 1.1rem;
+}
+@media (max-width: 900px) {
+  .product-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --- Liste des établissements --- */
+.manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+}
+.manage-item {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgba(40, 60, 110, 0.05);
+}
+.manage-thumb {
+  width: 96px;
+  height: 96px;
+  border-radius: 12px;
+  background: var(--bg-2) center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+.manage-info .meta-row {
+  margin-bottom: 4px;
+}
+.manage-info .title {
+  margin: 2px 0;
+}
+.manage-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .manage-item {
+    grid-template-columns: 72px 1fr;
+  }
+  .manage-thumb {
+    width: 72px;
+    height: 72px;
+  }
+  .manage-item-actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+}
