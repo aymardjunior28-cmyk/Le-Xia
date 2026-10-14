@@ -26,11 +26,14 @@
     whatsapp: document.getElementById('est-whatsapp'),
     note: document.getElementById('est-note'),
     photo: document.getElementById('est-photo'),
+    photoPreview: document.getElementById('est-photo-preview'),
     description: document.getElementById('est-description'),
     visibilites: document.getElementById('est-visibilites'),
   };
 
   let establishments = [];
+  // URL de la photo principale (existante ou fraîchement uploadée).
+  let establishmentPhotoUrl = '';
 
   function showError(message, box) {
     const target = box || els.error;
@@ -111,17 +114,20 @@
   });
 
   // ---- Éditeur de produits embarqués ----
+  // Chaque produit : inputs texte + un champ fichier photo (upload immédiat).
   function productRow(product, index) {
     const p = product || {};
+    const hasPhoto = p.photo ? '' : 'hidden';
     return `
-      <div class="product-row" data-index="${index}">
+      <div class="product-row" data-index="${index}" data-photo-url="${p.photo || ''}">
         <input type="text" class="p-nom" placeholder="Nom du produit" value="${p.nom || ''}" />
         <input type="number" class="p-prix" placeholder="Prix (FCFA)" value="${p.prix != null ? p.prix : ''}" />
         <input type="text" class="p-dispo" placeholder="Disponibilité" value="${p.disponibilite || ''}" />
-        <input type="text" class="p-photo" placeholder="Photo (URL)" value="${p.photo || ''}" />
+        <input type="file" class="p-photo" accept="image/*" title="Choisir une photo" />
         <input type="text" class="p-desc" placeholder="Description" value="${p.description || ''}" />
         <input type="text" class="p-tags" placeholder="Tags (séparés par des virgules)" value="${(p.tags || []).join(', ')}" />
         <button type="button" class="btn-small btn-danger p-remove">×</button>
+        <img class="p-photo-preview photo-preview ${hasPhoto}" alt="" src="${p.photo || ''}" />
       </div>`;
   }
 
@@ -137,7 +143,7 @@
         nom: row.querySelector('.p-nom').value.trim(),
         prix: Number(row.querySelector('.p-prix').value) || 0,
         disponibilite: row.querySelector('.p-dispo').value.trim(),
-        photo: row.querySelector('.p-photo').value.trim(),
+        photo: row.dataset.photoUrl || '',
         description: row.querySelector('.p-desc').value.trim(),
         tags: row
           .querySelector('.p-tags')
@@ -147,6 +153,54 @@
       }))
       .filter((p) => p.nom);
   }
+
+  /**
+   * Upload d'une image vers /api/upload. Retourne l'URL publique, ou null.
+   */
+  async function uploadImage(fileInput) {
+    if (!fileInput.files || !fileInput.files[0]) return null;
+    const formData = new FormData();
+    formData.append('photo', fileInput.files[0]);
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Upload échoué');
+    }
+    const { url } = await res.json();
+    return url;
+  }
+
+  // Photo principale de l'établissement.
+  els.photo.addEventListener('change', async () => {
+    try {
+      const url = await uploadImage(els.photo);
+      if (url) {
+        establishmentPhotoUrl = url;
+        els.photoPreview.src = url;
+        els.photoPreview.hidden = false;
+      }
+    } catch (err) {
+      showError(err.message, els.formError);
+    }
+  });
+
+  // Photos des produits : upload immédiat + aperçu.
+  els.productsList.addEventListener('change', async (event) => {
+    const input = event.target;
+    if (!input.classList.contains('p-photo')) return;
+    const row = input.closest('.product-row');
+    try {
+      const url = await uploadImage(input);
+      if (url) {
+        row.dataset.photoUrl = url;
+        const preview = row.querySelector('.p-photo-preview');
+        preview.src = url;
+        preview.hidden = false;
+      }
+    } catch (err) {
+      showError(err.message, els.formError);
+    }
+  });
 
   els.productsList.addEventListener('click', (event) => {
     if (event.target.classList.contains('p-remove')) {
@@ -171,7 +225,14 @@
     els.adresse.value = establishment ? establishment.adresse || '' : '';
     els.whatsapp.value = establishment ? establishment.whatsapp : '';
     els.note.value = establishment && establishment.note != null ? establishment.note : '';
-    els.photo.value = establishment ? establishment.photo || '' : '';
+    establishmentPhotoUrl = establishment ? establishment.photo || '' : '';
+    if (establishmentPhotoUrl) {
+      els.photoPreview.src = establishmentPhotoUrl;
+      els.photoPreview.hidden = false;
+    } else {
+      els.photoPreview.hidden = true;
+      els.photoPreview.removeAttribute('src');
+    }
     els.description.value = establishment ? establishment.description || '' : '';
     const vis = establishment && establishment.visibilites ? establishment.visibilites[0] : 'home_feed';
     els.visibilites.value = ['home_feed', 'restaurants', 'meubles'].includes(vis) ? vis : 'all';
@@ -190,6 +251,9 @@
   function closeForm() {
     els.formPanel.hidden = true;
     els.form.reset();
+    establishmentPhotoUrl = '';
+    els.photoPreview.hidden = true;
+    els.photoPreview.removeAttribute('src');
     showError('', els.formError);
   }
 
@@ -214,7 +278,7 @@
       adresse: els.adresse.value,
       whatsapp: els.whatsapp.value,
       note: els.note.value,
-      photo: els.photo.value,
+      photo: establishmentPhotoUrl,
       description: els.description.value,
       visibilites: buildVisibilites(els.visibilites.value),
       products: collectProducts(),

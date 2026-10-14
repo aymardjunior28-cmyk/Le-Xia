@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
+const fs = require('fs');
+const multer = require('multer');
 
 const { loadCollection, saveCollection } = require('./src/store');
 const { seedEstablishments } = require('./src/seed');
@@ -14,6 +16,32 @@ const establishmentsLib = require('./src/establishments');
 const app = express();
 const port = process.env.PORT || 3000;
 app.set('trust proxy', true);
+
+// ---------------------------------------------------------------------------
+// Upload d'images (multer) : stockage sur disque dans public/uploads.
+// ---------------------------------------------------------------------------
+const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+const ALLOWED_IMAGE = /^image\/(jpeg|jpg|png|webp|gif|avif)$/i;
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+    filename: (req, file, cb) => {
+      const ext = (path.extname(file.originalname) || '.jpg').toLowerCase();
+      const unique = `${Date.now()}_${crypto.randomBytes(4).toString('hex')}${ext}`;
+      cb(null, unique);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 Mo max
+  fileFilter: (req, file, cb) => {
+    if (ALLOWED_IMAGE.test(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Format non supporté : utilisez une image (jpg, png, webp, gif, avif)'));
+    }
+  },
+});
 
 // ---------------------------------------------------------------------------
 // Sources de vérité persistées (JSON dans data/)
@@ -418,107 +446,25 @@ app.get('/dashboard', requirePageAuth, (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Gestion des comptes administrateurs (réservé au super-admin)
+// Gestion des établissements (réservé au super-admin) + upload d'images
 // ---------------------------------------------------------------------------
-app.get('/admins', requirePageSuperAdmin, (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admins.html'));
-});
-
 app.get('/manage', requirePageSuperAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'manage.html'));
 });
 
-// GET  /api/admin/users          -> liste des comptes (super-admin)
-// POST /api/admin/users          -> créer un admin
-// PATCH /api/admin/users/:id     -> activer / désactiver
-// DELETE /api/admin/users/:id    -> supprimer
-app.get('/api/admin/users', requireSuperAdmin, (req, res) => {
-  const list = users.map((u) => ({
-    ...auth.publicUser(u),
-    is_you: u.id === req.user.id,
-  }));
-  return res.json(list);
-});
-
-app.post('/api/admin/users', requireSuperAdmin, (req, res) => {
-  const body = req.body || {};
-  const email = auth.normalizeEmail(body.email);
-
-  if (users.some((u) => u.email === email)) {
-    return res.status(409).json({ error: 'Cet email est déjà utilisé' });
-  }
-
-  // Via l'UI, un super-admin crée uniquement des comptes "admin".
-  const role = auth.ROLES.ADMIN;
-
-  const result = auth.buildUser({
-    email,
-    nom: body.nom,
-    password: body.password,
-    role,
-  });
-
-  if (!result.ok) {
-    return res.status(400).json({ error: result.error });
-  }
-
-  users.push(result.user);
-  persistUsers();
-  return res.status(201).json(auth.publicUser(result.user));
-});
-
-app.patch('/api/admin/users/:id', requireSuperAdmin, (req, res) => {
-  const target = users.find((u) => u.id === req.params.id);
-  if (!target) {
-    return res.status(404).json({ error: 'Compte introuvable' });
-  }
-  if (target.id === req.user.id) {
-    return res.status(400).json({ error: 'Vous ne pouvez pas modifier votre propre compte ici' });
-  }
-
-  if (typeof body_actif(req) === 'boolean') {
-    // Empêche de désactiver le dernier super-admin encore actif.
-    if (
-      target.role === auth.ROLES.SUPER_ADMIN &&
-      body_actif(req) === false &&
-      users.filter((u) => u.role === auth.ROLES.SUPER_ADMIN && u.actif !== false).length <= 1
-    ) {
-      return res.status(400).json({ error: 'Impossible de désactiver le dernier super-admin' });
+// Upload d'une image (réservé au super-admin) -> renvoie l'URL /uploads/<fichier>.
+app.post('/api/upload', requireSuperAdmin, (req, res) => {
+  const handler = upload.single('photo');
+  handler(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message || 'Upload échoué' });
     }
-    target.actif = body_actif(req);
-  }
-
-  persistUsers();
-  return res.json(auth.publicUser(target));
+    if (!req.file) {
+      return res.status(400).json({ error: 'Aucun fichier reçu' });
+    }
+    return res.json({ url: '/uploads/' + req.file.filename });
+  });
 });
-
-app.delete('/api/admin/users/:id', requireSuperAdmin, (req, res) => {
-  const index = users.findIndex((u) => u.id === req.params.id);
-  if (index === -1) {
-    return res.status(404).json({ error: 'Compte introuvable' });
-  }
-  const target = users[index];
-  if (target.id === req.user.id) {
-    return res.status(400).json({ error: 'Vous ne pouvez pas supprimer votre propre compte' });
-  }
-  if (
-    target.role === auth.ROLES.SUPER_ADMIN &&
-    users.filter((u) => u.role === auth.ROLES.SUPER_ADMIN).length <= 1
-  ) {
-    return res.status(400).json({ error: 'Impossible de supprimer le dernier super-admin' });
-  }
-
-  users.splice(index, 1);
-  persistUsers();
-  return res.json({ ok: true });
-});
-
-// Helper local : lit { actif: boolean } du body de PATCH.
-function body_actif(req) {
-  const v = req.body && req.body.actif;
-  return typeof v === 'boolean' ? v : null;
-}
-
 // API fiche produit dédiée (§10.2).
 app.get('/api/product/:establishmentId/:productId', (req, res) => {
   const { establishment, product } = findProduct(req.params.establishmentId, req.params.productId);

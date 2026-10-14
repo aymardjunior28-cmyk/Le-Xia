@@ -12,10 +12,7 @@ const crypto = require('crypto');
 
 const ROLES = {
   SUPER_ADMIN: 'super_admin',
-  ADMIN: 'admin',
 };
-
-const ALL_ROLES = [ROLES.SUPER_ADMIN, ROLES.ADMIN];
 
 // Compte super-admin amorcé au premier démarrage (à changer après connexion).
 const DEFAULT_SUPERADMIN = {
@@ -73,50 +70,6 @@ function publicUser(user) {
 }
 
 /**
- * Valide les champs de création d'un compte.
- * @returns {string|null} message d'erreur, ou null si valide
- */
-function validateUserInput({ email, nom, password, role }) {
-  if (!normalizeEmail(email) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(email))) {
-    return 'Adresse email invalide';
-  }
-  if (!nom || !String(nom).trim()) {
-    return 'Le nom est requis';
-  }
-  if (!password || String(password).length < 6) {
-    return 'Le mot de passe doit contenir au moins 6 caractères';
-  }
-  if (role && !ALL_ROLES.includes(role)) {
-    return 'Rôle invalide (admin | super_admin)';
-  }
-  return null;
-}
-
-/**
- * Construit un objet utilisateur prêt à être persisté.
- * @returns {{ ok: boolean, user?: object, error?: string }}
- */
-function buildUser({ email, nom, password, role = ROLES.ADMIN }) {
-  const error = validateUserInput({ email, nom, password, role });
-  if (error) return { ok: false, error };
-
-  const { salt, hash } = hashPassword(password);
-  return {
-    ok: true,
-    user: {
-      id: `user_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
-      email: normalizeEmail(email),
-      nom: String(nom).trim(),
-      role,
-      password_hash: hash,
-      password_salt: salt,
-      actif: true,
-      date_creation: new Date().toISOString(),
-    },
-  };
-}
-
-/**
  * Amorce un super-admin si aucun n'existe encore.
  * @param {object[]} users collection mutable
  * @returns {boolean} true si un super-admin a été créé
@@ -141,13 +94,10 @@ function ensureSuperAdmin(users) {
 
 module.exports = {
   ROLES,
-  ALL_ROLES,
   DEFAULT_SUPERADMIN,
   normalizeEmail,
   hashPassword,
   verifyPassword,
   publicUser,
-  validateUserInput,
-  buildUser,
   ensureSuperAdmin,
 };

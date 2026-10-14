@@ -91,58 +91,6 @@ test('login super-admin puis accès dashboard', async () => {
   assert.ok(data.stats);
 });
 
-test('super-admin crée un admin, qui peut se connecter', async () => {
-  // Connexion super-admin
-  const login = await fetch(`${BASE}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'Admin@2026' }),
-  });
-  const cookie = login.headers.get('set-cookie');
-
-  // Création d'un admin
-  const created = await fetch(`${BASE}/api/admin/users`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', cookie },
-    body: JSON.stringify({ nom: 'Admin Test', email: 'Admin@Test.cm', password: 'secret1' }),
-  });
-  assert.strictEqual(created.status, 201);
-  const newAdmin = await created.json();
-  assert.strictEqual(newAdmin.role, 'admin');
-
-  // Doublon refusé
-  const dup = await fetch(`${BASE}/api/admin/users`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', cookie },
-    body: JSON.stringify({ nom: 'Admin Test', email: 'admin@test.cm', password: 'secret1' }),
-  });
-  assert.strictEqual(dup.status, 409);
-
-  // Le nouvel admin peut se connecter
-  const adminLogin = await fetch(`${BASE}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'admin@test.cm', password: 'secret1' }),
-  });
-  assert.strictEqual(adminLogin.status, 200);
-
-  // Un admin ne peut PAS créer de comptes (403)
-  const adminCookie = adminLogin.headers.get('set-cookie');
-  const forbidden = await fetch(`${BASE}/api/admin/users`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', cookie: adminCookie },
-    body: JSON.stringify({ nom: 'X', email: 'x@test.cm', password: 'secret1' }),
-  });
-  assert.strictEqual(forbidden.status, 403);
-
-  // Suppression par le super-admin
-  const del = await fetch(`${BASE}/api/admin/users/${newAdmin.id}`, {
-    method: 'DELETE',
-    headers: { cookie },
-  });
-  assert.strictEqual(del.status, 200);
-});
-
 test('super-admin : CRUD complet d un établissement', async () => {
   const login = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
@@ -203,37 +151,64 @@ test('super-admin : CRUD complet d un établissement', async () => {
   assert.strictEqual(check.status, 404);
 });
 
-test('un admin simple ne peut PAS gérer les établissements (403)', async () => {
-  // Crée un admin
-  const superLogin = await fetch(`${BASE}/api/auth/login`, {
+test('routes sensibles protégées : /manage et /api/upload sans session', async () => {
+  const manage = await fetch(`${BASE}/manage`, { redirect: 'manual' });
+  assert.strictEqual(manage.status, 302);
+  assert.match(manage.headers.get('location') || '', /\/login$/);
+
+  const upload = await fetch(`${BASE}/api/upload`, { method: 'POST' });
+  assert.strictEqual(upload.status, 401);
+});
+
+test('upload d image : refusé sans session, accepté par le super-admin, rejeté si non-image', async () => {
+  // Petit PNG 1x1 valide (base64).
+  const png = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+    'base64'
+  );
+
+  // Sans session -> 401
+  const noAuth = await fetch(`${BASE}/api/upload`, {
+    method: 'POST',
+    body: (() => {
+      const fd = new FormData();
+      fd.append('photo', new Blob([png], { type: 'image/png' }), 'x.png');
+      return fd;
+    })(),
+  });
+  assert.strictEqual(noAuth.status, 401);
+
+  // Connexion super-admin
+  const login = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'Admin@2026' }),
   });
-  const superCookie = superLogin.headers.get('set-cookie');
-  const created = await fetch(`${BASE}/api/admin/users`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', cookie: superCookie },
-    body: JSON.stringify({ nom: 'Admin B', email: 'b@test.cm', password: 'secret1' }),
-  });
-  const adminId = (await created.json()).id;
+  const cookie = login.headers.get('set-cookie');
 
-  // Se connecte en admin
-  const adminLogin = await fetch(`${BASE}/api/auth/login`, {
+  // Upload valide -> 200 + URL /uploads/...
+  const ok = await fetch(`${BASE}/api/upload`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'b@test.cm', password: 'secret1' }),
+    headers: { cookie },
+    body: (() => {
+      const fd = new FormData();
+      fd.append('photo', new Blob([png], { type: 'image/png' }), 'photo.png');
+      return fd;
+    })(),
   });
-  const adminCookie = adminLogin.headers.get('set-cookie');
+  assert.strictEqual(ok.status, 200);
+  const { url } = await ok.json();
+  assert.match(url, /^\/uploads\/.+\.png$/);
 
-  // Tente de créer un établissement -> 403
-  const forbidden = await fetch(`${BASE}/api/establishments`, {
+  // Non-image -> 400
+  const bad = await fetch(`${BASE}/api/upload`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', cookie: adminCookie },
-    body: JSON.stringify({ nom: 'X', type: 'restaurant', quartier: 'Q', whatsapp: '237655000000' }),
+    headers: { cookie },
+    body: (() => {
+      const fd = new FormData();
+      fd.append('photo', new Blob([Buffer.from('texte')], { type: 'text/plain' }), 'note.txt');
+      return fd;
+    })(),
   });
-  assert.strictEqual(forbidden.status, 403);
-
-  // Nettoyage
-  await fetch(`${BASE}/api/admin/users/${adminId}`, { method: 'DELETE', headers: { cookie: superCookie } });
+  assert.strictEqual(bad.status, 400);
 });

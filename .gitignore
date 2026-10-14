@@ -4,6 +4,9 @@ node_modules/
 # Données persistées (générées à l'exécution)
 data/
 
+# Images uploadées par les administrateurs (générées à l'exécution)
+public/uploads/
+
 # Fichiers de test temporaires
 *.test.json
 

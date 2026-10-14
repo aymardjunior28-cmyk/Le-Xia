@@ -20,7 +20,6 @@
     html += '<a href="/dashboard">Dashboard</a>';
     if (user.role === 'super_admin') {
       html += '<a href="/manage">Gérer</a>';
-      html += '<a href="/admins">Admins</a>';
     }
     html += `<span class="nav-user" title="${user.email}">${user.nom || user.email}</span>`;
     html += '<a href="#" id="nav-logout" class="nav-logout">Déconnexion</a>';

@@ -29,7 +29,6 @@
         <nav>
           <a href="/">Accueil</a>
           <a href="/dashboard">Dashboard</a>
-          <a href="/admins">Admins</a>
         </nav>
       </div>
     </header>
@@ -91,8 +90,9 @@
           </label>
 
           <label class="field field-full">
-            <span>Photo principale (URL)</span>
-            <input type="text" id="est-photo" placeholder="https://…" />
+            <span>Photo principale</span>
+            <input type="file" id="est-photo" accept="image/*" />
+            <img id="est-photo-preview" class="photo-preview" alt="Aperçu" hidden />
           </label>
 
           <label class="field field-full">

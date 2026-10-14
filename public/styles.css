@@ -1365,3 +1365,29 @@ tbody tr:hover {
     flex-direction: row;
   }
 }
+
+
+/* --- Aperçus photo (établissement + produits) --- */
+.photo-preview {
+  display: block;
+  margin-top: 8px;
+  max-width: 160px;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.product-row .p-photo-preview {
+  grid-column: 1 / -1;
+  max-width: 120px;
+  max-height: 80px;
+  margin: 4px 0 0;
+}
+.product-row input[type="file"] {
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  width: 100%;
+}
