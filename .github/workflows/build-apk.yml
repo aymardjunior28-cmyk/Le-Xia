@@ -23,7 +23,12 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npm test
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee test-run.log || {
+            echo "::error title=Tests échoués::$(tail -n 60 test-run.log | tr '\n' ' ' | head -c 60000)"
+            exit 1
+          }
 
       - name: Build offline web bundle (www/)
         run: node build-offline.js

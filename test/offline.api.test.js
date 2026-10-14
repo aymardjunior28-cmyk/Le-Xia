@@ -14,23 +14,32 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..');
 
 // ---- Environnement navigateur simulé (AVANT de charger les scripts) ----
+// Chaque injection est défensive : en Node 21+ (CI), navigator existe déjà.
 const mem = new Map();
-Object.defineProperty(globalThis, 'localStorage', {
-  configurable: true,
-  writable: true,
-  value: {
-    getItem: (k) => (mem.has(k) ? mem.get(k) : null),
-    setItem: (k, v) => void mem.set(k, String(v)),
-    removeItem: (k) => void mem.delete(k),
-  },
-});
+try {
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    writable: true,
+    value: {
+      getItem: (k) => (mem.has(k) ? mem.get(k) : null),
+      setItem: (k, v) => void mem.set(k, String(v)),
+      removeItem: (k) => void mem.delete(k),
+    },
+  });
+} catch (e) {
+  /* localStorage natif conservé */
+}
 
 // fetch d'origine : doit être appelé UNIQUEMENT hors /api/ (sinon c'est une fuite).
 const originalFetchCalls = [];
-globalThis.fetch = async (input) => {
-  originalFetchCalls.push(String(input));
-  throw new Error('RESEAU_INDISPONIBLE:' + input);
-};
+try {
+  globalThis.fetch = async (input) => {
+    originalFetchCalls.push(String(input));
+    throw new Error('RESEAU_INDISPONIBLE:' + input);
+  };
+} catch (e) {
+  /* fetch global non remplaçable */
+}
 
 try {
   Object.defineProperty(globalThis, 'navigator', {
@@ -39,7 +48,7 @@ try {
     value: { userAgent: 'offline-test-agent' },
   });
 } catch (e) {
-  globalThis.navigator.userAgent = 'offline-test-agent';
+  /* navigator natif conservé (Node 21+) */
 }
 
 // FileReader absent de Node : simulé pour l'upload.
