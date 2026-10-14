@@ -18,9 +18,6 @@ npm-debug.log*
 .env
 .env.local
 
-# Build de l'app Android (généré par build-offline.js)
-www/
-
 # Systèmes d'exploitation / éditeurs
 .DS_Store
 Thumbs.db

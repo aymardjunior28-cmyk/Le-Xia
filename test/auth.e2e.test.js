@@ -34,27 +34,6 @@ async function waitReady(url, tries = 60) {
 const DATA_DIR = path.join(ROOT, 'data');
 const DATA_BACKUP = path.join(os.tmpdir(), `dd-data-backup-${Date.now()}`);
 
-function killServer(proc) {
-  return new Promise((resolve) => {
-    if (!proc || proc.exitCode !== null || proc.signalCode) return resolve();
-    let done = false;
-    const finish = () => {
-      if (!done) {
-        done = true;
-        resolve();
-      }
-    };
-    proc.once('exit', finish);
-    try {
-      proc.kill();
-    } catch (e) {
-      finish();
-    }
-    // Filet de sécurité : ne pas bloquer indéfiniment.
-    setTimeout(finish, 3000);
-  });
-}
-
 test.before(async () => {
   if (fs.existsSync(DATA_DIR)) {
     fs.renameSync(DATA_DIR, DATA_BACKUP);
@@ -63,24 +42,12 @@ test.before(async () => {
     env: { ...process.env, PORT: String(PORT) },
     stdio: 'ignore',
   });
-  // Échoue clairement si le port est déjà pris (évite les faux négatifs).
-  const portError = await new Promise((resolve) => {
-    const timer = setTimeout(() => resolve(null), 100);
-    server.once('error', (err) => resolve(err));
-    server.once('spawn', () => {
-      clearTimeout(timer);
-      resolve(null);
-    });
-  });
-  if (portError && ['EADDRINUSE', 'EACCES'].includes(portError.code)) {
-    throw new Error(`Port ${PORT} indisponible (${portError.code}). Fermez les processus node résiduels.`);
-  }
   await waitReady(`${BASE}/api/health`);
 });
 
-test.after(async () => {
-  await killServer(server);
-  // Laisse l'OS libérer le port avant un éventuel run suivant.
+test.after(() => {
+  if (server) server.kill();
+  if (tmpDataDir && fs.existsSync(tmpDataDir)) fs.rmSync(tmpDataDir, { recursive: true, force: true });
   if (fs.existsSync(DATA_DIR)) fs.rmSync(DATA_DIR, { recursive: true, force: true });
   if (fs.existsSync(DATA_BACKUP)) fs.renameSync(DATA_BACKUP, DATA_DIR);
 });

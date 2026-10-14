@@ -86,16 +86,10 @@ function evaluateClick({ clickLogs, sessionId, productId, userAgent }) {
   return { allowed: true };
 }
 
-const __api = {
+module.exports = {
   DEFAULT_CONFIG,
   looksLikeBot,
   isDuplicate,
   isBurst,
   evaluateClick,
 };
-
-// Double export : CommonJS (serveur Node) + global navigateur (app offline/Capacitor).
-(function (root) {
-  if (typeof module !== 'undefined' && module.exports) module.exports = __api;
-  root.DDantifraud = __api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);

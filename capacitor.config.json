@@ -1,9 +1,0 @@
-{
-  "appId": "cm.douala.discovery",
-  "appName": "Douala Discovery",
-  "webDir": "www",
-  "bundledWebRuntime": false,
-  "android": {
-    "allowMixedContent": false
-  }
-}
