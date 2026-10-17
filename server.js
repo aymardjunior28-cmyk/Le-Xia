@@ -301,7 +301,7 @@ app.post('/api/establishments', requireSuperAdmin, (req, res) => {
 // ---------------------------------------------------------------------------
 // Inscription publique d'un établissement (création du compte + du profil).
 // ---------------------------------------------------------------------------
-app.post('/api/etablissements/inscription', (req, res) => {
+app.post('/api/etablissements/inscription', upload.single('photo'), (req, res) => {
   const body = req.body || {};
 
   const required = ['email', 'password', 'nom', 'type', 'quartier', 'whatsapp'];
@@ -325,7 +325,11 @@ app.post('/api/etablissements/inscription', (req, res) => {
     return res.status(409).json({ error: 'Cet identifiant existe déjà' });
   }
 
-  const establishment = establishmentsLib.buildEstablishment(body, establishmentId);
+  const photoUrl = req.file ? '/uploads/' + req.file.filename : '';
+  const establishment = establishmentsLib.buildEstablishment(
+    { ...body, photo: photoUrl },
+    establishmentId
+  );
   establishments.push(establishment);
   persistEstablishments();
 

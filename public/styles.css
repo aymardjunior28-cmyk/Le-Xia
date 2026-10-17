@@ -923,6 +923,333 @@ tbody tr:hover {
   border-radius: 6px;
 }
 
+/* ===========================================================================
+   Inscription en 2 étapes — Design moderne centré
+   =========================================================================== */
+.inscription-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 32px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgba(40, 60, 110, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.brand-mark-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.inscription-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.inscription-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+
+.auth-sub {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.step {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 2;
+  position: relative;
+}
+
+.step.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(47, 109, 246, 0.08);
+  box-shadow: 0 0 0 4px rgba(47, 109, 246, 0.12);
+}
+
+.step-divider {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin: 0 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-labels {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 28px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.step-label.active {
+  color: var(--primary);
+}
+
+.step-form {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.step-form.active {
+  display: block;
+}
+
+.hidden {
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 7px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.field-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 1.1rem;
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.field-input-wrapper input,
+.field-input-wrapper select,
+.field-input-wrapper textarea {
+  width: 100%;
+  padding: 12px 14px 12px 44px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field-input-wrapper input:focus,
+.field-input-wrapper select:focus,
+.field-input-wrapper textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(47, 109, 246, 0.1);
+}
+
+.field-input-wrapper textarea {
+  resize: vertical;
+  min-height: 80px;
+  padding-left: 44px;
+  padding-top: 12px;
+  line-height: 1.6;
+}
+
+.file-wrapper {
+  width: 100%;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 12px 44px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.file-label:hover {
+  border-color: var(--primary);
+}
+
+.file-label input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.step-nav {
+  justify-content: space-between;
+}
+
+.ghost-btn {
+  flex: 1;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.ghost-btn:hover {
+  background: rgba(27, 35, 51, 0.05);
+  border-color: rgba(27, 35, 51, 0.3);
+}
+
+.primary-btn {
+  flex: 1;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(47, 109, 246, 0.3);
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  box-shadow: 0 6px 18px rgba(47, 109, 246, 0.4);
+}
+
+.primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.arrow {
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.auth-link {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.auth-link a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+.msg {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0);
+}
+
 /* --- Page gestion des admins --- */
 .admin-form {
   display: grid;
