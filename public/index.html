@@ -10,13 +10,6 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <!-- Fond aurora animé (glassmorphism Clair Lumineux). -->
-    <div class="aurora" aria-hidden="true">
-      <span class="b1"></span>
-      <span class="b2"></span>
-      <span class="b3"></span>
-      <span class="b4"></span>
-    </div>
     <header class="topbar">
       <div class="container nav">
         <div class="brand-wrap">
@@ -34,7 +27,7 @@
     </header>
 
     <main class="container page">
-      <section class="hero reveal" data-reveal-index="0">
+      <section class="hero">
         <div>
           <span class="eyebrow">Découverte locale</span>
           <h1>Retrouvez une meilleure façon de se détendre, à Douala.</h1>
@@ -54,7 +47,7 @@
             <div>
               <small>Restaurants</small>
               <p>Mangez &amp; buvez à partir de</p>
-              <strong><span id="hero-price-restaurant" data-count="350">350</span> FCFA</strong>
+              <strong><span id="hero-price-restaurant">350</span> FCFA</strong>
             </div>
           </div>
           <div class="hero-offer hero-offer--meuble">
@@ -69,13 +62,13 @@
             <div>
               <small>Meublés</small>
               <p>Profitez de votre intimité à partir de</p>
-              <strong><span id="hero-price-meuble" data-count="1500">1 500</span> FCFA</strong>
+              <strong><span id="hero-price-meuble">1 500</span> FCFA</strong>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="toolbar reveal" data-reveal-index="1">
+      <section class="toolbar">
         <div class="filters">
           <button class="filter-btn active" data-filter="all">Tout</button>
           <button class="filter-btn" data-filter="restaurant">Restaurants</button>

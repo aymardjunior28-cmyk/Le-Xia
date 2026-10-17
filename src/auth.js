@@ -12,6 +12,7 @@ const crypto = require('crypto');
 
 const ROLES = {
   SUPER_ADMIN: 'super_admin',
+  ETABLISSEMENT: 'etablissement',
 };
 
 // Compte super-admin amorcé au premier démarrage (à changer après connexion).

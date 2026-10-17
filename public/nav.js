@@ -17,14 +17,18 @@
 
   let html = '<a href="/">Accueil</a>';
   if (user) {
-    html += '<a href="/dashboard">Dashboard</a>';
     if (user.role === 'super_admin') {
+      html += '<a href="/dashboard">Dashboard</a>';
       html += '<a href="/manage">Gérer</a>';
+    } else if (user.role === 'etablissement') {
+      html += '<a href="/etablissement-dashboard">Tableau de bord</a>';
+      html += '<a href="/profil-etablissement">Mon profil</a>';
     }
     html += `<span class="nav-user" title="${user.email}">${user.nom || user.email}</span>`;
     html += '<a href="#" id="nav-logout" class="nav-logout">Déconnexion</a>';
   } else {
     html += '<a href="/login">Espace admin</a>';
+    html += '<a href="/inscription">Inscription établissement</a>';
   }
   nav.innerHTML = html;
 

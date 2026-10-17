@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mon profil — Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-mark">D</div>
+          <div>
+            <div class="brand-name">Douala Discovery</div>
+            <small>Mon établissement</small>
+          </div>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page">
+      <section class="auth-card">
+        <h2>Mon profil établissement</h2>
+        <p class="auth-sub">Gérez les informations de votre établissement. Vos clients vous retrouveront via ce profil.</p>
+
+        <div id="msg-profil" class="msg auth-error"></div>
+
+        <form id="form-profil">
+          <input type="hidden" name="id" />
+
+          <div class="field">
+            <span>Nom de l'établissement</span>
+            <input type="text" name="nom" required />
+          </div>
+          <div class="field">
+            <span>Type</span>
+            <select name="type" required>
+              <option value="restaurant">Restaurant</option>
+              <option value="meuble">Meublé</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span>Quartier</span>
+            <input type="text" name="quartier" required />
+          </div>
+          <div class="field">
+            <span>Téléphone WhatsApp</span>
+            <input type="tel" name="whatsapp" required />
+          </div>
+
+          <div class="field">
+            <span>Adresse</span>
+            <input type="text" name="adresse" />
+          </div>
+          <div class="field">
+            <span>Catégorie</span>
+            <input type="text" name="categorie" />
+          </div>
+
+          <div class="field">
+            <span>Description courte</span>
+            <textarea name="description" rows="3"></textarea>
+          </div>
+
+          <div class="field">
+            <span>Photo (URL)</span>
+            <input type="url" name="photo" />
+          </div>
+          <div class="field">
+            <span>Statut</span>
+            <select name="statut">
+              <option value="actif">Actif</option>
+              <option value="suspendu">Suspendu</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">Enregistrer les modifications</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script src="/profil-etablissement.js"></script>
+    <script src="/nav.js"></script>
+  </body>
+</html>

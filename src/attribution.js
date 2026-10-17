@@ -15,6 +15,8 @@
  * validation temps réel sans changer le schéma.
  */
 
+const crypto = require('crypto');
+
 /**
  * Génère un identifiant de clic unique, lisible et triable chronologiquement.
  * Format : 20261012_145233_89f2
@@ -30,7 +32,7 @@ function generateClickId(date = new Date()) {
   const HH = pad(date.getUTCHours());
   const mm = pad(date.getUTCMinutes());
   const ss = pad(date.getUTCSeconds());
-  const rand = Math.random().toString(16).slice(2, 6);
+  const rand = crypto.randomBytes(2).toString('hex');
 
   return `${yyyy}${MM}${dd}_${HH}${mm}${ss}_${rand}`;
 }

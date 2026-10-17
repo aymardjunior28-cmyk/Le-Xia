@@ -38,86 +38,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Fond animé : aurora pastel douce (blobs flous dérivants). */
-.aurora {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
 
-.aurora span {
-  position: absolute;
-  display: block;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.55;
-  will-change: transform;
-}
-
-.aurora .b1 {
-  width: 42vw;
-  height: 42vw;
-  background: #a7d8ff;
-  top: -10vh;
-  left: -8vw;
-  animation: drift1 24s ease-in-out infinite alternate;
-}
-
-.aurora .b2 {
-  width: 38vw;
-  height: 38vw;
-  background: #ffc9b8;
-  top: 20vh;
-  right: -10vw;
-  animation: drift2 28s ease-in-out infinite alternate;
-}
-
-.aurora .b3 {
-  width: 34vw;
-  height: 34vw;
-  background: #bff0e0;
-  bottom: -12vh;
-  left: 18vw;
-  animation: drift3 26s ease-in-out infinite alternate;
-}
-
-.aurora .b4 {
-  width: 26vw;
-  height: 26vw;
-  background: #d9c9ff;
-  top: 55vh;
-  left: 40vw;
-  animation: drift1 30s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes drift1 {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(6vw, 4vh) scale(1.12);
-  }
-}
-
-@keyframes drift2 {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(-7vw, 6vh) scale(1.08);
-  }
-}
-
-@keyframes drift3 {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(5vw, -5vh) scale(1.15);
-  }
-}
 
 h1,
 h2,
@@ -540,37 +461,7 @@ nav a:hover {
   opacity: 1;
 }
 
-/* Animation d'apparition au scroll (pilotée par ui.js). */
-.reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
 
-.reveal.in-view {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Spotlight qui suit le curseur sur les cartes tilt (props --mx/--my de ui.js). */
-.card[data-tilt]::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(
-    340px circle at var(--mx, 50%) var(--my, 50%),
-    rgba(255, 255, 255, 0.45),
-    transparent 60%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.card[data-tilt]:hover::after {
-  opacity: 1;
-}
 
 .card-body {
   padding: 18px 18px 20px;
@@ -679,22 +570,7 @@ nav a:hover {
   transform: translateY(0);
 }
 
-/* Onde (ripple) au clic — pilotée par ui.js. */
-.ripple {
-  position: absolute;
-  border-radius: 50%;
-  transform: scale(0);
-  background: rgba(255, 255, 255, 0.5);
-  animation: ripple-anim 0.6s ease-out;
-  pointer-events: none;
-}
 
-@keyframes ripple-anim {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
 
 .metrics {
   display: grid;
@@ -813,19 +689,8 @@ tbody tr:hover {
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
-  animation: product-in 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes product-in {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 .product-page-media {
   position: relative;
@@ -890,11 +755,6 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 
-  /* Sur mobile, on réduit le coût du flou. */
-  .aurora span {
-    filter: blur(60px);
-    opacity: 0.45;
-  }
 }
 
 @media (max-width: 700px) {
@@ -950,19 +810,8 @@ tbody tr:hover {
   background: var(--primary);
   box-shadow: 0 0 8px rgba(47, 109, 246, 0.55);
   user-select: none;
-  animation: scramble-caret 0.7s steps(1) infinite;
 }
 
-@keyframes scramble-caret {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
 
 
 /* ===========================================================================

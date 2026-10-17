@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscription établissement — Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-mark">D</div>
+          <div>
+            <div class="brand-name">Douala Discovery</div>
+            <small>Restaurants & meublés</small>
+          </div>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+          <a href="/login">Espace admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page">
+      <section class="auth-card">
+        <h2>Créer votre profil établissement</h2>
+        <p class="auth-sub">Inscrivez votre restaurant ou meublé pour apparaître sur Douala Discovery et recevoir des conversations WhatsApp attribuées.</p>
+
+        <form id="form-inscription">
+          <div class="field">
+            <span>Votre email</span>
+            <input type="email" name="email" required placeholder="contact@exemple.cm" />
+          </div>
+          <div class="field">
+            <span>Mot de passe</span>
+            <input type="password" name="password" required minlength="6" placeholder="••••••••" />
+          </div>
+
+          <div class="field">
+            <span>Nom de l'établissement</span>
+            <input type="text" name="nom" required placeholder="Ex: Akwaba Grill" />
+          </div>
+          <div class="field">
+            <span>Type</span>
+            <select name="type" required>
+              <option value="restaurant">Restaurant</option>
+              <option value="meuble">Meublé</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span>Quartier</span>
+            <input type="text" name="quartier" required placeholder="Ex: Bonanjo" />
+          </div>
+          <div class="field">
+            <span>Téléphone WhatsApp</span>
+            <input type="tel" name="whatsapp" required placeholder="Ex: 237655000001" />
+          </div>
+
+          <div class="field">
+            <span>Adresse (optionnel)</span>
+            <input type="text" name="adresse" placeholder="Ex: Rue des Griffons, Bonanjo" />
+          </div>
+          <div class="field">
+            <span>Catégorie (optionnel)</span>
+            <input type="text" name="categorie" placeholder="Ex: Cuisine locale" />
+          </div>
+
+          <div class="field">
+            <span>Description courte (optionnel)</span>
+            <textarea name="description" rows="3" placeholder="Présentez votre établissement en quelques mots..."></textarea>
+          </div>
+
+          <div class="field">
+            <span>Photo (optionnel)</span>
+            <input type="url" name="photo" placeholder="https://..." />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">S'inscrire</button>
+          </div>
+          <p id="msg-inscription" class="msg auth-error"></p>
+          <p class="auth-link">Vous avez un compte ? <a href="/login">Se connecter</a></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/inscription.js"></script>
+    <script src="/nav.js"></script>
+  </body>
+</html>
