@@ -158,11 +158,7 @@ async function loadDashboard() {
 
   metricsContainer.innerHTML = metricCards
     .map((metric) => {
-      const countable = Number.isFinite(metric.count);
-      const attrs = countable
-        ? ` data-count="${metric.count}" data-suffix="${metric.suffix || ''}"`
-        : '';
-      return `<div class="metric-card reveal" data-reveal-index="${metricCards.indexOf(metric)}"><span class="metric-label">${metric.label}</span><strong class="metric-value"${attrs}>${metric.value}</strong></div>`;
+      return `<div class="metric-card"><span class="metric-label">${metric.label}</span><strong class="metric-value">${metric.value}</strong></div>`;
     })
     .join('');
 

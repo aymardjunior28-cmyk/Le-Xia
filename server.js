@@ -182,6 +182,17 @@ function requirePageSuperAdmin(req, res, next) {
   next();
 }
 
+/** Exige le rôle établissement (sinon 403). */
+function requireEtablissement(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Authentification requise' });
+  }
+  if (req.user.role !== auth.ROLES.ETABLISSEMENT) {
+    return res.status(403).json({ error: 'Accès réservé aux établissements' });
+  }
+  next();
+}
+
 function setSessionCookie(res, token) {
   const cookie =
     `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${Math.floor(
@@ -244,7 +255,16 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/establishments', (req, res) => {
-  res.json(establishments);
+  const limit = Math.min(Number(req.query.limit) || 50, 100);
+  const offset = Number(req.query.offset) || 0;
+  const page = establishments.slice(offset, offset + limit);
+  res.json({
+    items: page,
+    total: establishments.length,
+    limit,
+    offset,
+    hasMore: offset + page.length < establishments.length,
+  });
 });
 
 app.get('/api/establishment/:id', (req, res) => {
@@ -278,6 +298,62 @@ app.post('/api/establishments', requireSuperAdmin, (req, res) => {
   return res.status(201).json(establishment);
 });
 
+// ---------------------------------------------------------------------------
+// Inscription publique d'un établissement (création du compte + du profil).
+// ---------------------------------------------------------------------------
+app.post('/api/etablissements/inscription', upload.single('photo'), (req, res) => {
+  const body = req.body || {};
+
+  const required = ['email', 'password', 'nom', 'type', 'quartier', 'whatsapp'];
+  const missing = required.filter((f) => typeof body[f] !== 'string' || !body[f].trim());
+  if (missing.length > 0) {
+    return res.status(400).json({ error: `Champs requis manquants : ${missing.join(', ')}` });
+  }
+
+  const emailNorm = body.email.trim().toLowerCase();
+  if (users.find((u) => u.email === emailNorm)) {
+    return res.status(409).json({ error: 'Cet email est déjà utilisé' });
+  }
+
+  const estError = establishmentsLib.validateEstablishmentInput(body);
+  if (estError) {
+    return res.status(400).json({ error: estError });
+  }
+
+  const establishmentId = establishmentsLib.generateId(body.type);
+  if (establishments.some((item) => item.id === establishmentId)) {
+    return res.status(409).json({ error: 'Cet identifiant existe déjà' });
+  }
+
+  const photoUrl = req.file ? '/uploads/' + req.file.filename : '';
+  const establishment = establishmentsLib.buildEstablishment(
+    { ...body, photo: photoUrl },
+    establishmentId
+  );
+  establishments.push(establishment);
+  persistEstablishments();
+
+  const { salt, hash } = auth.hashPassword(body.password);
+  const userId = `user_${Date.now().toString(36)}`;
+  users.push({
+    id: userId,
+    email: emailNorm,
+    password_hash: hash,
+    password_salt: salt,
+    role: auth.ROLES.ETABLISSEMENT,
+    etablissementId: establishmentId,
+    nom: body.nom,
+    actif: true,
+    date_creation: new Date().toISOString(),
+  });
+  persistUsers();
+
+  return res.status(201).json({
+    user: { id: userId, email: emailNorm, role: 'etablissement' },
+    establishment,
+  });
+});
+
 // Modification d'un établissement (réservé au super-admin).
 app.put('/api/establishments/:id', requireSuperAdmin, (req, res) => {
   const index = establishments.findIndex((item) => item.id === req.params.id);
@@ -301,6 +377,197 @@ app.put('/api/establishments/:id', requireSuperAdmin, (req, res) => {
   persistEstablishments();
 
   return res.json(updated);
+});
+
+// ---------------------------------------------------------------------------
+// Profil de l'établissement connecté (son propre établissement uniquement).
+// ---------------------------------------------------------------------------
+app.get('/api/etablissement/moi', requireEtablissement, (req, res) => {
+  const establishment = establishments.find(
+    (item) => item.id === req.user.etablissementId
+  );
+  if (!establishment) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+  return res.json(establishment);
+});
+
+app.put('/api/etablissement/moi', requireEtablissement, (req, res) => {
+  const index = establishments.findIndex(
+    (item) => item.id === req.user.etablissementId
+  );
+  if (index === -1) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+
+  const error = establishmentsLib.validateEstablishmentInput(req.body);
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const existing = establishments[index];
+  const updated = establishmentsLib.buildEstablishment(
+    { ...req.body, date_ajout: existing.date_ajout },
+    existing.id
+  );
+
+  establishments[index] = updated;
+  persistEstablishments();
+
+  return res.json(updated);
+});
+
+// ---------------------------------------------------------------------------
+// Gestion des produits d'un établissement (propriétaire ou super-admin).
+// ---------------------------------------------------------------------------
+function findEstablishmentIndex(etablissementId) {
+  return establishments.findIndex((item) => item.id === etablissementId);
+}
+
+function isOwnerOrSuperAdmin(req, etablissementId) {
+  return (
+    req.user.role === auth.ROLES.SUPER_ADMIN ||
+    (req.user.role === auth.ROLES.ETABLISSEMENT &&
+      req.user.etablissementId === etablissementId)
+  );
+}
+
+// Lister les produits d'un établissement (public).
+app.get('/api/etablissements/:etablissementId/produits', (req, res) => {
+  const establishment = establishments.find(
+    (item) => item.id === req.params.etablissementId
+  );
+  if (!establishment) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+  return res.json(establishment.products || []);
+});
+
+// Ajouter un produit à un établissement.
+app.post('/api/etablissements/:etablissementId/produits', requireAuth, (req, res) => {
+  const index = findEstablishmentIndex(req.params.etablissementId);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+  if (!isOwnerOrSuperAdmin(req, req.params.etablissementId)) {
+    return res.status(403).json({ error: 'Accès réservé au propriétaire ou au super-admin' });
+  }
+
+  const body = req.body || {};
+  if (!body.nom || !body.prix) {
+    return res.status(400).json({ error: 'nom et prix sont requis' });
+  }
+
+  const product = {
+    id: `prod_${req.params.etablissementId}_${Date.now().toString(36)}`,
+    id_etablissement: req.params.etablissementId,
+    type_produit: body.type_produit || 'plat',
+    nom: body.nom,
+    prix: Number(body.prix) || 0,
+    disponibilite: body.disponibilite || 'Disponible',
+    photo: body.photo || '',
+    description: body.description || '',
+    tags: Array.isArray(body.tags) ? body.tags : [],
+    statut: body.statut || 'actif',
+  };
+
+  establishments[index].products = establishments[index].products || [];
+  establishments[index].products.push(product);
+  persistEstablishments();
+
+  return res.status(201).json(product);
+});
+
+// Modifier un produit d'un établissement.
+app.put('/api/etablissements/:etablissementId/produits/:productId', requireAuth, (req, res) => {
+  const index = findEstablishmentIndex(req.params.etablissementId);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+  if (!isOwnerOrSuperAdmin(req, req.params.etablissementId)) {
+    return res.status(403).json({ error: 'Accès réservé au propriétaire ou au super-admin' });
+  }
+
+  const productIndex = establishments[index].products.findIndex(
+    (p) => p.id === req.params.productId
+  );
+  if (productIndex === -1) {
+    return res.status(404).json({ error: 'Produit introuvable' });
+  }
+
+  const body = req.body || {};
+  establishments[index].products[productIndex] = {
+    ...establishments[index].products[productIndex],
+    nom: body.nom || establishments[index].products[productIndex].nom,
+    prix: body.prix !== undefined ? Number(body.prix) : establishments[index].products[productIndex].prix,
+    disponibilite: body.disponibilite || establishments[index].products[productIndex].disponibilite,
+    photo: body.photo || establishments[index].products[productIndex].photo,
+    description: body.description || establishments[index].products[productIndex].description,
+    tags: body.tags || establishments[index].products[productIndex].tags,
+    statut: body.statut || establishments[index].products[productIndex].statut,
+  };
+  persistEstablishments();
+
+  return res.json(establishments[index].products[productIndex]);
+});
+
+// Supprimer un produit d'un établissement.
+app.delete('/api/etablissements/:etablissementId/produits/:productId', requireAuth, (req, res) => {
+  const index = findEstablishmentIndex(req.params.etablissementId);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+  if (!isOwnerOrSuperAdmin(req, req.params.etablissementId)) {
+    return res.status(403).json({ error: 'Accès réservé au propriétaire ou au super-admin' });
+  }
+
+  const productIndex = establishments[index].products.findIndex(
+    (p) => p.id === req.params.productId
+  );
+  if (productIndex === -1) {
+    return res.status(404).json({ error: 'Produit introuvable' });
+  }
+
+  establishments[index].products.splice(productIndex, 1);
+  persistEstablishments();
+
+  return res.json({ ok: true });
+});
+
+// ---------------------------------------------------------------------------
+// Stats du dashboard établissement (son propre rendement uniquement).
+// ---------------------------------------------------------------------------
+app.get('/api/etablissement/mes-stats', requireEtablissement, (req, res) => {
+  const establishmentId = req.user.etablissementId;
+
+  const estClicks = clickLogs.filter((c) => c.id_etablissement === establishmentId);
+  const totalClicks = estClicks.length;
+  const totalAttributed = estClicks.filter((c) => c.is_attributed).length;
+
+  const estBlocks = blocks.filter((b) => b.id_etablissement === establishmentId);
+  const totalPurchased = estBlocks.reduce((sum, b) => sum + b.nombre_conversations, 0);
+  const totalConsumed = estBlocks.reduce((sum, b) => sum + b.conversations_consommees, 0);
+  const totalRemaining = totalPurchased - totalConsumed;
+  const totalRevenue = estBlocks.reduce((sum, b) => sum + b.montant_total, 0);
+
+  const activeBlocks = estBlocks.filter((b) => b.statut === 'active');
+
+  res.json({
+    establishmentId,
+    totalClicks,
+    totalAttributed,
+    conversion: totalClicks > 0 ? totalAttributed / totalClicks : 0,
+    totalPurchased,
+    totalConsumed,
+    totalRemaining,
+    totalRevenue,
+    activeBlocks: activeBlocks.length,
+    blocks: estBlocks,
+    recentClicks: estClicks
+      .slice()
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .slice(0, 10),
+  });
 });
 
 // Suppression d'un établissement (réservé au super-admin).
@@ -445,6 +712,7 @@ app.get('/dashboard', requirePageAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
+<<<<<<< HEAD
 // ---------------------------------------------------------------------------
 // Gestion des établissements (réservé au super-admin) + upload d'images
 // ---------------------------------------------------------------------------
@@ -465,6 +733,43 @@ app.post('/api/upload', requireSuperAdmin, (req, res) => {
     return res.json({ url: '/uploads/' + req.file.filename });
   });
 });
+=======
+// ---------------------------------------------------------------------------
+// Gestion des établissements (réservé au super-admin) + upload d'images
+// ---------------------------------------------------------------------------
+app.get('/manage', requirePageSuperAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'manage.html'));
+});
+
+// Page d'inscription publique d'un établissement.
+app.get('/inscription', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'inscription.html'));
+});
+
+// Page de profil établissement (protégée : tout utilisateur authentifié).
+app.get('/profil-etablissement', requirePageAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'profil-etablissement.html'));
+});
+
+// Tableau de bord établissement (son propre rendement uniquement).
+app.get('/etablissement-dashboard', requirePageAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'etablissement-dashboard.html'));
+});
+
+// Upload d'une image (réservé au super-admin) -> renvoie l'URL /uploads/<fichier>.
+app.post('/api/upload', requireSuperAdmin, (req, res) => {
+  const handler = upload.single('photo');
+  handler(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message || 'Upload échoué' });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: 'Aucun fichier reçu' });
+    }
+    return res.json({ url: '/uploads/' + req.file.filename });
+  });
+});
+>>>>>>> refs/remotes/origin/main
 // API fiche produit dédiée (§10.2).
 app.get('/api/product/:establishmentId/:productId', (req, res) => {
   const { establishment, product } = findProduct(req.params.establishmentId, req.params.productId);

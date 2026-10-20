@@ -110,9 +110,10 @@ function updateHeroOffers(establishments) {
 async function fetchEstablishments() {
   const response = await fetch('/api/establishments');
   const data = await response.json();
-  allItems = flattenProducts(data);
-  populateQuartiers(data);
-  updateHeroOffers(data);
+  const items = Array.isArray(data) ? data : data.items;
+  allItems = flattenProducts(items);
+  populateQuartiers(items);
+  updateHeroOffers(items);
   renderEstablishments();
 }
 
@@ -142,10 +143,7 @@ function renderEstablishments() {
   items.forEach((item) => {
     const clone = template.content.cloneNode(true);
     const card = clone.querySelector('.card');
-    // Apparition en cascade au scroll + effet 3D au survol (ui.js).
-    card.classList.add('reveal', 'tilt');
-    card.dataset.revealIndex = String(items.indexOf(item));
-    card.dataset.tilt = '';
+    // Aucune classe d'animation : rendu immédiat.
     clone.querySelector('.card-image').src = item.photo;
     clone.querySelector('.card-image').alt = item.name;
     clone.querySelector('.badge').textContent =
