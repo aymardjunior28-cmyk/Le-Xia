@@ -950,7 +950,7 @@ tbody tr:hover {
   background: var(--primary);
   box-shadow: 0 0 8px rgba(47, 109, 246, 0.55);
   user-select: none;
-  animation: scramble-caret 0.7s steps(1) infinite;
+  animation: scramble-caret 0.1s steps(1) infinite;
 }
 
 @keyframes scramble-caret {

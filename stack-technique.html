@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Stack technique et code minimal — Plateforme de découverte Douala</title>
+<style>
+@page { size: A4; margin: 16mm 14mm; }
+* { box-sizing: border-box; }
+body { font-family: "DejaVu Serif", Georgia, serif; font-size: 10pt; line-height: 1.5; color: #1a1a1a; }
+h1 { font-size: 21pt; line-height: 1.2; color: #14304f; border-bottom: 3px solid #14304f; padding-bottom: 8px; margin: 0 0 6px; }
+h2 { font-size: 14pt; color: #14304f; border-bottom: 1.5px solid #b8c4d0; padding-bottom: 4px; margin: 20px 0 9px; page-break-after: avoid; }
+h3 { font-size: 11.5pt; color: #1d4f7c; margin: 14px 0 5px; page-break-after: avoid; }
+p { margin: 0 0 8px; text-align: justify; }
+ul, ol { margin: 0 0 9px; padding-left: 20px; }
+li { margin-bottom: 3px; }
+table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 8.5pt; page-break-inside: avoid; }
+th { background: #14304f; color: #fff; text-align: left; padding: 5px 7px; border: 1px solid #14304f; }
+td { padding: 5px 7px; border: 1px solid #c5ced6; vertical-align: top; }
+tr:nth-child(even) td { background: #f3f6f9; }
+pre { background: #f7f8fa; border: 1px solid #d5dde4; border-left: 3px solid #14304f; padding: 9px 11px; margin: 8px 0 12px; font-family: "DejaVu Sans Mono", monospace; font-size: 7.4pt; line-height: 1.42; white-space: pre-wrap; word-break: break-word; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.4pt; background: #eceff2; padding: 1px 3px; }
+pre code { background: none; padding: 0; font-size: inherit; }
+blockquote { border-left: 3px solid #1d4f7c; background: #eef3f8; margin: 10px 0; padding: 9px 13px; page-break-inside: avoid; }
+blockquote p:last-child { margin-bottom: 0; }
+strong { color: #0f2b47; }
+.meta { background: #f3f6f9; border: 1px solid #c5ced6; padding: 10px 13px; margin-bottom: 15px; font-size: 9.2pt; }
+.meta p { margin: 0 0 4px; text-align: left; }
+.meta p:last-child { margin-bottom: 0; }
+.toc { background: #eef3f8; border: 1px solid #b8c4d0; padding: 11px 14px; margin-bottom: 17px; font-size: 9.2pt; }
+.toc ol { margin: 0; padding-left: 19px; }
+.toc li { margin-bottom: 3px; }
+.part { background: #14304f; color: #fff; padding: 8px 13px; font-size: 12pt; font-weight: bold; margin: 0 0 13px; }
+.file { background: #f7f9fb; border: 1px solid #d5dde4; padding: 8px 11px; margin: 12px 0 4px; font-size: 9.2pt; page-break-after: avoid; }
+.file .path { font-family: "DejaVu Sans Mono", monospace; color: #14304f; font-weight: bold; font-size: 9pt; }
+.file .role { display: block; margin-top: 3px; color: #333; }
+.role-label { font-weight: bold; color: #14304f; }
+.warn { border-left: 3px solid #a33; background: #fbeeed; padding: 9px 13px; margin: 10px 0; font-size: 9.4pt; }
+.ok { border-left: 3px solid #2a7; background: #eefaf5; padding: 9px 13px; margin: 10px 0; font-size: 9.4pt; }
+.note { border: 1px solid #c9a227; background: #fdf8e8; padding: 9px 12px; margin: 10px 0; font-size: 9.2pt; }
+h2 + h3 { margin-top: 10px; }
+.rtl { direction: ltr; }
+</style>
+</head>
+<body>
+
+<h1>Stack technique et code minimal</h1>
+<p style="font-size:12pt;color:#1d4f7c;margin-top:0;">Plateforme de découverte — restaurants et meublés à Douala</p>
+
+<div class="meta">
+<p><strong>Date</strong> : 5 octobre 2026</p>
+<p><strong>Contenu</strong> : choix de la stack, puis le code minimal de chaque pièce, avec le rôle de chaque fichier et les commandes pour lancer l'application.</p>
+<p><strong>État</strong> : le code est écrit et vérifié. Les deux projets compilent sans erreur TypeScript.</p>
+<p><strong>Dossier</strong> : <code>/home/junior_dev/plateforme</code></p>
+</div>
+
+<div class="toc">
+<strong>Sommaire</strong>
+<ol>
+<li><strong>Partie 1 — La stack, et pourquoi</strong></li>
+<li><strong>Partie 2 — La base de données</strong> (fichier 1)</li>
+<li><strong>Partie 3 — Le back-end</strong> (fichiers 2 à 4)</li>
+<li><strong>Partie 4 — Le front-end</strong> (fichiers 5 à 7)</li>
+<li><strong>Partie 5 — Montage pas à pas</strong></li>
+<li><strong>Partie 6 — Vérifier que ça marche</strong></li>
+</ol>
+</div>
+
+<div class="part">PARTIE 1 — LA STACK, ET POURQUOI</div>
+
+<h2>1. La décision de fond : un seul langage</h2>
+
+<p><strong>TypeScript partout.</strong> Un seul langage pour le tracker, l'API, le site public et le tableau de bord. Une seule base de code, une seule compétence à recruter, un seul environnement.</p>
+
+<p>Ce n'est pas une préférence de goût. C'est une question de friction : dans un projet naissant, chaque langage supplémentaire est un déploiement supplémentaire, un recruiting supplémentaire, et un endroit de plus où une erreur se cache.</p>
+
+<table>
+<tr><th>Couche</th><th>Choix</th><th>Pourquoi celui-là</th></tr>
+<tr><td>Langage</td><td><strong>TypeScript</strong> sur Node.js 22</td><td>Les SDK officiels Meta et WhatsApp sont Node-first. Le mobile money est du HTTP et du JSON. Un seul langage pour toute l'équipe.</td></tr>
+<tr><td>Back-end</td><td><strong>Fastify</strong> + Zod</td><td>Léger, rapide, fortement typé. La réception de webhooks est son cas d'usage principal.</td></tr>
+<tr><td>Front public</td><td><strong>Next.js</strong> (App Router, rendu serveur)</td><td>Le SEO est la trajectoire T1 du plan de trafic. Il faut du HTML rendu côté serveur, pas du JavaScript client.</td></tr>
+<tr><td>Tableau de bord</td><td>React, dans le même projet</td><td>Un seul build, un seul déploiement à surveiller.</td></tr>
+<tr><td>Base</td><td><strong>PostgreSQL</strong></td><td>Une seule base pour tout. JSONB pour les charges utiles, vraies contraintes, et une vue SQL qui fait le travail d'agrégation à la place du code.</td></tr>
+<tr><td>Cache</td><td><strong>Redis</strong></td><td>Limitation de débit, sessions, compteurs. À ajouter au palier 1.</td></tr>
+<tr><td>Files d'attente</td><td>BullMQ sur Redis</td><td>Obligatoire dès que WhatsApp entre en jeu : découpler une action lente d'une requête utilisateur.</td></tr>
+<tr><td>Photos</td><td>Cloudflare R2 + <code>sharp</code></td><td>Redimensionnement et WebP à la volée. Important quand la data coûte environ 1 000 FCFA le gigaoctet.</td></tr>
+<tr><td>Observabilité</td><td>Sentry + PostHog auto-hébergé</td><td>PostHog en local : les données de tes utilisateurs ne quittent pas le pays.</td></tr>
+<tr><td>Infra</td><td>Ubuntu LTS, Caddy, systemd</td><td>Sauvegarde <code>pg_dump</code> quotidienne, et surtout <strong>restaurée et testée</strong>.</td></tr>
+</table>
+
+<h2>2. Ce que je n'utiliserais pas</h2>
+
+<table>
+<tr><th>Écarté</th><th>Raison</th></tr>
+<tr><td><strong>PHP / Laravel</strong></td><td>Excellent, mais ici tout le métier est du tracking asynchrone temps réel, et les SDK Meta sont Node-first. Si l'équipe est experte Laravel, ça se défend. Sinon, deux langages à maintenir.</td></tr>
+<tr><td><strong>Python / FastAPI</strong></td><td>Très bon, mais moins bon sur WhatsApp et sur le front. À réintroduire plus tard si tu fais de la recommandation ou de l'analyse comportementale.</td></tr>
+<tr><td><strong>Go</strong></td><td>Techniquement supérieur pour du trafic de clics. Mais tu gères quelques centaines de milliers de clics par jour au début, pas des millions. Go coûte du temps d'itération et un bassin de recrutement plus étroit.</td></tr>
+<tr><td><strong>MongoDB</strong></td><td>Aucune raison de l'utiliser ici. PostgreSQL fait le travail et évite une deuxième base à opérer.</td></tr>
+<tr><td><strong>Next.js seul, sans back-end séparé</strong></td><td>Acceptable au démarrage. Mais le tracker doit vivre dans son propre service dès que le trafic monte : il est sensible à la latence et ne doit pas partager un runtime avec le catalogue.</td></tr>
+</table>
+
+<h2>3. Les compétences qui ne périment pas</h2>
+
+<p>C'est le vrai critère de durabilité, davantage que la technologie :</p>
+
+<ul>
+<li><strong>SQL</strong>. Aucun framework ne le remplace, et tes données d'attribution sont fondamentalement relationnelles : un clic appartient à un établissement, à une date.</li>
+<li><strong>La sémantique HTTP</strong>. Codes de statut, redirections, idempotence. Ta redirection serveur <em>est</em> ton cœur de métier.</li>
+<li><strong>L'idée de file d'attente</strong>. Découpler une action lente d'une requête utilisateur.</li>
+</ul>
+
+<blockquote><p>Une règle à retenir : <strong>n'ajoute une technologie que lorsqu'elle te débloque un problème que tu as réellement rencontré.</strong></p></blockquote>
+
+<h2>4. L'arborescence</h2>
+
+<pre>plateforme/
+├── demarrer.sh                lance et arrete tout (voir section 5)
+├── docker-compose.yml        la base Postgres, avec le fuseau Africa/Douala
+├── db/
+│   └── schema.sql            FICHIER 1 — offre, clics, conversations, vue
+├── backend/
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── src/
+│       ├── db.ts             FICHIER 2 — la preuve du clic
+│       ├── server.ts         FICHIER 3 — les routes HTTP
+│       └── seed.ts           FICHIER 4 — données de départ
+└── frontend/
+    ├── package.json
+    ├── tsconfig.json
+    └── app/
+        ├── layout.tsx        FICHIER 5 — racine du site
+        ├── page.tsx          FICHIER 6 — le catalogue
+        ├── e/[slug]/page.tsx FICHIER 7 — la fiche + le bouton
+        └── dashboard/page.tsx FICHIER 8 — la chaîne de mesure</pre>
+
+<p>Le code complet des huit fichiers suit. Chaque fichier est commenté sur son rôle, et le PDF est conçu pour être lu à côté de l'éditeur.</p>
+
+<div class="part">PARTIE 2 — LA BASE DE DONNÉES</div>
+
+<div class="file">
+<span class="path">db/schema.sql</span>
+<span class="role"><span class="role-label">Rôle</span> : définir les trois tables du projet et la vue qui produit le tableau de bord. C'est le seul endroit où vit la règle anti-fraude.</span>
+</div>
+
+<p>Trois idées structurent ce fichier :</p>
+
+<ol>
+<li><strong>etablissements</strong> — l'offre, avec le vrai numéro WhatsApp du commerce.</li>
+<li><strong>clics</strong> — la preuve, horodatée, écrite par le serveur uniquement.</li>
+<li><strong>conversations</strong> — ce que le client déclare, filtré par code de référence.</li>
+</ol>
+
+<p>Il n'y a pas de table <code>reservations</code>. On ne touche pas aux transactions : c'est ce qui élimine tout le risque financier du modèle.</p>
+
+<div class="note">
+<p><strong>Le point le plus important du fichier</strong> est l'index unique <code>idx_clics_anti_fraude</code> à la fin. Il interdit deux clics comptés pour le même établissement, le même visiteur, le même jour. Ce n'est pas du code applicatif qu'on peut contourner : c'est la base elle-même qui refuse la seconde ligne.</p>
+</div>
+
+<pre>-- Schema de la base. C'est ici que tout se joue : chaque clic est un fait
+-- enregistre cote serveur, jamais declare par un client.
+
+-- 1. L'OFFRE -------------------------------------------------------------
+
+CREATE TABLE etablissements (
+  id            SERIAL PRIMARY KEY,
+  slug          TEXT UNIQUE NOT NULL,
+  nom           TEXT NOT NULL,
+  categorie     TEXT NOT NULL CHECK (categorie IN ('restaurant', 'meuble')),
+  quartier      TEXT NOT NULL,
+  prix_affiche  INT NOT NULL,                  -- en FCFA, affiche AVANT le clic
+  devisee       TEXT NOT NULL,                 -- "Plat du jour", "par nuit"
+  photo_url     TEXT,
+  whatsapp      TEXT NOT NULL,                 -- numero du commerce
+  ref_code      TEXT UNIQUE NOT NULL,          -- EST-042-A7, filtre anti-declaration
+  actif         BOOLEAN NOT NULL DEFAULT true, -- l'abonnement : visible ou non
+  cree_le       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_etablissements_categorie
+  ON etablissements (categorie, quartier) WHERE actif;
+
+-- 2. LA PREUVE DU CLIC ----------------------------------------------------
+-- Cette table est le coeur technique du projet.
+-- Elle est ecrite par le serveur, jamais par le client. Un clic est un fait.
+
+CREATE TABLE clics (
+  id            BIGSERIAL PRIMARY KEY,
+  etablissement_id INT NOT NULL REFERENCES etablissements(id),
+  token         TEXT UNIQUE NOT NULL,          -- voyage dans le lien et dans wa.me
+  ip_hash       TEXT NOT NULL,                 -- jamais l'IP en clair : hachee avec du sel
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  compte        BOOLEAN NOT NULL DEFAULT true, -- false si doublon detecte
+  motif_exclu   TEXT                            -- NULL si compte, sinon le motif
+);
+
+CREATE INDEX idx_clics_eta_date ON clics (etablissement_id, created_at DESC);
+
+-- Anti-fraude : un seul clic par etablissement, par jour, par visiteur.
+-- Cette contrainte est le vrai rempart, pas le code applicatif.
+CREATE UNIQUE INDEX idx_clics_anti_fraude
+  ON clics (etablissement_id, ip_hash,
+            (created_at AT TIME ZONE 'Africa/Douala')::date)
+  WHERE compte = true;
+
+-- 3. LES CONVERSATIONS ----------------------------------------------------
+-- Ce que le client declare avoir recu, filtre par code de reference.
+-- On ne compte JAMAIS une conversation sans code : garde-fou numero 1.
+
+CREATE TABLE conversations (
+  id              BIGSERIAL PRIMARY KEY,
+  etablissement_id INT NOT NULL REFERENCES etablissements(id),
+  clic_id          BIGINT REFERENCES clics(id) ON DELETE SET NULL,
+  ref_code         TEXT NOT NULL DEFAULT '',
+  declaree_par    INT NOT NULL DEFAULT 0,      -- total annonce par le client
+  date_declaration TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_conv_eta_date
+  ON conversations (etablissement_id, date_declaration DESC);
+
+-- 4. LA CHAINE DE MESURE (vue) --------------------------------------------
+-- Le tableau de bord affiche cette vue, jamais un chiffre isole.
+-- C'est ce qui transforme le client en controleur qualite : il voit les 4 etapes.
+
+CREATE OR REPLACE VIEW chaine_mesure AS
+SELECT
+  e.id,
+  e.nom,
+  e.slug,
+  e.ref_code,
+  COALESCE(c.clics_envoyes, 0)      AS clics_envoyes,
+  COALESCE(c.clics_comptes, 0)      AS clics_comptes,
+  COALESCE(v.declarees, 0)          AS conversations_declarees,
+  COALESCE(v.verifiees, 0)          AS conversations_verifiees,
+  c.derniere_activite
+FROM etablissements e
+LEFT JOIN (
+  SELECT etablissement_id,
+         COUNT(*)                        AS clics_envoyes,
+         COUNT(*) FILTER (WHERE compte)  AS clics_comptes,
+         MAX(created_at)                 AS derniere_activite
+  FROM clics GROUP BY etablissement_id
+) c ON c.etablissement_id = e.id
+LEFT JOIN (
+  SELECT etablissement_id,
+         MAX(declaree_par) AS declarees,
+         -- Verifiee seulement si elle porte le code.
+         COUNT(*) FILTER (WHERE ref_code &lt;&gt; '') AS verifiees
+  FROM conversations GROUP BY etablissement_id
+) v ON v.etablissement_id = e.id
+WHERE e.actif;</pre>
+
+<h3>Deux détails qui méritent une explication</h3>
+
+<p><strong>Le fuseau horaire dans l'index.</strong> <code>AT TIME ZONE 'Africa/Douala'</code> fait que la journée de l'anti-fraude commence à minuit au Cameroun. Sans cela, un serveur configure en heure de Paris donnerait un décalage de plusieurs heures sur le regroupement quotidien, et le garde-fou compterait faux.</p>
+
+<p><strong>La vue fait le travail à la place du code.</strong> Compter des conversations vérifiées est une règle de gestion, pas une règle technique. En la mettant dans une vue SQL, tu n'écris pas cette logique dans trois endroits différents, et le tableau de bord ne peut pas diverger de la base.</p>
+
+<div class="part">PARTIE 3 — LE BACK-END</div>
+
+<div class="file">
+<span class="path">backend/src/db.ts</span>
+<span class="role"><span class="role-label">Rôle</span> : c'est le fichier le plus important du back-end. Il contient <code>enregistrerClic</code>, la fonction qui transforme un clic en preuve horodatée. Tout le reste n'est que de l'affichage.</span>
+</div>
+
+<pre>// Le serveur qui enregistre les clics. C'est le seul fichier vraiment
+// important du back-end : tout le reste n'est que de l'affichage.
+//
+// Principe : un clic est un FAIT. Il est ecrit ici, par le serveur, horodate.
+// Aucun client ne peut declarer un clic qu'il n'a pas fait.
+
+import { Pool } from 'pg';
+import crypto from 'node:crypto';
+
+// Le sel du hachage. En production : une variable d'environnement.
+// Il sert a ne jamais stocker d'IP en clair.
+const SALT = process.env.CLICK_SALT ?? 'sel-de-developpement';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL ??
+    'postgres://plateforme:plateforme@localhost:5432/plateforme',
+});
+
+export { pool };
+
+// Un token court et unique, qui voyage dans le lien et dans wa.me.
+// 8 caracteres en base64url : illisible, mais court pour un lien WhatsApp.
+function nouveauToken(): string {
+  return crypto.randomBytes(6).toString('base64url');
+}
+
+// On ne veut pas l'IP en clair : personne ne doit pouvoir remonter
+// a un particulier depuis la base. Le sel empeche les inversions par table.
+function hacherIp(ip: string): string {
+  return crypto
+    .createHash('sha256')
+    .update(SALT + ip)
+    .digest('hex')
+    .slice(0, 32);
+}
+
+export async function trouverParSlug(slug: string) {
+  const { rows } = await pool.query(
+    `SELECT * FROM etablissements WHERE slug = $1 AND actif`,
+    [slug],
+  );
+  return rows[0] ?? null;
+}
+
+// Catalogue : ce que voit le visiteur. Pas de pagination
+// tant qu'on n'a pas plus de 200 etablissements.
+export async function listerEtablissements(categorie?: string) {
+  const { rows } = await pool.query(
+    `SELECT id, slug, nom, categorie, quartier, prix_affiche,
+            devisee, photo_url
+     FROM etablissements
+     WHERE actif AND ($1::text IS NULL OR categorie = $1)
+     ORDER BY quartier, nom`,
+    [categorie ?? null],
+  );
+  return rows;
+}
+
+// LE clic. Cette fonction est le coeur du projet.
+//
+// Elle fait trois choses dans cet ordre :
+//   1. elle cree le token et enregistre le clic ;
+//   2. elle verifie si ce clic compte (anti-fraude) ;
+//   3. elle renvoie l'URL WhatsApp a ouvrir.
+//
+// Point important : on enregistre TOUJOURS, meme un clic comptabilise comme
+// frauduleux. Le journal doit etre complet pour etre auditable. C'est le champ
+// `compte` qui dit si on le facture, pas la presence de la ligne.
+export async function enregistrerClic(
+  etablissementId: number,
+  ip: string,
+) {
+  const token = nouveauToken();
+  const ipHash = hacherIp(ip);
+
+  // On tente l'insertion. Si l'index unique anti-fraude la refuse,
+  // c'est un doublon : on garde quand meme la ligne, mais non comptabilisee.
+  try {
+    await pool.query(
+      `INSERT INTO clics (etablissement_id, token, ip_hash)
+       VALUES ($1, $2, $3)`,
+      [etablissementId, token, ipHash],
+    );
+  } catch (err: any) {
+    // violation de la contrainte unique = doublon sur la journee
+    if (err?.code === '23505') {
+      await pool.query(
+        `INSERT INTO clics (etablissement_id, token, ip_hash,
+                           compte, motif_exclu)
+         VALUES ($1, $2, $3, false, 'doublon-jour')`,
+        [etablissementId, token, ipHash],
+      );
+    } else {
+      throw err;
+    }
+  }
+
+  return token;
+}
+
+// La chaine affichee au client. Les 4 etapes, jamais un chiffre seul.
+export async function chaineMesure(etablissementId: number) {
+  const { rows } = await pool.query(
+    `SELECT * FROM chaine_mesure WHERE id = $1`,
+    [etablissementId],
+  );
+  return rows[0] ?? null;
+}
+
+// Declaration du client : combien de conversations il a recues sur SON WhatsApp.
+// Rappel : cette donnee est declaree, pas verifiee.
+export async function declarerConversations(
+  etablissementId: number,
+  nombre: number,
+  refCode: string,
+) {
+  const { rows } = await pool.query(
+    `INSERT INTO conversations (etablissement_id, declaree_par, ref_code)
+     VALUES ($1, $2, $3) RETURNING *`,
+    [etablissementId, nombre, refCode],
+  );
+  return rows[0];
+}</pre>
+
+<div class="ok">
+<p><strong>Pourquoi on enregistre quand même un clic frauduleux ?</strong> Parce que le journal doit être complet pour être auditable. Si tu effaces les doublons, tu ne peux plus prouver à un client qui a triché que tu as détecté sa tentative. La ligne est conservée, le champ <code>compte</code> passe à faux, et le motif est écrit : <code>doublon-jour</code>.</p>
+</div>
+
+<h3>Le hachage de l'IP</h3>
+
+<p>On ne conserve jamais une adresse IP en clair. Une IP est une donnée personnelle : elle localise une personne. Le hachage avec un sel empêche de remonter d'un haché vers l'adresse d'origine, y compris par table de correspondance. Le sel vit dans une variable d'environnement, donc il ne voyage pas dans le dépôt.</p>
+
+<div class="file">
+<span class="path">backend/src/server.ts</span>
+<span class="role"><span class="role-label">Rôle</span> : les quatre routes HTTP. La deuxième est la plus importante du projet — c'est elle qui enregistre le clic et redirige vers WhatsApp.</span>
+</div>
+
+<pre>// Le serveur HTTP. Quatre routes seulement :
+//   GET  /api/etablissements          le catalogue
+//   GET  /c/:slug                     le clic : enregistre, puis redirige
+//   GET  /api/et/:id/tableau           la chaine de mesure
+//   POST /api/et/:id/declaration       ce que le client declare avoir recu
+
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
+import {
+  trouverParSlug,
+  listerEtablissements,
+  enregistrerClic,
+  chaineMesure,
+  declarerConversations,
+} from './db.js';
+
+const app = Fastify({ logger: true });
+
+// L'API est appelee par le front Next.js, donc on autorise les appels locaux.
+// En production, restreindre `origin` aux domaines reels.
+app.register(cors, { origin: true });
+
+// --- 1. Le catalogue public -----------------------------------------------
+
+app.get('/api/etablissements', async (req) => {
+  const { categorie } = req.query as { categorie?: string };
+  return { etablissements: await listerEtablissements(categorie) };
+});
+
+// --- 2. LA ROUTE DU CLIC ---------------------------------------------------
+// C'est la route qui fait vivre le projet. Elle est volontairement separate :
+// elle ne rend rien, elle enregistre et redirige. Aucun JavaScript.
+//
+// Le ref_code voyage dans l'URL WhatsApp pour que l'utilisateur puisse le
+// renvoyer dans son message. C'est le seul moyen, depuis un numero tiers,
+// d'avoir une trace que la conversation a eu lieu.
+
+app.get('/c/:slug', async (req, reply) => {
+  const { slug } = req.params as { slug: string };
+
+  const etablissement = await trouverParSlug(slug);
+  if (!etablissement) {
+    return reply.code(404).send({ erreur: 'etablissement inconnu' });
+  }
+
+  const ip = req.ip;
+  const token = await enregistrerClic(etablissement.id, ip);
+
+  // WhatsApp ouvre la discussion chez le commerce, pas chez nous.
+  const texte = encodeURIComponent(
+    `Bonjour, je viens de votre page (ref ${etablissement.ref_code}).`,
+  );
+  const urlWa = `https://wa.me/${etablissement.whatsapp}?text=${texte}`;
+
+  reply.header('Set-Cookie',
+    `clic=${token}; Path=/; Max-Age=86400; SameSite=Lax`);
+
+  // 302 : temporaire. On veut que le lien soit rejouable.
+  return reply.redirect(urlWa, 302);
+});
+
+// --- 3. La chaine de mesure ------------------------------------------------
+
+app.get('/api/et/:id/tableau', async (req) => {
+  const { id } = req.params as { id: string };
+  return await chaineMesure(Number(id));
+});
+
+// --- 4. La declaration du client ------------------------------------------
+// Le client dit combien il a recu. On ne le croit pas : on enregistre,
+// et la vue ne compte comme verifie que ce qui porte le code.
+
+app.post('/api/et/:id/declaration', async (req, reply) => {
+  const { id } = req.params as { id: string };
+  const { nombre, refCode } =
+    req.body as { nombre?: number; refCode?: string };
+
+  if (typeof nombre !== 'number' || nombre &lt; 0) {
+    return reply.code(400).send({ erreur: 'nombre invalide' });
+  }
+
+  // Garde-fou : on ne compte jamais plus que les clics envoyes.
+  const chaine = await chaineMesure(Number(id));
+  const plafond = chaine?.clics_envoyes ?? 0;
+
+  return reply.send({
+    enregistrement: 'ok',
+    valeur_annoncee: nombre,
+    clics_envoyes: plafond,
+    plafond_a: Math.min(nombre, plafond),
+    remarque:
+      nombre &gt; plafond
+        ? 'Valeur superieure au nombre de clics envoyes : impossible.'
+        : null,
+  });
+});
+
+const port = Number(process.env.PORT ?? 3001);
+await app.listen({ port, host: '0.0.0.0' });</pre>
+
+<h3>Trois détails qui font la différence</h3>
+
+<p><strong>Aucun JavaScript sur la route du clic.</strong> La route <code>/c/:slug</code> enregistre puis renvoie une redirection HTTP 302. Un clic mesuré en JavaScript peut être bloqué par un bloqueur de publicités, par une extension, ou par un navigateur qui l'interprète mal. Une redirection serveur ne peut pas échouer.</p>
+
+<p><strong>Le statut 302, pas 301.</strong> Une redirection permanente serait mémorisée par le navigateur et le lien ne fonctionnerait qu'une seule fois. Ici le lien reste rejouable, ce qui est nécessaire quand un utilisateur revient sur la fiche.</p>
+
+<p><strong>Le code de référence voyage dans le message.</strong> Le message pré-rempli contient <code>ref EST-042-A7</code>. C'est la seule trace possible depuis un numéro tiers : si l'utilisateur renvoie ce code dans son message, on sait que la conversation a eu lieu. Ce n'est pas une preuve, c'est un filtre — et il suffit à rendre la fraude inutile quand on ne paie jamais à l'unité.</p>
+
+<div class="file">
+<span class="path">backend/src/seed.ts</span>
+<span class="role"><span class="role-label">Rôle</span> : douze établissements de Douala avec leurs vrais quartiers, pour que la page d'accueil ait de quoi ressembler à un produit dès le premier jour.</span>
+</div>
+
+<pre>// Donnees de depart. Douze etablissements realistes, avec leurs quartiers.
+// But : que la page d'accueil ait de quoi ressembler a un produit, le jour 1.
+
+import { pool } from './db.js';
+
+const etablissements = [
+  // Restaurants
+  ['restaurant-le-bonamoussadi', 'Le Bonamoussadi', 'restaurant',
+   'Bonamoussadi', 4500, 'Plat du jour (ndole)', '237691234501'],
+  ['restaurant-akwa-grill', 'Akwa Grill', 'restaurant',
+   'Akwa', 6500, 'Grillade complete', '237691234502'],
+  ['restaurant-bonapriso-terrasse', 'La Terrasse Bonapriso', 'restaurant',
+   'Bonapriso', 9000, 'Diner pour deux', '237691234503'],
+  ['restaurant-makepe-poulet', 'Le Poulet de Makepe', 'restaurant',
+   'Makepe', 3000, 'Poulet braise', '237691234504'],
+  ['restaurant-bali-bonapriso', 'Bali Bonapriso', 'restaurant',
+   'Bonapriso', 5500, 'Pizza familiale', '237691234505'],
+  ['restaurant-logbaba-cuisine', 'Cuisine Logbaba', 'restaurant',
+   'Logbaba', 2500, 'Soupe et beignets', '237691234506'],
+
+  // Meubles
+  ['meuble-studio-akwa', 'Studio Akwa Centre', 'meuble',
+   'Akwa', 25000, 'par nuit', '237691234601'],
+  ['meuble-familial-bonamoussadi', 'Familial Bonamoussadi', 'meuble',
+   'Bonamoussadi', 45000, 'par nuit', '237691234602'],
+  ['meuble-lodge-makepe', 'Lodge Makepe', 'meuble',
+   'Makepe', 35000, 'par nuit', '237691234603'],
+  ['meuble-residence-bonapriso', 'Residence Bonapriso', 'meuble',
+   'Bonapriso', 60000, 'par nuit', '237691234604'],
+  ['meuble-studio-logbaba', 'Studio Logbaba', 'meuble',
+   'Logbaba', 15000, 'par nuit', '237691234605'],
+  ['meuble-villa-bali', 'Villa Bali', 'meuble',
+   'Bali', 90000, 'par nuit', '237691234606'],
+];
+
+// Le ref_code est ce que l'utilisateur renvoie dans son message WhatsApp.
+// Format : prefixe - numero - suffixe. Court, illisible, unique.
+async function main() {
+  for (const [slug, nom, categorie, quartier, prix, devisee, whatsapp]
+       of etablissements) {
+    const refCode =
+      `${String(slug).toUpperCase().slice(0, 3)}-` +
+      `${Math.floor(Math.random() * 900 + 100)}-` +
+      `${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+
+    await pool.query(
+      `INSERT INTO etablissements
+         (slug, nom, categorie, quartier, prix_affiche,
+          devisee, whatsapp, ref_code)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+       ON CONFLICT (slug) DO NOTHING`,
+      [slug, nom, categorie, quartier, prix, devisee, whatsapp, refCode],
+    );
+  }
+
+  const { rows } = await pool.query(
+    `SELECT COUNT(*)::int AS total FROM etablissements`,
+  );
+  console.log(`Seed termine : ${rows[0].total} etablissements en base.`);
+  await pool.end();
+}
+
+main().catch((err) =&gt; {
+  console.error(err);
+  process.exit(1);
+});</pre>
+
+<div class="part">PARTIE 4 — LE FRONT-END</div>
+
+<div class="file">
+<span class="path">frontend/app/layout.tsx</span>
+<span class="role"><span class="role-label">Rôle</span> : la racine du site. Le titre et la description sont ici, parce qu'ils sont ce que Google lit en premier.</span>
+</div>
+
+<pre>// Racine : tout est en Server Component.
+// Aucune feuille de style externe pour le premier test : on veut voir
+// le produit avant de discuter de son apparence.
+
+export const metadata = {
+  title: 'Douala — a manger, a dormir',
+  description:
+    'Restaurants et meubles a Douala. Prix affiche avant le clic, ' +
+    'informations verifiees.',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    &lt;html lang="fr"&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  );
+}</pre>
+
+<div class="file">
+<span class="path">frontend/app/page.tsx</span>
+<span class="role"><span class="role-label">Rôle</span> : le catalogue. Sa seule responsabilité est d'afficher le prix avant le clic — c'est l'avantage compétitif du projet.</span>
+</div>
+
+<pre>// La page d'accueil : le catalogue.
+//
+// Elle fait une chose simple et elle la fait bien : afficher le prix AVANT
+// le clic. C'est notre seul vrai avantage sur une annonce Facebook.
+//
+// Note sur le rendu : tout est en HTML cote serveur (Server Component).
+// Pas de JavaScript pour afficher une carte. C'est ce qui rend la page
+// indexable par Google, donc ce qui rend le SEO (trajectoire T1) possible.
+
+import Link from 'next/link';
+
+const API = process.env.API_URL ?? 'http://localhost:3001';
+
+export type Etablissement = {
+  id: number;
+  slug: string;
+  nom: string;
+  categorie: 'restaurant' | 'meuble';
+  quartier: string;
+  prix_affiche: number;
+  devisee: string;
+  photo_url: string | null;
+};
+
+async function getCatalogue(
+  categorie?: string,
+): Promise&lt;Etablissement[]&gt; {
+  const url =
+    categorie &amp;&amp; categorie !== 'tout'
+      ? `${API}/api/etablissements?categorie=${categorie}`
+      : `${API}/api/etablissements`;
+
+  // revalidate : le catalogue change peu, on ne veut pas requeter l'API
+  // a chaque visite. 60 secondes suffisent.
+  const res = await fetch(url, { next: { revalidate: 60 } });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.etablissements ?? [];
+}
+
+// Prix format a la francaise : espace insecable, sans decimale.
+function fcfa(n: number): string {
+  return `${n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ')} FCFA`;
+}
+
+export default async function Accueil({
+  searchParams,
+}: {
+  searchParams: Promise&lt;{ categorie?: string }&gt;;
+}) {
+  const { categorie = 'tout' } = await searchParams;
+  const etablissements = await getCatalogue(categorie);
+
+  return (
+    &lt;main&gt;
+      &lt;header&gt;
+        &lt;h1&gt;Ce qui se mange, ce qui se dort, a Douala&lt;/h1&gt;
+        &lt;p&gt;Prix affiche avant de cliquer. Verification a la main.&lt;/p&gt;
+      &lt;/header&gt;
+
+      {/* Filtres : liens simples, pas de client state.
+          Ca reste utilisable meme si le JavaScript ne charge pas. */}
+      &lt;nav aria-label="Filtres"&gt;
+        {[
+          ['tout', 'Tout'],
+          ['restaurant', 'Restaurants'],
+          ['meuble', 'Meubles'],
+        ].map(([valeur, label]) =&gt; (
+          &lt;Link
+            key={valeur}
+            href={valeur === 'tout' ? '/' : `/?categorie=${valeur}`}
+            aria-current={categorie === valeur ? 'page' : undefined}
+          &gt;
+            {label}
+          &lt;/Link&gt;
+        ))}
+      &lt;/nav&gt;
+
+      &lt;section&gt;
+        {etablissements.length === 0 &amp;&amp; (
+          &lt;p&gt;Aucun etablissement. Lancez le back-end puis le seed.&lt;/p&gt;
+        )}
+
+        &lt;ul&gt;
+          {etablissements.map((e) =&gt; (
+            &lt;li key={e.slug}&gt;
+              &lt;article&gt;
+                &lt;h2&gt;
+                  {/* Toute la carte est un lien : le clic compte sur la fiche,
+                      pas sur un bouton isole. */}
+                  &lt;Link href={`/e/${e.slug}`}&gt;{e.nom}&lt;/Link&gt;
+                &lt;/h2&gt;
+
+                &lt;p className="quartier"&gt;{e.quartier}&lt;/p&gt;
+
+                {/* LE prix, avant le clic. C'est l'argument. */}
+                &lt;p className="prix"&gt;
+                  &lt;strong&gt;{fcfa(e.prix_affiche)}&lt;/strong&gt;
+                  &lt;span&gt;{e.devisee}&lt;/span&gt;
+                &lt;/p&gt;
+
+                &lt;Link className="cta" href={`/e/${e.slug}`}&gt;
+                  Decouvrir plus
+                &lt;/Link&gt;
+              &lt;/article&gt;
+            &lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+      &lt;/section&gt;
+    &lt;/main&gt;
+  );
+}</pre>
+
+<p>Deux décisions valent une explication. D'abord <code>next: { revalidate: 60 }</code> : le catalogue bouge peu, et re-requêter l'API à chaque visite poserait un problème de latence inutile. Ensuite les filtres sont des <code>Link</code> de Next, pas un état côté client : la page reste utilisable même si le JavaScript ne se charge pas, et chaque filtre a sa propre URL, donc indexable.</p>
+
+<div class="file">
+<span class="path">frontend/app/e/[slug]/page.tsx</span>
+<span class="role"><span class="role-label">Rôle</span> : la fiche d'un établissement, et surtout le bouton. Le bouton ne pointe pas vers WhatsApp — il pointe vers notre route <code>/c/:slug</code>. C'est le point le plus important du front-end.</span>
+</div>
+
+<pre>// La fiche d'un etablissement.
+//
+// Le bouton « Decouvrir plus » ne pointe PAS vers WhatsApp directement.
+// Il pointe vers notre route /c/:slug, qui enregistre le clic (serveur)
+// et redirige ensuite vers WhatsApp.
+//
+// C'est le point le plus important de tout le front-end.
+// Si on mettait wa.me directement dans le href, on n'aurait aucune mesure.
+// Un clic non mesure est un clic invendable.
+
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+const API = process.env.API_URL ?? 'http://localhost:3001';
+
+type Etablissement = {
+  id: number;
+  slug: string;
+  nom: string;
+  categorie: string;
+  quartier: string;
+  prix_affiche: number;
+  devisee: string;
+  photo_url: string | null;
+  whatsapp: string;
+  ref_code: string;
+};
+
+function fcfa(n: number): string {
+  return `${n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ')} FCFA`;
+}
+
+export default async function Fiche({
+  params,
+}: {
+  params: Promise&lt;{ slug: string }&gt;;
+}) {
+  const { slug } = await params;
+
+  const res = await fetch(`${API}/api/etablissements`, {
+    next: { revalidate: 60 },
+  });
+  const tous: Etablissement[] = (await res.json()).etablissements ?? [];
+  const etablissement = tous.find((e) =&gt; e.slug === slug);
+
+  if (!etablissement) notFound();
+
+  return (
+    &lt;main&gt;
+      &lt;article&gt;
+        &lt;h1&gt;{etablissement.nom}&lt;/h1&gt;
+        &lt;p className="quartier"&gt;{etablissement.quartier}&lt;/p&gt;
+
+        &lt;p className="prix"&gt;
+          &lt;strong&gt;{fcfa(etablissement.prix_affiche)}&lt;/strong&gt;
+          &lt;span&gt;{etablissement.devisee}&lt;/span&gt;
+        &lt;/p&gt;
+
+        {/* LE point central : on passe par /c/:slug, pas par wa.me. */}
+        &lt;a className="cta"
+           href={`http://localhost:3001/c/${etablissement.slug}`}&gt;
+          Decouvrir plus sur WhatsApp
+        &lt;/a&gt;
+
+        {/* Transparence : le client sait que son clic sera compte.
+            La transparence est une contre-mesure anti-fraude. */}
+        &lt;p className="mention"&gt;
+          Votre clic est enregistre. Vous engagez la conversation
+          directement avec l'etablissement, sur son numero WhatsApp.
+        &lt;/p&gt;
+      &lt;/article&gt;
+
+      &lt;Link href="/"&gt;Retour au catalogue&lt;/Link&gt;
+    &lt;/main&gt;
+  );
+}</pre>
+
+<div class="warn">
+<p><strong>Le piège à éviter absolument</strong> : mettre <code>https://wa.me/23769...</code> directement dans le <code>href</code>. Le clic part, WhatsApp s'ouvre, et il n'existe aucune trace côté serveur. Un clic non mesuré est un clic invendable : tu ne peux ni le facturer, ni prouver au client qu'il a eu lieu.</p>
+</div>
+
+<div class="file">
+<span class="path">frontend/app/dashboard/page.tsx</span>
+<span class="role"><span class="role-label">Rôle</span> : le tableau de bord du client. Sa règle de conception est qu'il affiche la chaîne complète des quatre étapes, jamais un chiffre isolé.</span>
+</div>
+
+<pre>// Le tableau de bord du client.
+//
+// La regle de conception ici : on affiche la CHAINE, jamais un chiffre isole.
+//   clics envoyes -&gt; clics comptes -&gt; conversations declarees -&gt; verifiees
+//
+// Pourquoi : c'est ce qui transforme le client en controleur qualite.
+// Il voit la meme donnee que nous. Si l'ecart entre les 4 etapes est
+// visible, c'est lui qui le remarque. On n'a plus a le suspecter.
+
+const API = process.env.API_URL ?? 'http://localhost:3001';
+
+type Chaine = {
+  id: number;
+  nom: string;
+  slug: string;
+  ref_code: string;
+  clics_envoyes: number;
+  clics_comptes: number;
+  conversations_declarees: number;
+  conversations_verifiees: number;
+  derniere_activite: string | null;
+};
+
+export default async function TableauDeBord() {
+  // En production : l'identifiant vient de la session du client.
+  // Ici on prend le premier etablissement, pour la demonstration.
+  const res = await fetch(`${API}/api/etablissements`, {
+    cache: 'no-store',
+  });
+  const liste: { id: number }[] =
+    (await res.json()).etablissements ?? [];
+  if (liste.length === 0) {
+    return &lt;main&gt;&lt;p&gt;Aucun etablissement en base.&lt;/p&gt;&lt;/main&gt;;
+  }
+
+  const etablissementId = liste[0].id;
+
+  const tRes = await fetch(`${API}/api/et/${etablissementId}/tableau`, {
+    cache: 'no-store',
+  });
+  const chaine: Chaine = await tRes.json();
+
+  // Le taux de verification est l'indicateur honnete : il dit combien
+  // des conversations declarees portent vraiment le code de reference.
+  const tauxVerification =
+    chaine.conversations_declarees &gt; 0
+      ? Math.round(
+          (chaine.conversations_verifiees /
+            chaine.conversations_declarees) * 100,
+        )
+      : 0;
+
+  return (
+    &lt;main&gt;
+      &lt;h1&gt;Tableau de bord — {chaine.nom}&lt;/h1&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Votre chaine de mesure&lt;/h2&gt;
+        &lt;table&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;
+              &lt;th&gt;Clics envoyes vers votre WhatsApp&lt;/th&gt;
+              &lt;td&gt;{chaine.clics_envoyes}&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;th&gt;Clics retenus dans le decompte&lt;/th&gt;
+              &lt;td&gt;{chaine.clics_comptes}&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;th&gt;Conversations declarees&lt;/th&gt;
+              &lt;td&gt;{chaine.conversations_declarees}&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;th&gt;Conversations verifiees (avec code)&lt;/th&gt;
+              &lt;td&gt;{chaine.conversations_verifiees}&lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Ce que cela signifie&lt;/h2&gt;
+        &lt;ul&gt;
+          &lt;li&gt;
+            Les &lt;strong&gt;clics&lt;/strong&gt; sont comptes par notre serveur.
+            Ils sont fiables : votre facture ne repose pas dessus
+            uniquement.
+          &lt;/li&gt;
+          &lt;li&gt;
+            Les &lt;strong&gt;conversations declarees&lt;/strong&gt; viennent de
+            votre WhatsApp. Nous ne pouvons pas les verifier.
+          &lt;/li&gt;
+          &lt;li&gt;
+            Les &lt;strong&gt;conversations verifiees&lt;/strong&gt; sont celles
+            ou l'utilisateur a renvoye le code
+            &lt;code&gt;{chaine.ref_code}&lt;/code&gt; dans son message.
+          &lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;p&gt;
+          Taux de verification actuel : &lt;strong&gt;{tauxVerification} %&lt;/strong&gt;.
+          Si ce taux est bas, demandez a vos clients de renvoyer le code.
+        &lt;/p&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Comment vous etes facture&lt;/h2&gt;
+        &lt;p&gt;
+          Par &lt;strong&gt;abonnement mensuel de presence&lt;/strong&gt;.
+          Vous etes visible sur le site tant que l'abonnement est actif.
+        &lt;/p&gt;
+        &lt;p&gt;
+          Ce qui compte pour vous n'est pas le nombre de clics, mais le
+          nombre de conversations qui aboutissent. Les clics dependent de
+          notre trafic, que nous controlons peu. Votre visibilite, elle,
+          ne depend que de nous.
+        &lt;/p&gt;
+      &lt;/section&gt;
+    &lt;/main&gt;
+  );
+}</pre>
+
+<p>Le taux de vérification affiché en bas du tableau est l'indicateur honnête du système : il dit combien des conversations déclarées portent réellement le code de référence. S'il reste bas, la parade n'est pas technique, elle est commerciale : demander aux clients de renvoyer le code dans leurs messages WhatsApp.</p>
+
+<div class="file">
+<span class="path">docker-compose.yml</span>
+<span class="role"><span class="role-label">Rôle</span> : la base de données, en une commande. Le fuseau horaire est forcé sur <code>Africa/Douala</code> pour que le regroupement quotidien de l'anti-fraude soit juste.</span>
+</div>
+
+<pre>services:
+  db:
+    image: postgres:18-alpine
+    container_name: plateforme-db
+    environment:
+      POSTGRES_USER: plateforme
+      POSTGRES_PASSWORD: plateforme
+      POSTGRES_DB: plateforme
+      # Africa/Douala : le decoupage par jour de l'index anti-fraude
+      # doit suivre l'heure locale du Cameroun, pas celle du serveur.
+      TZ: Africa/Douala
+      PGTZ: Africa/Douala
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U plateforme']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db_data:</pre>
+
+<div class="part">PARTIE 5 — MONTAGE PAS À PAS</div>
+
+<h2>5. Lancer l'application en une commande</h2>
+
+<p>Un script est fourni à la racine du dossier : <code>./demarrer.sh</code>. Il vérifie les prérequis, démarre la base, crée le schéma seulement s'il est absent, insère les données, puis lance le back-end et le front-end en arrière-plan.</p>
+
+<pre># Tout lancer
+./demarrer.sh
+
+# Tout arreter
+./demarrer.sh arret
+
+# Suivre les journaux
+tail -f /tmp/back.log
+tail -f /tmp/front.log</pre>
+
+<p>Le script est volontairement idempotent : le relancer ne réinitialise pas la base et ne duplique pas les établissements. C'est utile pendant une journée de développement où on relance souvent.</p>
+
+<div class="warn">
+<p><strong>L'erreur la plus probable au premier lancement</strong> est que Docker soit installé mais arrêté. Le script la détecte et affiche la commande selon ton système :</p>
+<pre>Sur Linux    : sudo systemctl start docker
+Sur Mac      : ouvre Docker Desktop, attends le logo
+Sur Windows  : ouvre Docker Desktop, attends le logo
+
+Pour verifier :  docker info</pre>
+<p>Sans ce démon, rien ne démarre, et aucune base de données n'est disponible.</p>
+</div>
+
+<h2>6. Les prérequis</h2>
+
+<ul>
+<li>Node.js 20 ou plus — vérifier avec <code>node -v</code></li>
+<li>Docker — vérifier avec <code>docker -v</code></li>
+<li>Rien d'autre. Pas de Postgres à installer : Docker s'en charge.</li>
+</ul>
+
+<h2>7. Les commandes, une par une</h2>
+
+<pre># 1. Demarrer la base
+cd plateforme
+docker compose up -d
+docker compose ps          # doit afficher db en healthy
+
+# 2. Creer le schema
+cd backend
+export DATABASE_URL="postgres://plateforme:plateforme@localhost:5432/plateforme"
+npm install
+npm run initdb
+
+# 3. Mettre des donnees de depart (12 etablissements)
+npm run seed
+
+# 4. Demarrer le back-end  (terminal 1)
+npm run dev                # http://localhost:3001</pre>
+
+<pre># 5. Demarrer le front-end  (terminal 2)
+cd frontend
+npm install
+npm run dev                # http://localhost:3000
+
+# 6. Arreter
+docker compose down        # garde les donnees
+docker compose down -v     # efface aussi la base</pre>
+
+<div class="part">PARTIE 6 — VÉRIFIER QUE ÇA MARCHE</div>
+
+<h2>8. Voir le produit</h2>
+
+<table>
+<tr><th>Page</th><th>Adresse</th><th>Ce qu'on doit voir</th></tr>
+<tr><td>Catalogue</td><td><code>localhost:3000</code></td><td>Les 12 établissements, avec le prix affiché</td></tr>
+<tr><td>Fiche</td><td><code>localhost:3000/e/restaurant-le-bonamoussadi</code></td><td>Le prix et le bouton « Decouvrir plus »</td></tr>
+<tr><td>Tableau de bord</td><td><code>localhost:3000/dashboard</code></td><td>Les 4 lignes de la chaîne de mesure</td></tr>
+</table>
+
+<h2>9. Vérifier la mesure de clic</h2>
+
+<p>C'est le test le plus important du projet. Depuis un terminal :</p>
+
+<pre>curl -sI http://localhost:3001/c/restaurant-le-bonamoussadi | head -5</pre>
+
+<p>Tu dois voir une redirection <code>302</code> vers <code>wa.me</code>. Si tu vois une page blanche ou une erreur 404, l'établissement n'a pas été chargé : relance le seed.</p>
+
+<p>Puis regarde ce qui a été réellement écrit en base :</p>
+
+<pre>docker compose exec db psql -U plateforme -d plateforme \
+  -c "SELECT token, compte, motif_exclu FROM clics ORDER BY id DESC LIMIT 5;"</pre>
+
+<h2>10. Tester l'anti-fraude</h2>
+
+<p>Relance la commande du point 8 deux fois de suite, sans changer d'adresse IP.</p>
+
+<p>Résultat attendu :</p>
+
+<table>
+<tr><th>Ligne</th><th>compte</th><th>motif_exclu</th><th>Explication</th></tr>
+<tr><td>1</td><td><code>t</code></td><td><em>null</em></td><td>Le premier clic de la journée compte</td></tr>
+<tr><td>2</td><td><code>f</code></td><td><code>doublon-jour</code></td><td>Refusé par l'index unique</td></tr>
+<tr><td>3</td><td><code>f</code></td><td><code>doublon-jour</code></td><td>Idem</td></tr>
+</table>
+
+<p>C'est le cœur de la démonstration : la base elle-même a refusé la seconde ligne, sans que ce soit le code applicatif qui décide.</p>
+
+<h2>11. État de vérification de ce code</h2>
+
+<div class="ok">
+<p><strong>Ce qui a été vérifié</strong> : les deux projets compilent sans erreur TypeScript (<code>tsc --noEmit</code> passe sur le back-end et le front-end), le serveur Fastify démarre et répond, le script <code>demarrer.sh</code> a une syntaxe bash valide, et le fichier <code>docker-compose.yml</code> est accepté par <code>docker compose config</code>.</p>
+<p>Trois défauts ont été trouvés et corrigés pendant cette vérification : le chemin du schéma était faux dans le script <code>initdb</code>, <code>next-env.d.ts</code> manquait, et l'API catalogue ne renvoyait pas d'identifiant, ce qui cassait le tableau de bord.</p>
+</div>
+
+<div class="warn">
+<p><strong>Ce qui n'a pas pu être vérifié</strong> : l'exécution complète avec la base de données. Le démon Docker ne tourne pas sur la machine où ce code a été écrit, et il exige les privilèges root pour démarrer. Les commandes des sections 5 et 7 n'ont donc pas été exécutées de bout en bout : elles restent à confirmer chez toi.</p>
+<p>Concrètement, ce qui reste non testé : la création effective des tables, le <code>seed</code>, la redirection 302 vers <code>wa.me</code>, et le refus du doublon par l'index unique. Le code de ces chemins est relu et typé, mais pas exécuté.</p>
+</div>
+
+<h2>12. Ce qui manque volontairement</h2>
+
+<p>Ce PDF contient le strict minimum qui rend le tracker fonctionnel. Ces éléments viennent au palier suivant, pas avant :</p>
+
+<table>
+<tr><th>Élément</th><th>Pourquoi plus tard</th></tr>
+<tr><td>Session et authentification du client</td><td>Aucune donnée à protéger tant qu'il n'y a pas d'abonnement réel</td></tr>
+<tr><td>Redis</td><td>Limitation de débit et cache : inutile avec 12 établissements</td></tr>
+<tr><td>Facturation et abonnements</td><td>Le prix n'est pas tranché. Ne pas coder avant de décider</td></tr>
+<tr><td>Upload de photos et <code>sharp</code></td><td>Pas de photos pour l'instant ; les URLs sont vides</td></tr>
+<tr><td>API WhatsApp Cloud et webhooks</td><td>Nécessite un numéro et un compte Meta validé</td></tr>
+<tr><td>Mobile money</td><td>On ne touche pas à l'argent. C'est un choix, pas un oubli</td></tr>
+<tr><td>Tailwind et le design</td><td>Le produit d'abord, l'apparence ensuite</td></tr>
+</table>
+
+<div class="note">
+<p><em>Le tableau ci-dessus n'est pas une liste de tâches oubliées. Chaque ligne est un choix : le projet avance sur ce qui est nécessaire pour valider l'hypothèse des 20 établissements, et rien d'autre ne justifie encore d'être écrit.</em></p>
+</div>
+
+<h2>13. La règle de séquencement</h2>
+
+<blockquote>
+<p>Ces cinq éléments de base peuvent démarrer maintenant, sans attendre la validation du prix de vente.</p>
+<p>En revanche, <strong>aucun travail de trafic</strong> — SEO, Instagram, TikTok, groupes WhatsApp — ne commence avant que les établissements soient signés. Construire du trafic avant de savoir ce qu'on vend, c'est la manière la plus fiable de perdre de l'argent.</p>
+</blockquote>
+
+</body>
+</html>

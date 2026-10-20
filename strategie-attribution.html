@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Stratégie et attribution — Plateforme de découverte restaurants et meublés à Douala</title>
+<style>
+@page { size: A4; margin: 18mm 16mm; }
+* { box-sizing: border-box; }
+body { font-family: "DejaVu Serif", Georgia, serif; font-size: 10.4pt; line-height: 1.55; color: #1a1a1a; }
+h1 { font-size: 22pt; line-height: 1.2; color: #14304f; border-bottom: 3px solid #14304f; padding-bottom: 8px; margin: 0 0 6px; }
+h2 { font-size: 15pt; color: #14304f; border-bottom: 1.5px solid #b8c4d0; padding-bottom: 4px; margin: 24px 0 10px; page-break-after: avoid; }
+h3 { font-size: 11.8pt; color: #1d4f7c; margin: 16px 0 6px; page-break-after: avoid; }
+h4 { font-size: 10.6pt; color: #2c5f8a; margin: 12px 0 4px; page-break-after: avoid; }
+p { margin: 0 0 9px; text-align: justify; }
+ul, ol { margin: 0 0 10px; padding-left: 21px; }
+li { margin-bottom: 4px; }
+table { width: 100%; border-collapse: collapse; margin: 9px 0 14px; font-size: 8.8pt; page-break-inside: avoid; }
+th { background: #14304f; color: #fff; text-align: left; padding: 5px 8px; font-weight: bold; border: 1px solid #14304f; }
+td { padding: 5px 8px; border: 1px solid #c5ced6; vertical-align: top; }
+tr:nth-child(even) td { background: #f3f6f9; }
+pre { background: #f3f6f9; border-left: 3px solid #14304f; padding: 10px 12px; margin: 9px 0 14px; font-family: "DejaVu Sans Mono", monospace; font-size: 8.6pt; line-height: 1.5; white-space: pre-wrap; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.9pt; background: #eceff2; padding: 1px 3px; }
+pre code { background: none; padding: 0; }
+blockquote { border-left: 3px solid #1d4f7c; background: #eef3f8; margin: 11px 0; padding: 10px 14px; page-break-inside: avoid; }
+blockquote p:last-child { margin-bottom: 0; }
+strong { color: #0f2b47; }
+hr { border: none; border-top: 1px solid #c5ced6; margin: 18px 0; }
+.meta { background: #f3f6f9; border: 1px solid #c5ced6; padding: 11px 14px; margin-bottom: 17px; font-size: 9.4pt; }
+.meta p { margin: 0 0 4px; text-align: left; }
+.meta p:last-child { margin-bottom: 0; }
+.toc { background: #eef3f8; border: 1px solid #b8c4d0; padding: 12px 16px; margin-bottom: 19px; font-size: 9.5pt; }
+.toc ol { margin: 0; padding-left: 20px; }
+.toc li { margin-bottom: 3px; }
+.part { background: #14304f; color: #fff; padding: 9px 14px; font-size: 12.5pt; font-weight: bold; margin: 0 0 14px; }
+.simple { background: #f7f9fb; border: 1px solid #d5dde4; padding: 11px 14px; margin: 10px 0 14px; font-size: 10pt; }
+.simple p:last-child { margin-bottom: 0; }
+.cible { font-size: 8pt; background: #1d4f7c; color: #fff; padding: 2px 7px; border-radius: 2px; display: inline-block; }
+.note { border: 1px solid #c9a227; background: #fdf8e8; padding: 9px 13px; margin: 11px 0; font-size: 9.4pt; }
+.warn { border-left: 3px solid #a33; background: #fbeeed; padding: 9px 13px; margin: 11px 0; font-size: 9.6pt; }
+h2 + h3 { margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<h1>Stratégie et attribution</h1>
+<p style="font-size:12.5pt;color:#1d4f7c;margin-top:0;">Plateforme de découverte — restaurants et meublés à Douala</p>
+
+<div class="meta">
+<p><strong>Date</strong> : 5 octobre 2026</p>
+<p><strong>Document</strong> : synthèse stratégique (version simple, pour l'équipe) et note technique sur l'attribution des conversations.</p>
+<p><strong>Contenu</strong> : la partie 1 est rédigée pour être lue à voix haute à des membres non techniques. La partie 2 s'adresse à qui conçoit le produit.</p>
+<p><strong>Statut</strong> : décision stratégique à valider. Le socle technique d'attribution est défini et peut démarrer.</p>
+</div>
+
+<div class="toc">
+<strong>Sommaire</strong>
+<ol>
+<li><strong>Partie 1 — La synthèse, expliquée simplement</strong> (pour toute l'équipe)</li>
+<li><strong>Partie 2 — Le problème de l'attribution</strong> (technique et stratégique)</li>
+</ol>
+</div>
+
+<div class="part">PARTIE 1 — LA SYNTHÈSE, EXPLIQUÉE SIMPLEMENT</div>
+
+<div class="simple"><p><em>À lire à voix haute à l'équipe. Aucun jargon technique dans cette partie.</em></p></div>
+
+<h2>1. Ce qu'on veut construire</h2>
+
+<p>On veut un site qui montre des plats et des appartements, avec le prix écrit en clair.</p>
+
+<p>Quand quelqu'un voit un truc qui lui plaît, il clique sur « Découvrir plus »… et il arrive directement dans une discussion WhatsApp avec le restaurant ou le propriétaire.</p>
+
+<p><strong>Pas de site de réservation. Pas de paiement en ligne. On ne touche jamais à l'argent du client.</strong></p>
+
+<h2>2. Pourquoi c'est une bonne idée</h2>
+
+<h3>Le prix est écrit avant de cliquer</h3>
+
+<p>Une annonce Facebook dit : « Restaurant X, venez nous voir ! »</p>
+
+<p>Nous on dit : « Ndolè, 4 500 francs, disponible ce soir, à Bonapriso. »</p>
+
+<p>Le client sait déjà ce que ça coûte et si c'est possible <strong>avant</strong> de perdre du temps. C'est notre vraie force. Personne d'autre ne le fait aussi bien.</p>
+
+<h3>WhatsApp, c'est là que les gens sont déjà</h3>
+
+<p>Au Cameroun, la grande majorité des gens consultent leurs messages chaque jour. Notre client n'a rien à installer, rien à créer, aucun compte à faire.</p>
+
+<p>Il clique, et il parle. C'est tout.</p>
+
+<h3>On ne touche jamais à l'argent de personne</h3>
+
+<div class="simple">
+<p>C'est très important, et on ne le réalise pas assez. On ne reçoit pas de paiement, on ne réserve pas, on ne gère pas de nuitée. Donc :</p>
+<ul>
+<li>personne ne peut nous devoir de l'argent ;</li>
+<li>personne ne peut nous demander un remboursement ;</li>
+<li>personne ne peut plus annuler à la dernière minute ;</li>
+<li>on n'a pas besoin de licence pour encaisser.</li>
+</ul>
+<p>Tout ce qui fait hurler les autres projets de ce genre a disparu. Notre risque financier est <strong>zéro</strong>.</p>
+</div>
+
+<h2>3. Ce qui est difficile</h2>
+
+<p>Il faut être honnête sur ce point, sinon on va croire que tout va bien alors que non.</p>
+
+<h3>Le problème numéro 1 : notre prix de 50 francs est trop bas</h3>
+
+<p>On avait prévu de facturer 50 francs par clic.</p>
+
+<p>Sauf qu'un clic n'est pas une vente. C'est juste un clic. Sur 5 clics, un seul devient une vraie discussion. Donc 50 francs par clic, ça fait <strong>10 francs par client</strong>.</p>
+
+<p>En face, un resto qui gagne bien encaisse <strong>environ 9 millions de francs par mois</strong>.</p>
+
+<p>Quand on lui demande 30 000 francs par mois pour être bien visible et recevoir des clients, on prend <strong>moins de 0,5 %</strong> de ce qu'il gagne. Ce serait imbécile de refuser.</p>
+
+<p>Autrement dit : <strong>50 francs n'est pas trop cher pour les restaurants. C'est trop bon marché pour nous.</strong></p>
+
+<h3>Le problème numéro 2 : les restaurants sont de mauvais clients</h3>
+
+<p>C'est contre-intuitif, alors vérifions-le avec des chiffres simples.</p>
+
+<p>Le resto gagne environ 3 500 francs de marge par client servi.</p>
+
+<p>On touche 2 000 francs pour lui amener un client. Il nous reste 1 500 francs pour nous.</p>
+
+<p>C'est serré. Alors il essaie, il paye deux mois… et il arrête. Ou il ne essaie même pas.</p>
+
+<p><strong>Les appartements meublés, c'est l'inverse.</strong> Le client gagne 15 000 francs de marge, il réfléchit trois nuits avant de réserver, et il sait mesurer si la pub lui a rapporté de l'argent. Il paie 1 500 francs sans broncher et il reste avec nous des mois.</p>
+
+<p>Donc : <strong>les meublés payent la facture. Les restaurants font le volume.</strong> C'est l'inverse de ce qu'on imaginait.</p>
+
+<h3>Le problème numéro 3 : on ne contrôle presque rien</h3>
+
+<p>Soyons clairs :</p>
+
+<ul>
+<li>les photos et les menus, c'est le restaurant, il peut les enlever demain ;</li>
+<li>la discussion avec le client, elle se passe <strong>sur le numéro du restaurant</strong>, pas chez nous ;</li>
+<li>WhatsApp, c'est Facebook. Ils peuvent changer les règles du jeu demain.</li>
+</ul>
+
+<p>Il ne nous reste que deux choses : savoir <strong>à qui</strong> on a envoyé le client, et la relation commerciale avec l'établissement.</p>
+
+<p>C'est vrai que c'est un peu mince. D'où l'idée suivante.</p>
+
+<h2>4. L'idée qui change tout</h2>
+
+<p>Aujourd'hui on veut vendre <strong>des clics</strong>.</p>
+
+<p>Demain, on veut vendre <strong>une place sur la page</strong>.</p>
+
+<p>Autrement dit : au lieu de « vous payez quand on vous envoie un clic », on propose <strong>« tous les mois, vous êtes présent sur notre site, avec vos informations vérifiées »</strong>.</p>
+
+<p>Pourquoi c'est bien meilleur ? Parce que :</p>
+
+<div class="simple">
+<p><strong>On ne dépend plus du nombre de visites.</strong> Si le site a 50 visiteurs ou 5 000, le resto paie pareil. Il paie pour être visible, pas pour avoir de la chance.</p>
+<p><strong>On n'a plus besoin de prouver grand-chose.</strong> Les clics, ça se compte, et un jour un restaurant va dire « j'ai eu 265 clients, vous en comptez 231 ». Avec un abonnement, cette discussion n'existe plus : il est là, il est visible, c'est tout.</p>
+<p><strong>On gagne de l'argent chaque mois, de façon prévisible.</strong> Au lieu de vendre par petits bouts, on a une recette mensuelle, comme un abonnement de téléphone.</p>
+<p><strong>Et ça ne nous coûte presque rien en publicité.</strong> C'est la vraie raison.</p>
+</div>
+
+<p>Quand on vend des discussions, il nous faut du monde sur le site. Du monde, ça s'achète, et c'est cher. Quand on vend une place sur la page, il suffit que le site soit <strong>crédible</strong>, même avec peu de visiteurs.</p>
+
+<p>C'est toute la différence.</p>
+
+<h2>5. Le vrai visage du projet</h2>
+
+<p>Une image simple pour tout le monde.</p>
+
+<p>Aujourd'hui on veut être <strong>une revue</strong>.</p>
+
+<p>Si on est une revue, il nous faut des lecteurs. Et des lecteurs, ça coûte cher.</p>
+
+<p>Si on est <strong>un annuaire vérifié de Douala</strong>, il nous faut seulement être fiable. On peut avoir 200 visiteurs par jour et avoir raison.</p>
+
+<p>Or, aujourd'hui, les sites qui existent sont mauvais. On y trouve des notes « 5 étoiles » avec 3 votes, des photos qui ne correspondent pas, des horaires vides.</p>
+
+<p><strong>C'est exactement la place à prendre.</strong> Les gens ne demandent pas plus d'annuaires. Ils en demandent <strong>un qui soit juste</strong>.</p>
+
+<p>Donc le mot qui résume le projet, ce n'est pas « plateforme ». C'est <strong>annuaire vérifié</strong>.</p>
+
+<h2>6. Ce qu'on fait, dans l'ordre</h2>
+
+<div class="warn">
+<p>Pas de site. Pas de référencement. <strong>Pas de SEO, pas d'Instagram, pas de TikTok.</strong> Rien de tout ça maintenant.</p>
+</div>
+
+<ol>
+<li><strong>Cette semaine</strong>, on va voir <strong>20 endroits</strong> — des meublés d'abord. On leur propose : « Vous êtes sur notre page, vos informations sont vérifiées, vous recevez les clients qui vous écrivent. 30 000 francs par mois. » On encaisse en espèces le premier mois.</li>
+<li>On regarde combien disent oui. <strong>Si 10 disent oui, on a gagné.</strong> Le projet est validé.</li>
+<li>Si personne ne dit oui, on l'apprend en une semaine. C'est gratuit, et c'est bien mieux que de découvrir ça dans six mois, après avoir tout construit.</li>
+<li><strong>Ensuite seulement</strong>, on construit le site, le bouton qui compte les clients, les catégories par quartier pour Google.</li>
+</ol>
+
+<h2>7. Ce qu'il ne faut pas faire</h2>
+
+<p>Trois erreurs classiques, à éviter :</p>
+
+<ul>
+<li><strong>Ne pas construire le site avant d'avoir des clients.</strong> Un site sans clients ne sert à rien, et il coûte cher à maintenir.</li>
+<li><strong>Ne pas commencer par les restaurants.</strong> Ils ne peuvent pas absorber notre coût d'acquisition. On perd le temps et l'argent.</li>
+<li><strong>Ne pas se fier à Facebook pour le trafic.</strong> Si notre plan est uniquement « acheter des publicité », on va perdre. Le plan doit reposer sur le fait qu'on est <strong>digne de confiance</strong>.</li>
+</ul>
+
+<h2>8. Le résumé en une phrase</h2>
+
+<blockquote><p>On ne veut pas être une page qui attire du monde et qui vend des clics.</p>
+<p>On veut être <strong>l'annuaire de référence à Douala</strong>, où les informations sont justes, et où les restaurants et propriétaires paient chaque mois pour y figurer.</p>
+<p>Le reste n'est que de la mise en œuvre.</p></blockquote>
+
+<div class="note">
+<p><em>Note pour l'équipe : les chiffres avancés dans cette synthèse sont des ordres de grandeur, pas des données vérifiées. Avant de fixer un prix définitif, on va poser ces questions à trois vrais restaurateurs et trois vrais propriétaires. Ce qu'on ne sait pas encore, on ne l'invente pas.</em></p>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<div class="part">PARTIE 2 — LE PROBLÈME DE L'ATTRIBUTION</div>
+
+<div class="simple"><p><em>Note technique et stratégique. Pour qui conçoit le produit et décide du modèle commercial.</em></p></div>
+
+<h2>9. Le problème</h2>
+
+<p>Tu as identifié le point faible exact du modèle. Il faut être clair : <strong>ce problème n'est pas soluble par la technique si tu vends des discussions sur un numéro que tu ne contrôles pas.</strong></p>
+
+<p>Mais il ne se pose pas de la même façon selon ce que tu vends. Deux stratégies, deux niveaux d'exigence.</p>
+
+<h2>10. D'abord, la vérité inconfortable</h2>
+
+<p>Ce qu'un client peut faire aujourd'hui, sans que tu le détectes :</p>
+
+<ul>
+<li>cliquer sur le lien, <strong>ne jamais écrire</strong>, puis te dire « le clic n'a rien donné » — c'est fait ;</li>
+<li>ouvrir WhatsApp, écrire un mot, supprimer la discussion ;</li>
+<li>envoyer le lien du client A à quelqu'un d'autre pour gonfler ses chiffres ;</li>
+<li>juste vieillir : un clic d'il y a des mois qu'il ressort quand tu demandes des preuves.</li>
+</ul>
+
+<p>Et ce que <strong>tu ne peux pas</strong> faire techniquement : lire le contenu de sa discussion WhatsApp, voir son téléphone, ou savoir s'il a ouvert l'application.</p>
+
+<div class="warn">
+<p><strong>La preuve absolue n'existe pas depuis un numéro tiers.</strong> Quiconque te promet le contraire te vend une illusion. Il faut donc changer ce qu'on cherche à prouver.</p>
+</div>
+
+<h2>11. Stratégie A — ne rien prouver (recommandée)</h2>
+
+<p><strong>Tu vends une présence, pas une conversation.</strong></p>
+
+<p>Alors la question devient : <em>le client est-il visible sur la page ce mois-ci ?</em> Réponse binaire, vérifiable en une seconde, aucun débat possible.</p>
+
+<p>Un clic reste un clic — et un clic, <strong>ça se prouve très bien</strong> : ton serveur l'enregistre, point final. Pas de foi, pas de déclaration, pas de capture d'écran exigée.</p>
+
+<p>C'est pour ça que cette stratégie est supérieure : <strong>elle supprime le problème au lieu de l'affronter.</strong> Tu peux vérifier un fait infrastructurel, pas un comportement humain.</p>
+
+<p>Et le revenu devient récurrent, ce qui te laisse le temps de construire les outils de mesure au lieu de courir après la preuve.</p>
+
+<h2>12. Stratégie B — facturer à la conversation, mais en blocs prépayés</h2>
+
+<p>Si tu veux quand même garder le prix par conversation, il faut changer la logique de vérification.</p>
+
+<h3>Le changement clé : on ne vérifie plus l'unité, on vérifie le volume</h3>
+
+<p>Aujourd'hui tu te demandes : « cette conversation a-t-elle eu lieu ? »</p>
+
+<p>Demande-toi plutôt : <strong>« sur 1 000 conversations payées d'avance, est-ce que ce client en a vraiment obtenu 900, ou est-ce qu'il me compte des chiffres ? »</strong></p>
+
+<p>C'est un problème d'ordre de grandeur, pas de vérité unitaire. Et il se traite très bien.</p>
+
+<h3>Pourquoi le prépaiement résout le problème de bonne foi</h3>
+
+<p>C'est le point que tu n'avais pas vu, et il est décisif.</p>
+
+<p>Le client qui a <strong>payé d'avance</strong> n'a aucun intérêt à sous-déclarer. Chaque conversation sous-déclarée, c'est de l'argent qu'il a payé et qu'il ne récupère pas. <strong>Ton client a le même intérêt que toi : il veut que le chiffre soit juste.</strong></p>
+
+<p>Avec un modèle à la commission, le sous-déclarement est rationnel. Avec un bloc prépayé, il est contre-intéressé. Tu as transformé ton arnaqueur potentiel en allié, gratuitement.</p>
+
+<h3>Les quatre garde-fous</h3>
+
+<h4>1. Le code de référence, en clair dans le lien</h4>
+
+<p>Ton lien contient une référence unique par établissement : <code>wa.me/237...?ref=EST-042-A7</code>.</p>
+
+<p>Et tu fais en sorte que le client la voie. Deux façons :</p>
+
+<ul>
+<li><strong>automatique</strong> : ton redirect serveur génère un message pré-rempli contenant le code ;</li>
+<li><strong>explicite</strong> : une phrase du type « Répondez A7 pour être compté comme conversation vérifiée ».</li>
+</ul>
+
+<p>Ce n'est pas une preuve — c'est un <strong>filtre</strong>. Ça ne bloque pas la malveillance organisée, mais ça élimine la grande majorité des discussions spontanées, et ça te donne un motif clair pour refuser un chiffre.</p>
+
+<h4>2. Le plafond théorique</h4>
+
+<p>Tu ne vends pas 1 000 conversations : tu vends 1 000 clics, et tu reconnais une conversation vérifiée quand elle porte le bon code.</p>
+
+<p>Un client honnête qui a 900 conversations sur 1 000 clics est content. Un qui en a 60 n'a rien à storyteller. <strong>La fraude devient inutile parce que tu ne paies jamais par conversation.</strong></p>
+
+<p>C'est la réponse complète à ton problème : <strong>si tu ne paies pas à l'unité, tu n'as pas besoin de prouver l'unité.</strong></p>
+
+<h4>3. Le rapport transparent</h4>
+
+<p>Tu affiches dans le tableau de bord :</p>
+
+<pre>Clics envoyés        1 000
+Conversations ouvertes  140
+Conversations vérifiées  138</pre>
+
+<p>Le client voit la chaîne entière, pas un chiffre final. S'il constate lui-même un écart, il vient te le signaler. <strong>La transparence transforme ton adversaire en contrôleur qualité</strong> — tu n'as plus besoin de l'être.</p>
+
+<h4>4. Le contrôle des clics, lui, est total</h4>
+
+<p>Le clic est côté serveur, donc infalsifiable de ton côté :</p>
+
+<ul>
+<li>un seul identifiant par clic ;</li>
+<li>un clic maximum par visiteur et par établissement et par jour ;</li>
+<li>sessions vers le même numéro exclues ;</li>
+<li>journal serveur non modifiable ;</li>
+<li>adresses IP des locaux de l'établissement exclues du décompte.</li>
+</ul>
+
+<p>Un restaurant qui simule 1 000 clics depuis son téléphone ? Bloqué au deuxième.</p>
+
+<h2>13. Stratégie C — la seule qui donne une vraie preuve, et son coût</h2>
+
+<p>Si un jour tu as besoin d'une attribution incontestable, <strong>il faut que le numéro soit à toi.</strong></p>
+
+<p>Quand tu reçois un message WhatsApp sur un numéro que tu possèdes, ton serveur reçoit un événement qui contient le numéro de l'expéditeur et l'horodatage. <strong>Ça, c'est une preuve technique, datée, non contestable.</strong></p>
+
+<p>Mais ça change tout le modèle :</p>
+
+<ul>
+<li>le client ne parle plus au restaurant, il parle à toi → il perd le contact direct, et le restaurant le sait ;</li>
+<li>tu dois faire les présentations, gérer les désaccords, tu deviens un intermédiaire ;</li>
+<li>l'usage d'un numéro comme relais pour des tiers est <strong>à faire valider au préalable auprès de Meta</strong>, parce que c'est exactement le genre d'usage que les politiques de messagerie encadrent ;</li>
+<li>tu perds l'avantage concurrentiel numéro un : le contact direct.</li>
+</ul>
+
+<p><strong>Verdict</strong> : techniquement parfait, commercialement lourd. Je ne le recommande pas, sauf si un jour tu décides de redevenir intermédiaire — auquel cas c'est un tout autre projet.</p>
+
+<h2>14. Ce que je recommande</h2>
+
+<table>
+<tr><th></th><th>Modèle facturé</th><th>Ce que tu dois prouver</th><th>Charge de vérification</th></tr>
+<tr><td><strong>A</strong></td><td>Présence mensuelle</td><td>Être visible sur la page</td><td><strong>Nulle</strong></td></tr>
+<tr><td><strong>B</strong></td><td>Bloc de clics, conversation vérifiée par code</td><td>Un volume, pas une unité</td><td><strong>Faible</strong></td></tr>
+<tr><td><strong>C</strong></td><td>Conversation exacte</td><td>Chaque conversation</td><td><strong>Élevée</strong>, et coûteuse</td></tr>
+</table>
+
+<p><strong>Choisis A comme socle, et B comme option pour ceux qui veulent plus de volume.</strong></p>
+
+<ul>
+<li><strong>A, en abonnement mensuel.</strong> C'est ta recette prévisible, et tu ne vérifies rien.</li>
+<li><strong>B, pour les clients qui veulent payer plus.</strong> Tu vends 1 000 clics d'avance, tu reconnais les conversations qui portent le bon code, tu affiches toute la chaîne. Ton client a payé d'abord, donc il n'a aucune raison de tricher.</li>
+</ul>
+
+<div class="simple">
+<p><strong>Dans les deux cas, tu ne paies jamais à la conversation isolée.</strong> C'est ce choix qui rend le problème gérable.</p>
+</div>
+
+<h2>15. Le point que tu as bien identifié</h2>
+
+<p>Tu as raison de te méfier de la bonne foi. Mais note où ça mène, concrètement : <strong>le seul mode de vente où tu as besoin de croire tes clients est la commission sur transaction.</strong> Ce n'est pas un détail de conception, c'est la structure même du modèle.</p>
+
+<p>En passant en <strong>présence plus blocs prépayés</strong>, tu n'as plus besoin de les croire. Tu n'as plus besoin de croire personne : tu vends une page affichée et un nombre de clics, deux choses que ton serveur constate.</p>
+
+<p>C'est un argument de plus pour ce qu'on a dit : ce n'est pas seulement un modèle plus simple, c'est un modèle <strong>vérifiable</strong>.</p>
+
+<h2>16. Le socle technique à lancer</h2>
+
+<p>Ces éléments sont indépendants du choix entre A et B : ils servent les deux.</p>
+
+<table>
+<tr><th>#</th><th>Élément</th><th>Rôle</th><th>Délai</th></tr>
+<tr><td>1</td><td>Redirect serveur, identifiant de clic unique, journal horodaté</td><td>La preuve du clic, côté serveur. Sans JavaScript : c'est une redirection HTTP.</td><td>1 à 2 semaines</td></tr>
+<tr><td>2</td><td>Génération du lien avec référence unique par établissement</td><td>Le code de référence qui sert de filtre</td><td>1 semaine</td></tr>
+<tr><td>3</td><td>Tableau de bord en chaîne (clics, conversations, vérifiées)</td><td>La transparence qui transforme le client en contrôleur</td><td>1 à 2 semaines</td></tr>
+<tr><td>4</td><td>Facturation : abonnement mensuel plus blocs prépayés</td><td>Le prépaiement qui supprime l'intérêt de tricher</td><td>1 à 2 semaines</td></tr>
+<tr><td>5</td><td>Filtrage anti-fraude sur les clics</td><td>Un clic par visiteur, établissement et jour ; IP des locaux exclues</td><td>1 semaine</td></tr>
+</table>
+
+<p><strong>Ces cinq éléments peuvent démarrer maintenant</strong>, sans attendre la validation du prix de vente.</p>
+
+<div class="note">
+<p><em>Réserve : les chiffres de marge et de volume sont des ordres de grandeur issus de la première analyse. Les hypothèses de volume de couverts et de taux de conversion doivent être confirmées auprès de trois restaurants et trois propriétaires avant tout engagement tarifaire définitif.</em></p>
+</div>
+
+</body>
+</html>

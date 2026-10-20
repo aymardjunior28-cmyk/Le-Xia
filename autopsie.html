@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Autopsie — Booking.com · trivago · Ayila'a Cameroun</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+
+  :root{
+    --ink:#14181f;
+    --ink2:#3d4655;
+    --muted:#6b7686;
+    --line:#d8dee7;
+    --bg:#ffffff;
+    --soft:#f4f6fa;
+    --accent:#0b5fff;
+    --accent-soft:#e8f0ff;
+    --warn:#b4530a;
+    --warn-soft:#fff3e6;
+    --good:#0d7a55;
+    --good-soft:#e6f6ef;
+    --bad:#b3261e;
+    --bad-soft:#fdecea;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html{
+    font-family:"DejaVu Sans","Liberation Sans",Cantarell,sans-serif;
+    font-size:9.6pt;
+    line-height:1.52;
+    color:var(--ink);
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  body{ margin:0; padding:0; background:#fff; }
+
+  /* ---------- Couverture ---------- */
+  .cover{
+    page-break-after:always;
+    height:247mm;
+    display:flex; flex-direction:column; justify-content:space-between;
+    border-top:6mm solid var(--ink);
+    padding-top:10mm;
+  }
+  .cover .eyebrow{
+    font-size:8pt; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--accent); font-weight:700;
+  }
+  .cover h1{
+    font-size:30pt; line-height:1.1; margin:6mm 0 3mm; font-weight:700;
+    letter-spacing:-.02em;
+  }
+  .cover h1 .thin{ font-weight:300; color:var(--ink2); }
+  .cover .sub{
+    font-size:12pt; color:var(--ink2); font-weight:400; line-height:1.4;
+    max-width:135mm; margin:0 0 8mm;
+  }
+  .cover .rule{ height:1px; background:var(--line); margin:6mm 0; }
+  .cover .kpis{ display:flex; gap:5mm; }
+  .cover .kpi{
+    flex:1; border:1px solid var(--line); border-radius:3px;
+    padding:4mm; background:var(--soft);
+  }
+  .cover .kpi b{ display:block; font-size:17pt; line-height:1.1; color:var(--ink); }
+  .cover .kpi span{ display:block; font-size:7.6pt; color:var(--muted); margin-top:1.5mm; text-transform:uppercase; letter-spacing:.08em; }
+  .cover .meta{ font-size:8.4pt; color:var(--muted); }
+
+  /* ---------- Structure ---------- */
+  h2{
+    font-size:14pt; margin:0 0 4mm; padding-bottom:2mm;
+    border-bottom:2px solid var(--ink); letter-spacing:-.01em;
+    page-break-after:avoid;
+  }
+  h2 .num{ color:var(--accent); margin-right:2.5mm; }
+  h3{
+    font-size:10.6pt; margin:6mm 0 2.5mm; color:var(--ink);
+    page-break-after:avoid;
+  }
+  h4{
+    font-size:9.4pt; margin:4.5mm 0 1.5mm; color:var(--ink2);
+    text-transform:uppercase; letter-spacing:.07em; font-weight:700;
+    page-break-after:avoid;
+  }
+  p{ margin:0 0 2.6mm; text-align:justify; hyphens:auto; }
+  ul,ol{ margin:0 0 3mm; padding-left:5.5mm; }
+  li{ margin-bottom:1.2mm; }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  a{ color:var(--accent); text-decoration:none; }
+
+  section{ page-break-before:always; }
+  section.cont{ page-break-before:auto; }
+
+  /* ---------- Tableaux ---------- */
+  table{
+    width:100%; border-collapse:collapse; margin:3mm 0 4mm;
+    font-size:8.6pt; page-break-inside:avoid;
+  }
+  th{
+    background:var(--ink); color:#fff; text-align:left; padding:2mm 2.5mm;
+    font-weight:700; font-size:8pt; letter-spacing:.04em; text-transform:uppercase;
+  }
+  td{ padding:1.8mm 2.5mm; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:nth-child(even){ background:var(--soft); }
+  td.num, th.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  tr.total td{ font-weight:700; border-top:2px solid var(--ink); background:var(--accent-soft); }
+  caption{
+    caption-side:top; text-align:left; font-size:8pt; color:var(--muted);
+    padding-bottom:1.5mm; font-style:italic;
+  }
+
+  /* ---------- Encadrés ---------- */
+  .box{
+    border:1px solid var(--line); border-left:3px solid var(--accent);
+    background:var(--accent-soft); padding:3.5mm 4mm; margin:4mm 0;
+    page-break-inside:avoid;
+  }
+  .box.warn{ border-left-color:var(--warn); background:var(--warn-soft); }
+  .box.good{ border-left-color:var(--good); background:var(--good-soft); }
+  .box.bad{ border-left-color:var(--bad); background:var(--bad-soft); }
+  .box .lbl{
+    display:block; font-size:7.6pt; text-transform:uppercase; letter-spacing:.1em;
+    font-weight:700; color:var(--accent); margin-bottom:1.5mm;
+  }
+  .box.warn .lbl{ color:var(--warn); }
+  .box.good .lbl{ color:var(--good); }
+  .box.bad .lbl{ color:var(--bad); }
+  .box p:last-child{ margin-bottom:0; }
+
+  .kpi-row{ display:flex; gap:3mm; margin:4mm 0; }
+  .kpi-row .k{
+    flex:1; border:1px solid var(--line); border-radius:3px;
+    padding:3mm; text-align:center; background:var(--soft);
+  }
+  .kpi-row .k b{ display:block; font-size:15pt; line-height:1.05; }
+  .kpi-row .k span{ display:block; font-size:7.4pt; color:var(--muted); margin-top:1.5mm; text-transform:uppercase; letter-spacing:.06em; }
+  .kpi-row .k.neg b{ color:var(--bad); }
+  .kpi-row .k.pos b{ color:var(--good); }
+
+  /* ---------- Barres CSS ---------- */
+  .chart{ margin:4mm 0 5mm; page-break-inside:avoid; }
+  .chart .row{ display:flex; align-items:center; margin-bottom:2mm; }
+  .chart .lbl{ width:52mm; font-size:8.2pt; flex:none; color:var(--ink2); }
+  .chart .track{ flex:1; background:var(--soft); border:1px solid var(--line); height:6mm; position:relative; }
+  .chart .fill{ height:100%; }
+  .chart .val{ width:20mm; text-align:right; font-size:8.2pt; font-weight:700; flex:none; font-variant-numeric:tabular-nums; }
+  .f1{ background:var(--accent); }
+  .f2{ background:#5b8cff; }
+  .f3{ background:#a8c3ff; }
+  .f4{ background:#d3e0ff; }
+  .fbad{ background:var(--bad); }
+  .fwarn{ background:var(--warn); }
+  .fgood{ background:var(--good); }
+
+  /* ---------- Comparatif deux colonnes ---------- */
+  .cols2{ display:flex; gap:5mm; }
+  .cols2 > div{ flex:1; }
+  .vs{
+    border:1px solid var(--line); border-radius:3px; overflow:hidden;
+    page-break-inside:avoid; margin:4mm 0;
+  }
+  .vs .vs-h{ background:var(--ink); color:#fff; padding:2.5mm 3mm; font-weight:700; font-size:9.4pt; }
+  .vs .vs-b{ padding:3mm; }
+  .vs .vs-b li{ font-size:8.6pt; }
+
+  /* ---------- Codes ---------- */
+  code, .mono{ font-family:"DejaVu Sans Mono",monospace; font-size:8.2pt; background:var(--soft); padding:.3mm 1mm; border-radius:2px; }
+  pre{
+    background:#1a1f2b; color:#e8ecf3; padding:3.5mm 4mm; border-radius:3px;
+    overflow:hidden; font-size:8.2pt; line-height:1.5; margin:3mm 0;
+    white-space:pre-wrap; page-break-inside:avoid;
+  }
+  pre b{ color:#8fb6ff; font-weight:400; }
+  pre i{ color:#7f8a9c; font-style:normal; }
+
+  /* ---------- Numérotation ---------- */
+  .fn{
+    float:footnote; position:relative; font-size:0;
+  }
+  sup.fnref{ font-size:6.4pt; vertical-align:super; line-height:0; }
+
+  .toc td{ border-bottom:1px dotted var(--line); }
+  .toc td.n{ width:10mm; color:var(--accent); font-weight:700; }
+  .toc td.p{ width:14mm; text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+  .tag{
+    display:inline-block; font-size:6.8pt; font-weight:700; padding:.6mm 1.6mm;
+    border-radius:2px; text-transform:uppercase; letter-spacing:.06em; vertical-align:.4mm;
+  }
+  .tag.src{ background:#e6e9ef; color:var(--ink2); }
+  .tag.est{ background:var(--warn-soft); color:var(--warn); }
+
+  .footer{
+    position:fixed; bottom:-12mm; left:0; right:0;
+    font-size:7.2pt; color:var(--muted);
+    border-top:.5px solid var(--line); padding-top:1.5mm;
+    display:flex; justify-content:space-between;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================ COUVERTURE ============================ -->
+<div class="cover">
+  <div>
+    <div class="eyebrow">Étude de marché &amp; stratégie produit</div>
+    <h1>Autopsie comparative<br><span class="thin">Booking.com · trivago · Ayila'a Cameroun</span></h1>
+    <p class="sub">Ce que trois architectures économiques opposées révèlent sur la construction d'une plateforme de réservation de restaurants et de meublés à Douala, Cameroun.</p>
+
+    <div class="rule"></div>
+
+    <div class="kpis">
+      <div class="kpi"><b>26,9 Md$</b><span>Revenus Booking 2025</span></div>
+      <div class="kpi"><b>14,5 %</b><span>Take rate Booking</span></div>
+      <div class="kpi"><b>124 %</b><span>ROAS trivago 9M25</span></div>
+      <div class="kpi"><b>3 840</b><span>Fiches Ayila'a</span></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="box bad" style="margin-bottom:5mm;">
+      <span class="lbl">Conclusion principale</span>
+      <p><strong>Le cadrage « Booking + trivago pour les restaurants <em>et</em> les meublés » est une erreur de catégorie.</strong> Les deux verticales n'ont ni la même économie, ni le même moteur, ni le même client. Restaurants = média. Meublés = transaction. Un seul produit, une seule équipe, un seul moteur : c'est ainsi que le projet meurt.</p>
+    </div>
+    <p class="meta">
+      Document d'analyse — Sources publiques : <strong>Booking Holdings Form 10-K (SEC, exercice 2025)</strong>, communiqués trimestriels trivago N.V. (SEC, 6-K), pages publiques ayilaa.com (/fr/services, /fr/conditions-generales-de-vente), et sites concurrents camerounais.<br>
+      Les valeurs marquées <span class="tag est">ESTIMATION</span> sont des calculs de l'auteur, non des données publiées.
+    </p>
+  </div>
+</div>
+
+<!-- ============================ SOMMAIRE ============================ -->
+<section>
+<h2><span class="num">§</span>Sommaire</h2>
+
+<table class="toc">
+  <tbody>
+    <tr><td class="n">1</td><td>Synthèse exécutive — les sept conclusions</td><td class="p">3</td></tr>
+    <tr><td class="n">2</td><td>Autopsie : Booking Holdings</td><td class="p">5</td></tr>
+    <tr><td class="n">3</td><td>Autopsie : trivago N.V.</td><td class="p">8</td></tr>
+    <tr><td class="n">4</td><td>Autopsie : Ayila'a Cameroun</td><td class="p">11</td></tr>
+    <tr><td class="n">5</td><td>Cartographie concurrentielle de Douala</td><td class="p">14</td></tr>
+    <tr><td class="n">6</td><td>Économie réelle et plafonds de marché</td><td class="p">16</td></tr>
+    <tr><td class="n">7</td><td>Diagnostic : ce qu'il faut copier, ce qu'il faut proscrire</td><td class="p">19</td></tr>
+    <tr><td class="n">8</td><td>Recommandations et feuille de route</td><td class="p">21</td></tr>
+    <tr><td class="n">9</td><td>Annexe A — Sources et traçabilité des chiffres</td><td class="p">24</td></tr>
+  </tbody>
+</table>
+
+<h4>Méthode</h4>
+<p>Trois niveaux d'analyse ont été menés en parallèle. <strong>(a) Analyse documentaire</strong> des filings réglementaires de Booking Holdings et trivago, qui imposent un niveau de transparence absent du secteur camerounais — chaque chiffre y est auditable. <strong>(b) Analyse de surface</strong> du produit Ayila'a : parcours utilisateur, structure tarifaire, conditions générales de vente, cohérence des données, hébergement technique. <strong>(c) Recherche de terrain</strong> sur les acteurs déjà présents à Douala, pour distinguer la concurrence réelle de la concurrence imaginée.</p>
+
+<div class="box warn">
+  <span class="lbl">Avertissement de méthode</span>
+  <p>Aucune donnée d'audience indépendante (Similarweb, Semrush, GA) n'a pu être obtenue sur Ayila'a ni sur les acteurs camerounais : ces sites ne sont pas instrumentés publiquement. Les chiffres de trafic reposent donc sur les <em>déclarations commerciales de l'entreprise elle-même</em> et sont à considérer comme non vérifiées. C'est une limite réelle de cette étude, et elle est également un signal : <strong>un acteur qui revendique son trafic mais ne l'expose pas est un acteur qui n'a pas à le prouver.</strong></p>
+</div>
+
+<h4>Convention de lecture</h4>
+<p>Les montants sont exprimés dans la devise d'origine. « Md$ » = milliards de dollars, « M€ » = millions d'euros, « Md FCFA » = milliards de francs CFA (XAF), « M FCFA » = millions de FCFA. L'année de référence par défaut est l'exercice 2025 pour les deux groupes cotés, et l'état observé du site pour Ayila'a.</p>
+</section>
+
+<!-- ============================ 1. SYNTHESE ============================ -->
+<section>
+<h2><span class="num">1</span>Synthèse exécutive</h2>
+
+<p>Trois entreprises, trois architectures économiques, une seule leçon : <strong>la valeur se trouve là où vous détenez la transaction, pas là où vous détenez l'affichage.</strong></p>
+
+<table>
+  <caption>Tableau 1 — Les trois modèles en une ligne</caption>
+  <thead>
+    <tr><th style="width:20mm">Acteur</th><th style="width:32mm">Ce qu'il possède</th><th style="width:36mm">Source de revenu</th><th>Mécanisme de captation</th><th class="num" style="width:26mm">Verdict économique</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Booking Holdings</strong></td>
+      <td>Le stock, la disponibilité, le prix, <em>le paiement</em>, le client</td>
+      <td>Commission <em>et</em> facilitation de paiement</td>
+      <td>Merchant of record : encaisse pour l'hôtel, paie l'hôtel, garde la différence et les frais de paiement</td>
+      <td class="num">Take rate <strong>14,5 %</strong>, take rate en hausse</td>
+    </tr>
+    <tr>
+      <td><strong>trivago</strong></td>
+      <td>L'instant de la comparaison</td>
+      <td>Enchères publicitaires (CPC / CPA)</td>
+      <td>Monétise le clic sur l'inventaire des autres</td>
+      <td class="num">ROAS <strong>124 %</strong> — ne margine pas</td>
+    </tr>
+    <tr>
+      <td><strong>Ayila'a Cameroun</strong></td>
+      <td>Le trafic, les catégories, l'indexation</td>
+      <td>Publicité et placement payant</td>
+      <td>Vend du top-10, des bannières, des QR codes, du community management</td>
+      <td class="num">Aucune transaction <strong>captée</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="kpi-row">
+  <div class="k pos"><b>+68 %</b><span>Part merchant<br>Booking (vs 61 %)</span></div>
+  <div class="k neg"><b>–3,3 M€</b><span>Résultat net<br>trivago 9M25</span></div>
+  <div class="k neg"><b>0</b><span>Commission<br>Ayila'a</span></div>
+</div>
+
+<h3>Les sept conclusions</h3>
+
+<h4>① Booking a abandonedé les restaurants, et son propre document le prouve</h4>
+<p>Les revenus OpenTable — réservations de restaurants et abonnements de gestion — sont noyés dans une ligne « Advertising and other » de 6 % du total, elle-même mêlée au référencement de KAYAK. Cela représente au mieux <span class="tag est">ESTIMATION</span> 0,3 à 0,5 % du groupe. Booking a acheté OpenTable en 2019, et n'en a jamais fait un pilier. Une plateforme de réservation de tables n'est pas un business de transaction à l'échelle, car elle ne prélève rien sur l'addition.</p>
+
+<h4>② Le cœur du business de Booking n'est plus la commission : c'est le paiement</h4>
+<p>Les gross bookings « merchant » sont passés de 61 % à 68 % du total en un an. Ce n'est pas un hasard : la commission est sous pression concurrentielle — leur 10-K l'écrit noir sur blanc — tandis que la marge sur le paiement ne se négocie pas. <strong>Le contrôle de l'encaissement est devenu la variables stratégique numéro un.</strong></p>
+
+<h4>③ trivago est un cautionary tale, pas un modèle</h4>
+<p>ROAS de 124 % : l'entreprise dépense presque tout ce qu'elle encaisse. 30 % de son revenu de référence provient des marques d'un concurrent direct (Expedia Group). Et 30 % de son trafic porte sa propre marque dans la requête — ils achètent leur nom sur Google. En juillet 2025, ils rachètent <strong>Holisto pour 22,3 M€</strong> (merchant of record + moteur de réservation) et le rebaptisent <em>trivago DEALS</em>. Motif officiel : « expanding its trivago-branded booking funnel ». Traduction : <strong>le metasearch pur ne margine pas, alors on achète la transaction.</strong></p>
+
+<h4>④ Ayila'a n'est pas une marketplace : c'est un média local</h4>
+<p>Cinq offres payantes, aucune indexée sur une transaction. Zéro commission, zéro réservation réelle, zéro avis. Le tunnel de conversion se termine sur WhatsApp : Ayila'a capte l'impression, WhatsApp capte la réservation. Son actif est le trafic revendiqué (1 M de visites/mois web, 200 k sur l'app).</p>
+
+<h4>⑤ Le cadrage du projet est une erreur de catégorie</h4>
+<p>Restaurants et meublés n'ont ni la même économie, ni le même inventaire, ni la même fréquence, ni le même mode de paiement dominant. <strong>La preuve que ce n'est pas une intuition : Ayila'a a déjà fait ce tri.</strong> Ils monétisent les restaurants en publicité parce que c'est la seule chose qui y fonctionne ; ils ne touchent pas les meublés parce qu'ils ne savent pas encaisser.</p>
+
+<h4>⑥ L'opportunité n'est pas l'inventaire, c'est la friction</h4>
+<p>Les quelque 660 appartements et studios meublés référencés au Cameroun ne manquent pas de supply. Ils manquent de photos, de prix affichés, de disponibilités, et de moyen d'encaisser. Chaque établissement|long tail est un prospect, pas un concurrent. C'est exactement le mouvement par lequel Booking a fait croître ses alternative accommodations à un rythme à deux chiffres pendant que son stock hôtelier classique stagnait.</p>
+
+<h4>⑦ La seule erreur irréparable serait de reproduire Ayila'a</h4>
+<p>Un modèle où l'on ne détient ni la transaction, ni le client, ni le feedback se copie en trois mois avec un formulaire et un budget publicitaire. La seule chose non reproductible est <strong>l'historique de réservations enrichi</strong> — qui a réservé, quand, à quel prix, avec quel taux de no-show. C'est l'actif de Booking. C'est ce qu'il faut construire, pas le trafic.</p>
+</section>
+
+<!-- ============================ 2. BOOKING ============================ -->
+<section>
+<h2><span class="num">2</span>Autopsie : Booking Holdings</h2>
+
+<p>Booking Holdings (NASDAQ : BKNG) est le seul des trois à avoir conquis le marché, et le seul des trois à devoir publier des comptes audités. Cette transparence est un atout d'analyse : on peut disséquer ses comptes couche par couche.</p>
+
+<h3>2.1 Décomposition du modèle de revenu</h3>
+
+<table>
+  <caption>Tableau 2 — Structure de revenu, Booking Holdings, T1 2025 <span class="tag src">SOURCE</span></caption>
+  <thead>
+    <tr><th>Couche de revenu</th><th class="num">Montant</th><th class="num">Part</th><th>Nature économique</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Merchant revenues</strong></td><td class="num">2 918 M$</td><td class="num">61,3 %</td>
+      <td>Booking encaisse le voyageur, Reverse charge le débit, reverse à l'hôtel, et garde la commission <em>plus</em> la marge de paiement</td>
+    </tr>
+    <tr>
+      <td><strong>Agency revenues</strong></td><td class="num">1 564 M$</td><td class="num">32,8 %</td>
+      <td>Commission pure : l'hôtel encaisse lui-même, Booking ne porte que le risque commercial</td>
+    </tr>
+    <tr>
+      <td><strong>Advertising and other</strong></td><td class="num">280 M$</td><td class="num">5,9 %</td>
+      <td>KAYAK (référencement + pub), <strong>OpenTable (restaurants)</strong>, Agoda, Rentalcars.com</td>
+    </tr>
+    <tr class="total"><td>Revenu total</td><td class="num">4 762 M$</td><td class="num">100 %</td><td></td></tr>
+  </tbody>
+</table>
+
+<p>Ce tableau est l'objet de toute cette autopsie. La ligne du haut est deux fois plus rentable que celle du milieu, parce qu'elle ajoute une couche de service (le paiement) sur un revenu identique. Et Booking pousse activement cette migration.</p>
+
+<div class="chart">
+  <div class="row"><span class="lbl">Merchant (paiement)</span><span class="track"><span class="fill f1" style="width:61.3%"></span></span><span class="val">61,3 %</span></div>
+  <div class="row"><span class="lbl">Agency (commission)</span><span class="track"><span class="fill f2" style="width:32.8%"></span></span><span class="val">32,8 %</span></div>
+  <div class="row"><span class="lbl">Publicité &amp; autres</span><span class="track"><span class="fill f3" style="width:5.9%"></span></span><span class="val">5,9 %</span></div>
+</div>
+
+<h3>2.2 Les métriques qui comptent</h3>
+
+<table>
+  <caption>Tableau 3 — Métriques opérationnelles, exercice 2025 <span class="tag src">SOURCE</span></caption>
+  <thead><tr><th>Indicateur</th><th class="num">2024</th><th class="num">2025</th><th>Lecture</th></tr></thead>
+  <tbody>
+    <tr><td>Chiffre d'affaires</td><td class="num">—</td><td class="num"><strong>26,9 Md$</strong></td><td>Exercice 2025 complet</td></tr>
+    <tr><td>Revenu / gross bookings</td><td class="num">14,3 %</td><td class="num"><strong>14,5 %</strong></td><td>Take rate en hausse malgré la pression sur les commissions</td></tr>
+    <tr><td>Marketing / gross bookings</td><td class="num">4,4 %</td><td class="num">4,4 %</td><td>CAC maîtrisé grâce au canal direct</td></tr>
+    <tr><td>Part merchant des gross bookings</td><td class="num">61 %</td><td class="num"><strong>68 %</strong></td><td>Migration forcée vers le paiement</td></tr>
+    <tr><td>Nuits à deux places</td><td class="num">319 M</td><td class="num">+7 %</td><td>T1 2025, croissance en décélération</td></tr>
+    <tr><td>Gross bookings (T1)</td><td class="num">46,7 Md$</td><td class="num">+7 %</td><td>≈ 185 Md$derive sur l'année</td></tr>
+    <tr><td>Canal direct (4 trim. glissés)</td><td class="num">—</td><td class="num">mi-50 %</td><td>Programme de fidélité <strong>Genius</strong></td></tr>
+    <tr><td>Alternative accommodations</td><td class="num">—</td><td class="num">+2 chiffres</td><td>Meublés et locations : <em>c'est votre marché</em></td></tr>
+  </tbody>
+</table>
+
+<div class="box">
+  <span class="lbl">Le mécanisme central</span>
+  <p>Le take rate monte (14,3 % → 14,5 %) alors même que leur propre 10-K reconnaît que « the consolidation among travel service providers or AI-enabled alternative travel offerings could result in lower OTC commission rates ». Autrement dit : <strong>la commission se dégrade, la marge de paiement se compense.</strong> C'est la démonstration qu'en 2026, dans le voyage, <em>l'éncaissement est la valeur</em>, pas l'intermédiation.</p>
+</div>
+
+<h3>2.3 Pourquoi le restaurant y échoue structurellement</h3>
+<p>Le 10-K de Booking Holdings énumère explicitement ses sources de revenus « advertising and other » : le référencement et la publicité de <strong>KAYAK</strong>, les réservations de restaurants et les abonnements de gestion d'OpenTable, et la publicité des autres marques. Les réservations de restaurants sont donc noyées dans 5,9 % du total, avec du référencement de moteur de recherche.</p>
+
+<table>
+  <caption>Tableau 4 — Poids économique estimé du segment restaurants dans le groupe <span class="tag est">ESTIMATION</span></caption>
+  <thead><tr><th>Étape du raisonnement</th><th class="num">Valeur</th></tr></thead>
+  <tbody>
+    <tr><td>Ligne « Advertising and other » (T1 2025)</td><td class="num">280 M$</td></tr>
+    <tr><td>Part attribuée à KAYAK et aux autres marques pub</td><td class="num">≈ 190 M$ <em>(estimation)</em></td></tr>
+    <tr><td>Reste attribuable à OpenTable (restaurants + SaaS)</td><td class="num">≈ 90 M$ <em>(estimation)</em></td></tr>
+    <tr class="total"><td>En % du revenu annuel du groupe (≈ 107 Md$ annualisé)</td><td class="num"><strong>≈ 0,3 %</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box bad">
+  <span class="lbl">Test de cohérence économique</span>
+  <p>Pourquoi la réservation de tables ne marginerait-elle pas ? Parce qu'une table ne produit pas de nuitée, et qu'une réservation de restaurant ne capte <strong>aucune part de l'addition</strong>. Le seul revenu possible est publicitaire ou un frais de réservation — deux dérivés de l'audience, pas de la transaction. La commission sur un repas ne peut pas être prélevée sans rôle d'encaissement, or personne ne veut payer son addition par smartphone au restaurant. <strong>Ce n'est pas un problème d'exécution d'Ayila'a : c'est une limite géométrique du modèle.</strong></p>
+</div>
+</section>
+
+<!-- ============================ 3. TRIVAGO ============================ -->
+<section>
+<h2><span class="num">3</span>Autopsie : trivago N.V.</h2>
+
+<p>trivago est le contre-exemple le plus instructif des trois. Même marché, même millésime, architecture incompatible — et le diagnostic est chiffré dans ses propres documents.</p>
+
+<h3>3.1 Le modèle : la taxonomie d'une encyclopédie</h3>
+
+<pre><b>Modèle :</b> une auction. Les annonceurs (OTA, hôtels) enchérissent en CPC sur chaque clic.
+<b>Revenu :</b> « Referral Revenue » — le clic, ou la réservation
+<b>CPC :</b> historiquement universal. <b>CPA :</b> option pour les petits et moyens partenaires.
+<b>Référencement :</b> 5,0 millions d'hébergements, plus de 190 pays.</pre>
+
+<p>trivago ne possède ni chambre, ni disponibilité, ni prix, ni paiement. Il possède le moment de la décision — et le monétise comme une place de marché publicitaire. Comparaison structurelle directe :</p>
+
+<table>
+  <caption>Tableau 5 — Comparaison structurelle Booking / trivago</caption>
+  <thead><tr><th style="width:32mm">Couche</th><th>Booking Holdings</th><th>trivago N.V.</th></tr></thead>
+  <tbody>
+    <tr><td>Détient le stock</td><td>Oui (contrats de disponibilité)</td><td><b>Non</b></td></tr>
+    <tr><td>Encaisse le paiement</td><td>Oui — 68 % des gross bookings</td><td><b>Non</b> (jusqu'en 2025)</td></tr>
+    <tr><td>Détient la donnée client</td><td>Oui — compte, historique, fidélité</td><td>Partiel — seulement les membres (>25 % du rev. réf.)</td></tr>
+    <tr><td>Subit la conversion</td><td>Oui — risque direct</td><td>Non — le clic part chez l'autre</td></tr>
+    <tr><td>Revenu par action</td><td>Commission + frais de paiement</td><td>CPC / CPA sur trafic</td></tr>
+    <tr><td>Marge structurelle</td><td>Take rate 14,5 %</td><td>ROAS ≈ 124 %</td></tr>
+    <tr><td>Faille</td><td>Intermédiation (Google, IA)</td><td>Aucune transaction à revendiquer</td></tr>
+  </tbody>
+</table>
+
+<h3>3.2 Les trois plaies</h3>
+
+<div class="kpi-row">
+  <div class="k neg"><b>124,1 %</b><span>ROAS 9M 2025<br>(9M24 : 125,9 %)</span></div>
+  <div class="k neg"><b>–3,3 M€</b><span>Résultat net<br>9 mois 2025</span></div>
+  <div class="k neg"><b>–28,8 M€</b><span>Résultat net<br>exercice 2024</span></div>
+</div>
+
+<h4>Plaie 1 — Le ROAS de 124 % : une entreprise qui ne margine pas</h4>
+<p>Le <em>Return on Advertising Spend</em> est le rapport entre le revenu et la dépense marketing. À 124 %, chaque euro de revenu nécessite 0,81 € de dépense marketing. Il reste 0,19 € pour absorber tous les autres coûts — salaires, technologie, structure, amortissements. Le résultat : quatre exercices consécutifs de résultat net négatif ou quasi nul. Sur 9 mois 2025, <strong>trivago a réalisé 429,0 M€ de revenus et perdu 3,3 M€</strong>. Cette entreprise a la taille d'un acteur coté et la rentabilité d'un projet;</p>
+
+<div class="box bad">
+  <span class="lbl">Le seuil de mort d'un metasearch</span>
+  <p>Un modèle publicitaire a besoin d'un ROAS supérieur à ~150 % pour être structurellement rentable. En deçà, chaque euro gagné en Audience détruit de la valeur. La seule sortie est alors : <strong>capter la transaction soi-même.</strong> C'est exactement ce qu'a fait trivago en payant 22,3 M€.</p>
+</div>
+
+<h4>Plaie 2 — 30 % du revenu vient d'un concurrent direct</h4>
+<table>
+  <caption>Tableau 6 — Concentration du referral revenue sur les marques Expedia Group <span class="tag src">SOURCE</span></caption>
+  <thead><tr><th>Période</th><th class="num">T3 2025</th><th class="num">9M 2025</th><th class="num">T3 2024</th><th class="num">9M 2024</th></tr></thead>
+  <tbody>
+    <tr><td>Part des marques Expedia Group</td><td class="num">30 %</td><td class="num">34 %</td><td class="num">36 %</td><td class="num">38 %</td></tr>
+    <tr><td>— dont Booking, Hotels.com, Orbitz, Travelocity, Vrbo, ebookers</td><td class="num" colspan="4">En baisse tendancielle : 38 % → 34 % sur neuf mois</td></tr>
+  </tbody>
+</table>
+<p>Un tiers du revenu de trivago dépend d'une seule relationship, celle d'Expedia Group. Noter la baisse : c'est le signe que Booking, ayant construit son propre canal direct (programme Genius, 50 %+ des nuits), ferme progressivement la nourrice. <strong>Le client le plus important de trivago est en train de construire son indépendance.</strong></p>
+
+<h4>Plaie 3 — 30 % du trafic porte le nom de leur marque</h4>
+<p>trivago achète le mot « trivago » sur Google. C'est une déclaration de leurs propres communiqués : ils distinguent le « branded channel » (requêtes incluant le nom de la marque) du trafic organique. Environ un tiers du trafic est donc acheté, à un coût qui monte avec leur succès. <strong>C'est la définition d'une entreprise qui n'a pas de conversion naturelle acquise.</strong></p>
+</section>
+
+<!-- ============================ 4. AYILAA ============================ -->
+<section>
+<h2><span class="num">4</span>Autopsie : Ayila'a Cameroun</h2>
+
+<p>Ayila'a est le seul des trois qu'on puisse autopsier intégralement, parce qu'il n'a rien à cacher : c'est un site public. Le résultat est sans appel, mais il faut le dire précisément — car <strong>l'ausiness est plus sain qu'il n'y paraît, et l'illusion vient de là.</strong></p>
+
+<h3>4.1 Ce que c'est réellement : un annuaire qui vend de l'attention</h3>
+
+<table>
+  <caption>Tableau 7 — Inventaire du catalogue</caption>
+  <thead><tr><th>Catégorie principale</th><th class="num">Volume</th><th>Sous-catégories notables</th></tr></thead>
+  <tbody>
+    <tr><td>Restauration</td><td class="num">2 265</td><td>Restaurant 572 · Pizzaria/Pâtisserie 992 · Traiteur 181 · Fast food 156 · Restaurant en ligne 158</td></tr>
+    <tr><td>Hôtels et hébergements</td><td class="num">1 368</td><td><strong>Appartements/Studios meublés 662</strong> · Hôtel 564 · Villa 35 · Complexe hôtelier 58 · Motel 19</td></tr>
+    <tr><td>Divertissements</td><td class="num">437</td><td>Snack/Club/Bar · Cinéma · Concert · Piscine · Bowling · Cabaret</td></tr>
+    <tr><td>Sites touristiques</td><td class="num">—</td><td>Plage · Musée/Parc/Zoo · Chute d'eau · Port</td></tr>
+    <tr><td>Modes et beauté</td><td class="num">—</td><td>Institut · Salon · Couture · Maison de couture</td></tr>
+    <tr><td>Commerces</td><td class="num">—</td><td>Marché · Centre commercial · Boulangerie · Pressing</td></tr>
+    <tr><td>Transports</td><td class="num">—</td><td>Agence de voyage · Location de véhicule · Moto-taxi · Aéroport</td></tr>
+    <tr><td>Secours</td><td class="num">—</td><td>Hôpital · Police/gendarmerie · Pompier · Pharmacie</td></tr>
+    <tr><td>Administrations</td><td class="num">—</td><td>Ministère · Mairie · Lycée · Université · Église</td></tr>
+    <tr class="total"><td>Total catalogue</td><td class="num">≈ 3 840</td><td>10 catégories principales, plus de 150 sous-catégories</td></tr>
+  </tbody>
+</table>
+
+<div class="box">
+  <span class="lbl">Observation structurante</span>
+  <p>Le catalogue dérive massivement vers l'<strong>annuaire généraliste</strong> : urgences, police, lycées, ministères, gymnases, presses. Un produit vertical de restauration et d'hébergement n'a aucune raison de lister une caserne de pompiers ou un lycée. Ce choix est économique et révélateur : <strong>le prix de production d'une fiche est proche de zéro, alors que sa valeur de vente dépend uniquement du volume d'attention.</strong> On catalogue donc tout ce qui génère des pages vues, dans l'ordre dégressif de l'effort de saisie.</p>
+</div>
+
+<h3>4.2 Le modèle de revenu : cinq offres, zéro transaction</h3>
+
+<table>
+  <caption>Tableau 8 — Offres commerciales Ayila'a <span class="tag src">SOURCE : ayilaa.com/fr/services</span></caption>
+  <thead><tr><th style="width:8mm">#</th><th>Offre</th><th>Nature</th><th>Revenu indexé sur</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Présence site &amp; App</td><td><strong>Placement payant</strong> dans le top 10 de la catégorie</td><td>Le classement</td></tr>
+    <tr><td>2</td><td>Bannière web + app</td><td>Publicité display</td><td>Le trafic</td></tr>
+    <tr><td>3</td><td>Promotion réseaux sociaux</td><td>Posts, stories, rapports de portée</td><td>La portée</td></tr>
+    <tr><td>4</td><td><strong>Codes QR dédiés</strong></td><td>Menu digital redirigeant vers leur site</td><td>Le scan</td></tr>
+    <tr><td>5</td><td>Community management</td><td>Abonnement de gestion de contenus</td><td>Le forfait</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Aucune de ces cinq offres n'est indexée sur une transaction.</strong> Aucune ne prélève de commission. Aucune n'accepte de paiement. Il s'agit intégralement de vente d'espace et de prestation de communication — un modèle <em>média</em>, pas un modèle <em>marketplace</em>.</p>
+
+<h3>4.3 Les quatre failles observables</h3>
+
+<h4>Faille 1 — Le tunnel de conversion se termine sur WhatsApp</h4>
+<p>Les fiches affichent « <em>_partagez ce coin</em> », « <em>copier</em> », « <em>téléchargez l'application pour contacter ce coin</em> ». Il n'existe aucun parcours de réservation ni d'encaissement sur la plateforme. Conséquence directe : <strong>Ayila'a capte l'impression, WhatsApp capte la réservation.</strong> Le canal le plus rentable de l'économie camerounaise est aussi le seul canal qui enlève tout historique exploitable.</p>
+
+<h4>Faille 2 — Les conditions générales décrivent un produit qui n'existe pas</h4>
+<p>Les CGV d'Ayila'a (« Conditions Générales de Vente ») prévoient « le paiement s'effectue lors de la réservation en ligne, à l'aide d'une carte de crédit ». Sur un pays où la carte bancaire est marginale et le site ne propose aucun paiement, cette clause est un template. Elle indique une intention, pas un état. À comparer avec le paiement mobile money (1,5 à 1,7 % le paiement entrant), l'écart n'est pas un détail : <strong>c'est toute la thesis.</strong></p>
+
+<h4>Faille 3 — Zéro avis, notation décorative</h4>
+<p>Sur la fiche « African Grill by Emy » (Yaoundé), la page affiche simultanément un score « 5.0 », un compteur « 0.0 (3 likes) », et le texte « Vous n'avez pas à aucun commentaire ». La notation n'est reliée à aucun avis vérifié. <strong>C'est un motif de confiance fabriqué, et c'est le premier obstacle à la conversion sérieuse :</strong> un client qui cherche un meublé à Douala ne peut pas évaluer la qualité de l'hébergement sans signal fiable.</p>
+
+<h4>Faille 4 — Descriptions générées et remplissage spam</h4>
+<p>Les descriptions contiennent un texte générique qui ne parle pas de l'établissement : sur une fiche de grill de Yaoundé, on lit « Pour découvrir d'autres coins dans la même région […] À propos des attractions touristiques à explorer à Douala, le marché de Mfoundi est un marché animé […] ». C'est du contenu généré à fort volume, optimisé pour le référencement. C'est une méthode valide — mais elle produit un catalogue que personne ne peut recommander, donc un catalogue qui ne convertit pas.</p>
+
+<div class="kpi-row">
+  <div class="k"><b>3 840</b><span>Fiches au catalogue</span></div>
+  <div class="k"><b>0</b><span>Avis vérifiés</span></div>
+  <div class="k"><b>0</b><span>Réservations en ligne</span></div>
+  <div class="k"><b>0</b><span>Commissions perçues</span></div>
+</div>
+
+<h3>4.4 Verdict</h3>
+<div class="box good">
+  <span class="lbl">Un business sain, une thesis fausse</span>
+  <p>La conclusion honnête est en deux temps. <strong>Temps 1 — Ayila'a fonctionne</strong> : une société de communication digitale qui vend de la visibilité à des commerçants, avec un inventaire produit déjà payé (les fiches) et un trafic qu'elle revendique à un million de visites mensuelles. <strong>Temps 2 — Ayila'a ne peut pas être le modèle d'un produit de réservation</strong>, parce que son modèle économique ne dépend d'aucune réservation. Si les réservations augmentaient, son revenu ne changerait pas. C'est la définition exacte d'un modèle non exposé à son propre succès.</p>
+</div>
+</section>
+
+<!-- ============================ 5. CONCURRENCE ============================ -->
+<section>
+<h2><span class="num">5</span>Cartographie concurrentielle de Douala</h2>
+
+<p>Étape souvent négligée, et pourtant la plus utile de cette étude : <strong>qui fait vraiment ce que tu vas faire, à Douala ?</strong> Le tableau suivant est le résultat d'une recherche sur les acteurs réels du marché.</p>
+
+<table>
+  <caption>Tableau 9 — Acteurs actifs sur le segment Douala / Cameroun</caption>
+  <thead>
+    <tr><th style="width:26mm">Acteur</th><th style="width:14mm">Positionnement</th><th>État observé</th><th>Angle mort exploitable</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Ayila'a Cameroun</strong></td>
+      <td>Annuaire généraliste</td>
+      <td>≈ 3 840 fiches · trafic revendiqué 1 M/mois · 5 offres B2B · 0 transaction</td>
+      <td>Ne peut pas commodifier : ses revenus ne dépendent d'aucune réservation</td>
+    </tr>
+    <tr>
+      <td><strong>Uniresa</strong></td>
+      <td>Marketplace meublés <em>réellement transactive</em></td>
+      <td><strong>288 établissements · 226 propriétaires · 573 chambres · 10 villes · commission 10 % à la réservation confirmée · encaisse et gère la relation client</strong></td>
+      <td><strong>Meublés uniquement, aucune restauration. Et fortement biaisé Yaoundé : 149 logements à Yaoundé contre 70 à Douala.</strong> C'est le vrai concurrent, pas Ayila'a.</td>
+    </tr>
+    <tr>
+      <td><strong>Camhebergement</strong></td>
+      <td>Annuaire + procédure</td>
+      <td>Pages détaillées, tarifs affichés (15 000 – 45 000 FCFA/nuit), contact WhatsApp, bouton « Réserver »</td>
+      <td>Traitement manuel, pas d'encaissement, pas de disponibilité en temps réel</td>
+    </tr>
+    <tr>
+      <td><strong>YayaBooking</strong></td>
+      <td>Conciergerie meublés</td>
+      <td>Ex-Yaya Conciergerie, fondée 2019 à Yaoundé, plateforme en ligne 2023, logements « vérifiés », WhatsApp</td>
+      <td>Modèle service, pas marketplace : ne passe pas à l'échelle logicielle</td>
+    </tr>
+    <tr>
+      <td><strong>Zuma Eats</strong></td>
+      <td>Super-app africaine</td>
+      <td><strong>Douala explicitement « Launching soon », Cameroun en tier 2 de rollout, page d'attente, pas encore ouvert</strong></td>
+      <td>Fenêtre ouverte, mais temporaire : c'est le futur concurrent direct</td>
+    </tr>
+    <tr>
+      <td><strong>Wakalooka</strong></td>
+      <td>Voyage + hébergement</td>
+      <td>Fondée 2019 à Douala · <strong>site hors service</strong> (page « suspended »)</td>
+      <td>Échec à analyser : la trace d'un marché qui a été tenté sans succès</td>
+    </tr>
+    <tr>
+      <td><strong>Reeyo</strong></td>
+      <td>Livraison + dine-in</td>
+      <td>Fondée 2023 à Douala, commande de repas et livraison, commandes en salle par QR</td>
+      <td>Livraison, pas réservation. Segment adjacent, pas concurrent</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="box">
+  <span class="lbl">La position tenue par personne</span>
+  <p>Répartition de l'offre transactionnelle réelle : <strong>Ayila'a</strong> a la couverture mais pas la transaction ; <strong>Uniresa</strong> a la transaction mais seulement les meublés, seulement 288 établissements, et le poids de son offre est à Yaoundé ; <strong>Zuma</strong> aurait la couverture <em>et</em> la transaction mais n'est pas encore à Douala. <strong>Aucun acteur ne tient simultanément : restaurants + meublés + disponibilité réelle + paiement mobile money + commission sur transaction confirmée, à l'échelle d'une ville.</strong> C'est l'espace libre.</p>
+</div>
+
+<h4>Note de vigilance</h4>
+<p>L'espace est ouvert parce qu'il est difficile, pas parce qu'il est vide. Le "</p>
+</section>
+
+<!-- ============================ 6. ECONOMIE ============================ -->
+<section>
+<h2><span class="num">6</span>Économie réelle et plafonds de marché</h2>
+
+<p>Cette section est celle qui change les décisions. Elle est entièrement composée de chiffres publics, à une exception près signalée.</p>
+
+<h3>6.1 Le coût réel du paiement au Cameroun</h3>
+
+<p>Le paiement au Cameroun n'est pas un facilitator de paiement bancaire : c'est du mobile money. Les cartes bancaires sont marginales pour les usages locaux. Les opérateurs ont construit des agrégateurs (CamerPay, Y-Note) qui unifient MTN et Orange Money derrière une seule interface.</p>
+
+<table>
+  <caption>Tableau 10 — Barèmes de paiement mobile money <span class="tag src">SOURCE : Y-Note, CamerPay, AangaraaPay</span></caption>
+  <thead><tr><th>Prestataire / réseau</th><th class="num">Encaissement (payin)</th><th class="num">Retrait (payout)</th><th class="num">Aller-retour</th></tr></thead>
+  <tbody>
+    <tr><td>MTN Cameroon</td><td class="num">1,70 %</td><td class="num">1,30 %</td><td class="num"><strong>3,00 %</strong></td></tr>
+    <tr><td>Orange Cameroon</td><td class="num">1,50 %</td><td class="num">2,10 %</td><td class="num"><strong>3,60 %</strong></td></tr>
+    <tr><td>CamerPay — Starter</td><td class="num">3,00 %</td><td class="num" rowspan="3">1 % + frais opérateur<br><span style="font-size:7.4pt;color:#6b7686">Orange 1 % · MTN 2,75 %</span></td><td class="num">≈ 4,0 – 6,7 %</td></tr>
+    <tr><td>CamerPay — Business</td><td class="num">1,50 %</td><td class="num">≈ 3,5 – 6,2 %</td></tr>
+    <tr><td>CamerPay — Pro / BYOK</td><td class="num">1,00 %</td><td class="num">≈ 3,0 – 5,7 %</td></tr>
+    <tr class="total"><td>Hypothèse de travail retenue</td><td class="num" colspan="2">Frais provider niveau Pro</td><td class="num"><strong>≈ 3,2 %</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lbl">Conséquence directe sur la commission</span>
+  <p>Si tu prends <strong>10 % de commission</strong> (le taux de référence d'Uniresa) et que le rail de paiement te coûte <strong>3,2 %</strong>, il te reste <strong>6,8 % avant impôt et structure</strong>. À <strong>5 %</strong>, il te reste 1,8 %. La commission n'est pas une variable commerciale, c'est une variable <em>arithmétique</em>. Et le risque de no-show, sans carte Recorded on file, est structurellement plus élevé qu'en Europe : c'est pour cela que le <strong>prépaiement par mobile money</strong> n'est pas une option — c'est la condition de survie du modèle.</p>
+</div>
+
+<h3>6.2 La taille réelle du marché meublés à Douala</h3>
+
+<table>
+  <caption>Tableau 11 — Plafond du segment meublés, ville de Douala <span class="tag est">ESTIMATION</span></caption>
+  <thead><tr><th>Paramètre</th><th class="num">Valeur retenue</th><th>Justification</th></tr></thead>
+  <tbody>
+    <tr><td>Population de Douala</td><td class="num">≈ 3,9 M</td><td>Donnée publique</td></tr>
+    <tr><td>Chambres meublées louables</td><td class="num">2 000</td><td><strong>Hypothèse</strong> — 662 meublés référencés sur Ayila'a, dont une partie non professionalism ; extrapolation majorée</td></tr>
+    <tr><td>Tarif moyen par nuit</td><td class="num">20 000 FCFA</td><td>Fourchette observée Camhebergement : 15 000 – 45 000 FCFA</td></tr>
+    <tr><td>Taux d'occupation</td><td class="num">30 %</td><td><strong>Hypothèse prudente</strong></td></tr>
+    <tr><td>GMV annuel total du segment</td><td class="num"><strong>4,38 Md FCFA</strong></td><td>2 000 × 20 000 × 0,30 × 365</td></tr>
+    <tr class="total"><td>Revenu plateforme à 10 % de commission</td><td class="num"><strong>≈ 440 M FCFA / an</strong></td><td>≈ 670 000 € / an</td></tr>
+  </tbody>
+</table>
+
+<div class="box bad">
+  <span class="lbl">Regardons ce chiffre de plus près avant de s'en servir</span>
+  <p>440 M FCFA, c'est <strong>le plafond du marché entier de Douala en meublés, pas ton objectif</strong>. Mais c'est déjà une base de calcul indispensable. Et une seconde donnée dans le même ordre de grandeur : <strong>Uniresa ne capte aujourd'hui que 70 logements à Douala sur 288 au Cameroun</strong>. Cela signifie que l'incumbent le mieux établi, avec une offre produit complète et une commission déjà affilée, a mosquitoes 20 % du marché. Le verrou n'est pas la demande. Il est la <em>conquête de l'offre</em> — et c'est bon signe, parce que c'est là qu'un canal de terrain fait la différence.</p>
+</div>
+
+<h3>6.3 Pourquoi le segment restaurants ne peut pas être une source de commission</h3>
+
+<table>
+  <caption>Tableau 12 — Les deux verticales mises en regard</caption>
+  <thead><tr><th style="width:34mm">Dimension</th><th>Restaurants</th><th>Meublés</th></tr></thead>
+  <tbody>
+    <tr><td>Ticket unitaire</td><td>5 000 – 15 000 FCFA</td><td>15 000 – 45 000 FCFA / nuit</td></tr>
+    <tr><td>Fréquence d'achat</td><td>Plusieurs fois par mois</td><td>1 à 3 fois par an</td></tr>
+    <tr><td>Nature de l'inventaire</td><td>Des <strong>tables</strong> — rarement le goulot d'étranglement</td><td>Des <strong>nuitées</strong> — stock fixe, l'offre est élastique</td></tr>
+    <tr><td>Traitement du no-show</td><td>Problème majeur, non résolu</td><td>Résolu par le <strong>prépaiement</strong></td></tr>
+    <tr><td>Revenu plateforme possible</td><td>Publicité, promotion, ~2 – 5 % à la marge</td><td>10 – 15 % de commission</td></tr>
+    <tr><td>Part du paiement capté</td><td>Fraction du ticket</td><td><strong>Le ticket entier</strong></td></tr>
+    <tr><td>Acheteur de l'offre</td><td>Événements, anniversaires, dîners d'affaires</td><td>Expatriés, familles, tourisme</td></tr>
+    <tr><td>Modèle validé localement</td><td><strong>Publicité</strong> (celui d'Ayila'a)</td><td><strong>Commission</strong> (celui d'Uniresa)</td></tr>
+  </tbody>
+</table>
+
+<div class="box">
+  <span class="lbl">La confirmation empirique</span>
+  <p>Ce tableau n'est pas une opinion : c'est une <strong>description de ce que font déjà les acteurs en place</strong>. Ayila'a monétise les restaurants par la publicité. Uniresa monétise les meublés par la commission. Deux acteurs, deux disciplines, deux modèles — et <strong>aucun des deux n'a essayé de les fondre</strong>. Toi non plus tu ne devrais pas, pas au départ.</p>
+</div>
+</section>
+
+<!-- ============================ 7. DIAGNOSTIC ============================ -->
+<section>
+<h2><span class="num">7</span>Diagnostic : ce qu'il faut copier, ce qu'il faut proscrire</h2>
+
+<h3>7.1 Pourquoi « Booking à l'échelle de Booking » est hors de portée</h3>
+<p>L'échelle de Booking ne vient pas de l'exécution : elle vient de la <strong>structure du marché</strong>. Chez Booking, une nuitée supplémentaire à Douala coûte zéro euro marginal — le stock est mondial, donc l'inventaire s'ajoute au dénominateur sans rien changer au numérateur. À Douala, le stock hôtelier est <strong>fixe</strong> et détenu par quelques dizaines d'opérateurs réels : les groupes hôteliers, les résidences, et puis le long tail des meublés.</p>
+
+<div class="vs">
+  <div class="vs-h">La seule leverage qui existe à Douala</div>
+  <div class="vs-b">
+    <p>Ce ne sont pas les hôtels. Ce sont les <strong>meublés</strong>.</p>
+    <ul>
+      <li>Ils sont hors des systèmes de distribution internationaux (aucun <em>channel manager</em>, aucun flux d'invendus).</li>
+      <li>Ils n'ont pas de photos correctes, pas de prix affiché, pas de disponibilités, pas de moyen d'encaisser.</li>
+      <li>Ils se réservent aujourd'hui par WhatsApp, donc <strong>sans historique exploitable</strong>.</li>
+      <li>Ils ne sont pas captifs d'une OTA : à Douala, personne ne se bat pour ce stock.</li>
+      <li>C'est exactement le segment par lequel Booking a fait croître ses <em>alternative accommodations</em> à un rythme à deux chiffres.</li>
+    </ul>
+  </div>
+</div>
+
+<h3>7.2 Ce qu'il faut copier — et ce qu'il faut proscrire</h3>
+
+<table>
+  <caption>Tableau 13 — Transposition des architectures</caption>
+  <thead><tr><th style="width:24mm">Élément</th><th style="width:36mm">Booking</th><th style="width:36mm">Ayila'a</th><th>Verdict pour ton projet</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Merchant of record</strong></td>
+      <td>68 % des gross bookings</td>
+      <td>Absent</td>
+      <td style="background:var(--good-soft)"><strong>À copier.</strong> C'est la seule chose qui produit de la donnée propriétaire.</td>
+    </tr>
+    <tr>
+      <td><strong>Encaissement mobile money</strong></td>
+      <td>Carte + fraude + settlement</td>
+      <td>Absent (mentionné en CGV)</td>
+      <td style="background:var(--good-soft)"><strong>À copier.</strong> Prérequis d'existence.</td>
+    </tr>
+    <tr>
+      <td><strong>Prépaiement anti-no-show</strong></td>
+      <td>Carte sur fichier</td>
+      <td>Absent</td>
+      <td style="background:var(--good-soft)"><strong>À copier.</strong> Condition de rentabilité.</td>
+    </tr>
+    <tr>
+      <td><strong>Génie de la fidélisation</strong></td>
+      <td>Genius → 50 %+ du canal direct</td>
+      <td>Absent</td>
+      <td style="background:var(--good-soft)"><strong>À copier.</strong> Réduit le CAC, qui sera ton poste principal.</td>
+    </tr>
+    <tr>
+      <td><strong>Alternative accommodations</strong></td>
+      <td>Deux chiffres de croissance</td>
+      <td>662 fiches meublées</td>
+      <td style="background:var(--good-soft)"><strong>À copier.</strong> Le cœur de cible.</td>
+    </tr>
+    <tr>
+      <td><strong>Qualité de l'inventaire</strong></td>
+      <td>Vérification stricte, photos pro</td>
+      <td>Descriptions générées, spam</td>
+      <td style="background:var(--bad-soft)"><strong>À proscrire.</strong> C'est le coût de sortie du modèle.</td>
+    </tr>
+    <tr>
+      <td><strong>Confiance</strong></td>
+      <td>Avis vérifiés, volume</td>
+      <td>Note 5.0 sans aucun avis</td>
+      <td style="background:var(--bad-soft)"><strong>À proscrire.</strong> Signal de fraude commerciale.</td>
+    </tr>
+    <tr>
+      <td><strong>Modèle publicitaire</strong></td>
+      <td>Marginal</td>
+      <td>Cœur de l'offre</td>
+      <td style="background:var(--bad-soft)"><strong>À proscrire</strong> comme socle. Garder comme revenu complémentaire.</td>
+    </tr>
+    <tr>
+      <td><strong>Modèle metasearch</strong></td>
+      <td>—</td>
+      <td>—</td>
+      <td style="background:var(--bad-soft)"><strong>À proscrire.</strong> ROAS de 124 % le condamne.</td>
+    </tr>
+    <tr>
+      <td><strong>Trafic de masse</strong></td>
+      <td>Canal direct, non acheté</td>
+      <td>1 M/mois, monétisé</td>
+      <td style="background:var(--bad-soft)"><strong>À proscrire.</strong> Un actif non défendu, et un coût récurrent.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>7.3 La seule chose non reproductible</h3>
+<div class="box good">
+  <span class="lbl">L'actif à construire en priorité</span>
+  <p>Tout ce qui précède est réplicable en trois mois : le catalogue, l'annuaire, l'enchère publicitaire, le trafic acheté. Une seule chose ne l'est pas — <strong>l'historique de réservations enrichi</strong>. Qui a réservé, à quelles dates, à quel prix, avec quel taux de no-show, sur quelle durée moyenne, dans quel quartier. Ce jeu de données est :<br><br>
+  (1) <strong>le seul actif anti-copie</strong> qu'une place de marché puisse détenir ;<br>
+  (2) la seule base crédible pour <strong>fixer dynamiquement les prix</strong> d'un établissement sans données ;<br>
+  (3) le seul moyen de devenir <strong>indispensable au propriétaire</strong>, qui ne peut pas comparer son coût de dépendance que sur des années.<br><br>
+Booking a mis quinze ans à le construire. Toi, tu as l'avantage d'une ville : un historique de deux mille chambres est un actif qu'on peut constituer en dix-huit mois, et qu'aucun acteur national ne peut répliquer à Douala sans y être.</p>
+</div>
+</section>
+
+<!-- ============================ 8. RECOMMANDATIONS ============================ -->
+<section>
+<h2><span class="num">8</span>Recommandations et feuille de route</h2>
+
+<h3>8.1 Les cinq décisions à prendre avant d'écrire une ligne de code</h3>
+
+<table>
+  <caption>Tableau 14 — Arbitrages stratégiques</caption>
+  <thead><tr><th style="width:8mm">#</th><th style="width:40mm">Question</th><th>Recommandation</th><th class="num" style="width:22mm">Priorité</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td><td>Quel segment en premier ?</td>
+      <td><strong>Meublés uniquement.</strong> Inventaire fini, prix élevé, prépaiement naturel, pas de gestion de table, ticket qui justifie la commission. Les restaurants viennent en phase 2, en média.</td>
+      <td class="num"><strong>Critique</strong></td>
+    </tr>
+    <tr>
+      <td>2</td><td>Quel périmètre géographique ?</td>
+      <td><strong>Douala intra-muros, par quartier.</strong> Pas de Yaoundé. La densité fournit la liquidité ; la distance la détruit.</td>
+      <td class="num"><strong>Critique</strong></td>
+    </tr>
+    <tr>
+      <td>3</td><td>Quel modèle de paiement ?</td>
+      <td><strong>Merchant of record, intégralement.</strong> Tu encaisses par mobile money, tu reverse à l'établissement. Sans cela, tu n'as ni donnée ni garantie.</td>
+      <td class="num"><strong>Critique</strong></td>
+    </tr>
+    <tr>
+      <td>4</td><td>Quelle commission ?</td>
+      <td><strong>10 à 12 % du prépaiement</strong>, frais de service explicitement inclus pour le client. En dessous de 9 % tu ne survis pas au rail de paiement ; au-dessus de 15 % tu perds l'hôte.</td>
+      <td class="num">Haute</td>
+    </tr>
+    <tr>
+      <td>5</td><td>Quel canal d'acquisition de l'offre ?</td>
+      <td><strong>Terrain et WhatsApp</strong>, pas SEO. Le SEO est déjà pris, et il est plus lent que ta fenêtre.</td>
+      <td class="num">Haute</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>8.2 Séquencement</h3>
+
+<h4>Phase 0 — Preuve de la demande (4 à 6 semaines)</h4>
+<p>Avant toute plateforme : <strong>100 fiches réelles, vérifiées à la main</strong>, avec photos, prix, et disponibilité tenue à jour. Le canal : WhatsApp Business, groupes de propriétaires de meublés de Bonamoussadi, Bonapriso, Akwa, Makepe. L'indicateur qui compte n'est pas le trafic — c'est le nombre d'établissements qui <em>demandent</em> à être listés avant d'être payés. Si personne ne le demande gratuitement, il n'y a pas de marché et il faut le dire maintenant.</p>
+
+<h4>Phase 1 — La boucle transactionnelle (3 mois)</h4>
+<p>Réservation, paiement mobile money, confirmation, notification. Pas de communauté, pas de contenu, pas de loyalty. Un seul objective : <strong>zéro réservation perdue et cent pour cent des paiements traçables.</strong> C'est le seul système qui, une fois en place, produit l'actif de la section 7.3.</p>
+
+<h4>Phase 2 — La dense-side (6 mois)</h4>
+<p>Prépaiement systématique,rm handling des no-shows mesuré et affiché, génération d'avis vérifiés post-séjour, et les premiers accords de distribution. À ce stade, la <strong>publicité et la bannière</strong> deviennent un revenu complémentaire naturel — exactement le que vend déjà Ayila'a, mais posé sur une base transactionnelle qui le rend crédible.</p>
+
+<h4>Phase 3 — Restaurants (12 mois et plus)</h4>
+<p>Entrée par la <strong>publicité</strong> et la mise en avant, pas par la réservation de tables. Un module de type « bon coin vérifié » vendu aux restaurants comme Ayila'a le fait déjà. Ne pas tenter de construire une réservation de table : les données de la section 6.3 disent que le modèle ne marginerait pas.</p>
+
+<h3>8.3 Les cinq pièges</h3>
+
+<table>
+  <caption>Tableau 15 — Risques spécifiques et parades</caption>
+  <thead><tr><th style="width:8mm">#</th><th style="width:34mm">Piège</th><th>Description et parade</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td><td><strong>Le no-show</strong></td>
+      <td>Sans carte sur fichier, le risque est structurellement plus élevé qu'en Europe. <em>Parade :</em> prépaiement intégral obligatoire, remboursement systématique en cas d'annulation anticipée (72 h), et mesure publique du taux par établissement — qui devient à la fois un critère de classement et une arme commerciale.</td>
+    </tr>
+    <tr>
+      <td>2</td><td><strong>La dépendance au rail</strong></td>
+      <td>MTN et Orange contrôlent l'entrée, le retrait et le prix. 30 % de part de marché supprimé par un operadoresur un coup de pouce réglementaire. <em>Parade :</em> passer par les agrégateurs (CamerPay, Y-Note) qui négocient lesceiling KYC et les conditions, et ne jamais coder en dur contre une API opérateur.</td>
+    </tr>
+    <tr>
+      <td>3</td><td><strong>La qualité du catalogue</strong></td>
+      <td>Un catalogue de mauvaise qualité est le coût de sortie du modèle Ayila'a : il ne se répare pas. <em>Parade :</em> accepter moins d'établissements et les vérifier physiquement. C'est long et c'est exactement le coût qui rend l'actif défendable.</td>
+    </tr>
+    <tr>
+      <td>4</td><td><strong>Le copycat</strong></td>
+      <td>Un concurrent peut copier l'interface en six semaines. <em>Parade :</em> ne jamais copier les HistoReservations ni la donnée de prix — c'est le seul élément que personne ne peut rattraper.</td>
+    </tr>
+    <tr>
+      <td>5</td><td><strong>L'erreur de catégorie</strong></td>
+      <td>Bâtir restaurants et meublés dans le même produit avec la même équipe. <em>Parade :</em> séquencer strictement, mesurer chaque verticale séparément, et ne jamais présenter une traction en meublés comme une traction en restauration.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>8.4 Synthèse visuelle</h3>
+
+<table>
+  <caption>Tableau 16 — Ce qu'il faut retenir</caption>
+  <thead><tr><th style="width:26mm">Axe</th><th>Recommandation</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Cible</strong></td><td>Les meublés de Douala intra-muros. Les hôtels ont des systèmes, tu n'es pas nécessaire.</td></tr>
+    <tr><td><strong>Modèle</strong></td><td>Merchant of record, prépaiement, commission de 10 – 12 %.</td></tr>
+    <tr><td><strong>Actif</strong></td><td>L'historique de réservations enrichi, pas le trafic.</td></tr>
+    <tr><td><strong>Canal</strong></td><td>WhatsApp et terrain pour l'offre. Direct pour la demande, dès la première saison.</td></tr>
+    <tr><td><strong>À ne pas faire</strong></td><td>Metasearch. Publicité comme socle de revenu. Catalogue de masse sans vérification. Un produit qui couvre deux verticales.</td></tr>
+    <tr><td><strong>Test de succès</strong></td><td>À 18 mois : 200 établissements, 8 000 nuits réservées, 400 M FCFA de GMV, 40 M FCFA de revenus, et un propriétaire qui ne part pas quand un concurrent arrive.</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ============================ ANNEXE ============================ -->
+<section>
+<h2><span class="num">9</span>Annexe A — Sources et traçabilité</h2>
+
+<h4>Sources primaires cotées</h4>
+<table>
+  <thead><tr><th style="width:52mm">Document</th><th>Éléments repris</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Booking Holdings Inc.</strong><br>Form 10-K, exercice clos le 31/12/2025<br>(SEC EDGAR, CIK 1075531)</td>
+      <td>Revenu 26,9 Md$ · décomposition merchant / agency / advertising and other · définition des trois couches de revenu · take rate 14,5 % (vs 14,3 % en 2024) · marketing 4,4 % des gross bookings · part merchant 61 % → 68 % · mention d'OpenTable dans la ligne advertising · mention des alternative accommodations · mise en garde sur la pression concurrentielle et l'IA sur les commissions · canal direct « mi-50 % »</td>
+    </tr>
+    <tr>
+      <td><strong>Booking Holdings</strong><br>Communiqué T1 2025 et transcription T3 2025</td>
+      <td>Chiffre d'affaires T1 4 762 M$ (2 918 / 1 564 / 280) · 319 M nuits · gross bookings 46,7 Md$ · marketing 3,8 % des gross bookings · alternative accommodations +2 chiffres · part merchant des gross bookings 68 %</td>
+    </tr>
+    <tr>
+      <td><strong>trivago N.V.</strong><br>Form 6-K et Operating and Financial Review<br>(SEC EDGAR, CIK 1683825)</td>
+      <td>Revenu 9M 2025 : 429,0 M€ · referral revenue 423,5 M€ · ROAS 124,1 % (vs 125,9 %) · résultat net –3,3 M€ (vs –28,8 M€ en 2024) · EBITDA ajusté 4,5 M€ · part Expedia Group 34 % (vs 38 %) · trafic de canal de marque ≈ 30 % · > 5,0 M d'hébergements, 190+ pays</td>
+    </tr>
+    <tr>
+      <td><strong>trivago N.V.</strong><br>Note « Holisto Investment and Acquisition »</td>
+      <td>Investissement initial 10,2 M€ pour 38,6 % (30,0 % dilué) le 30/07/2024 · option d'achat sur 69,2 % restante · closing le 31/07/2025 pour 22,3 M€ (25,5 M$) · gain de réévaluation 3,2 M€ · 211 employés · contribution 2025 : 12,6 M€ de revenus et 2,7 M€ de résultat net · renommé trivago DEALS · motif : « expand its trivago-branded booking funnel » · impact sur le coût du revenu (processing, vérification, support)</td>
+    </tr>
+    <tr>
+      <td><strong>trivago N.V.</strong><br>Résultats T1 2026 et T2 2026</td>
+      <td>Revenu T1 2026 : 142,9 M€ · ROAS 121,0 % · résultat net –7,3 M€ · maintien du modèle : un an de croissance, pas de bascule vers la rentabilité structurelle</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Sources sur Ayila'a Cameroun</h4>
+<table>
+  <thead><tr><th style="width:52mm">Page consultée</th><th>Éléments repris</th></tr></thead>
+  <tbody>
+    <tr><td>ayilaa.com/fr/services</td><td>Les 5 offres commerciales · revendication « plus d'un million de visites mensuelles » sur le site et « plus de 200 000 visites mensuelles » sur l'application · positioning « top 10 de votre catégorie » · offre QR codes redirigeant vers leur propre site</td></tr>
+    <tr><td>ayilaa.com/fr/conditions-generales-de-vente</td><td>Mention d'un « formulaire de réservation en ligne » et d'un « paiement à l'aide d'une carte de crédit » · absence de toute grille tarifaire de commission · loi applicable : camerounaise</td></tr>
+    <tr><td>ayilaa.com/fr/contact</td><td>Coordonnées exclusivement via WhatsApp (+237 6 50 80 19 91) · mentions « partnerships » et « réservation de nos offres »</td></tr>
+    <tr><td>Fiches d'établissement (ex. African Grill by Emy, Yaoundé)</td><td>Score « 5.0 » affiché avec « 0.0 (3 likes) » et mention « Vous n'avez pas à aucun commentaire » · descriptions contenant du texte générique hors sujet · mentions « Partagez ce coin », « Téléchargez l'application pour contacter ce coin » · « Horaires : Aucune disponibilité définie » · médias servis depuis <span class="mono">ayilaa.s3.eu-west-1.amazonaws.com</span> (region UE-West-1, Irlande)</td></tr>
+    <tr><td>Catégories (fr et en)</td><td>Inventaire : restauration 2 265 · hébergement 1 368 dont 662 appartements/studios meublés · divertissements 437 · total ≈ 3 840 · 10 catégories principales incluant secours et administrations</td></tr>
+  </tbody>
+</table>
+
+<h4>Sources sur les concurrents et le marché</h4>
+<table>
+  <thead><tr><th style="width:52mm">Source</th><th>Éléments repris</th></tr></thead>
+  <tbody>
+    <tr><td>uniresa.com/fr/owners</td><td>288 établissements référencés · 226 propriétaires partenaires · 573 chambres et logements · 10 villes couvertes · commission de 10 % uniquement à la réservation confirmée, inscription gratuite · répartition : Yaoundé 149, Douala 70, Kribi 50, Bafoussam 8, Limbe 5, Bertoua 2, Ngaoundéré 1, Mfou 1, Edea 1, Bafang 1 · 189 des 270 premiers référencés étaient des appartements meublés · prise en charge de la réservation, de l'encaissement et de la relation client</td></tr>
+    <tr><td>camhebergement.com</td><td>Fourchette de prix pour meublés à Douala : 15 000 – 45 000 FCFA par nuit · modèle de contact WhatsApp et bouton « Réserver » sans paiement intégré</td></tr>
+    <tr><td>yayabooking.com/a-propos.html</td><td>Ex-Yaya Conciergerie · fondée 2019 à Yaoundé · plateforme en ligne 2023 · logements « vérifiés » · Districts de Douala visés : Akwa, Bonamoussadi, Bonapriso · modèle conciergerie assisted</td></tr>
+    <tr><td>wakalooka.com</td><td>Fondée 2019 à Douala · site hors service, page « suspended » servie par cgi-sys</td></tr>
+    <tr><td>reeyoapp.com (via Tracxn)</td><td>Fondée 2023 à Douala · commande de repas et livraison · commandes en salle par QR code · payouts automatisés aux commerçants</td></tr>
+    <tr><td>mrzuma.africa/cm/eats/douala</td><td>Zuma Eats : Douala « Launching soon », statut « Not live here yet » · Cameroun en tier 2 du rollout · liste d'attente · paiement en XAF via MTN MoMo, Orange Money et carte · devise et fuseau affichés</td></tr>
+    <tr><td>Barèmes agrégateurs (Y-Note, CamerPay, AangaraaPay)</td><td>MTN : payin 1,70 % / payout 1,30 % · Orange : payin 1,50 % / payout 2,10 % · CamerPay : 3,00 % / 1,50 % / 1,00 % selon volume, retrait 1 % + 1 % Orange ou 2,75 % MTN · paiement marchand Orange Money par code marchand, QR code, USSD #150*47#</td></tr>
+    <tr><td>MTN Group, résultats T1 2025</td><td>MTN Cameroun : 209,1 Md FCFA de revenus (+18,5 %) · EBITDA 90,9 Md FCFA, marge 43,5 % · ARPU 2 734,93 FCFA · passage attendu du cap des 6 millions d'utilisateurs actifs MoMo fin 2025</td></tr>
+    <tr><td>Mowali (JV MTN / Orange)</td><td>Interopérabilité du mobile money Afrique de l'Ouest et Centrale, solutions Mojaloop · paiement mobile money disponible même sans smartphone par USSD</td></tr>
+  </tbody>
+</table>
+
+<h4>Limites de l'étude</h4>
+<div class="box warn">
+  <ul style="margin-bottom:0">
+    <li><strong>Aucune donnée de trafic vérifiée.</strong> Les chiffres « 1 M de visites/mois » et « 200 k sur l'application » sont des <em>déclarations commerciales</em> d'Ayila'a. Aucun outil indépendant n'a pu les confirmer.</li>
+    <li><strong>Aucune donnée financière sur les acteurs camerounais.</strong> Aucune société du secteur n'est cotée ni ne publie. Les seules données comptables disponibles sont celles de MTN Cameroun et des opérateurs.</li>
+    <li><strong>Le TAM meublés de Douala est une estimation.</strong> Le nombre de chambres louables et le taux d'occupation sont des hypothèses explicites, calculables et réfutables. Seuls le tarif moyen et la répartition d'Uniresa sont des données observées.</li>
+    <li><strong>Les états d'Ayila'a sont ponctuels.</strong> Ils reflètent le site au moment de la consultation. Un site peut changer de modèle du jour au lendemain.</li>
+    <li><strong>Une part de l'analyse d'Ayila'a est inférentielle.</strong> L'identification de la stack technique (arborescence /build/, style de routes) est une déduction, non une déclaration.</li>
+  </ul>
+</div>
+
+<h4>Ce que cette étude ne couvre pas</h4>
+<p>Le dimensionnement financier détaillé par cohorte, l'analyse unitaire d'acquisition (CAC/LTV) par canal, le cahier des charges fonctionnel du module de réservation et de paiement, l'architecture technique de l'intégration mobile money, le registre réglementaire et fiscal camerounais (BEAC, MINFI, loi sur la protection des données), et l'analyse des accords de distribution. Ces sujets sont prioritaires dès que l'arbitrage de la section 8.1 est stabilisé.</p>
+</section>
+
+<div style="page-break-before:always; display:flex; align-items:center; justify-content:center; height:200mm; border-top:1px solid var(--line);">
+  <div style="text-align:center; max-width:110mm;">
+    <div style="font-size:8pt; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); font-weight:700; margin-bottom:4mm;">Fin du document</div>
+    <p style="font-size:10pt; color:var(--ink2); text-align:center;">Autopsie comparative de Booking.com, trivago et Ayila'a Cameroun,<br>dans une perspective de construction d'une plateforme de réservation<br>de restaurants et de meublés à Douala.</p>
+    <div style="height:1px; background:var(--line); margin:6mm auto; width:40mm;"></div>
+    <p class="meta" style="font-size:8pt; color:var(--muted);">Document d'analyse interne — les données des groupes cotés proviennent de leurs filings SEC. Les estimations sont signalées. Aucune donnée client n'a été collectée.</p>
+  </div>
+</div>
+
+</body>
+</html>
