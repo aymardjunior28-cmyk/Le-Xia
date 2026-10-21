@@ -3,6 +3,14 @@
  * Charge GET /api/etablissement/mes-stats et affiche les métriques.
  */
 (function bootDashboard() {
+  const escapeHtml = (value) =>
+    String(value ?? '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    })[char]);
   const msg = document.getElementById('msg-dashboard');
   const logout = document.getElementById('nav-logout-dash');
 
@@ -87,14 +95,14 @@
     const html =
       '<table>' +
       '<thead><tr>' +
-      headers.map((h) => '<th>' + h + '</th>').join('') +
+      headers.map((h) => '<th>' + escapeHtml(h) + '</th>').join('') +
       '</tr></thead>' +
       '<tbody>' +
       rows
         .map(
           (row) =>
             '<tr>' +
-            row.map((cell) => '<td>' + String(cell) + '</td>').join('') +
+            row.map((cell) => '<td>' + escapeHtml(cell) + '</td>').join('') +
             '</tr>'
         )
         .join('') +

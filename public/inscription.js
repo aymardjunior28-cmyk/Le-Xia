@@ -66,8 +66,8 @@
       showMsg('Veuillez remplir tous les champs de l\'étape 1.', 'error');
       return false;
     }
-    if (password.length < 6) {
-      showMsg('Le mot de passe doit contenir au moins 6 caractères.', 'error');
+    if (password.length < 12) {
+      showMsg('Le mot de passe doit contenir au moins 12 caractères.', 'error');
       return false;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -115,6 +115,7 @@
 
     btnSubmit2.disabled = true;
     btnSubmit2.textContent = 'Création en cours…';
+    let submitted = false;
 
     try {
       const res = await fetch('/api/etablissements/inscription', {
@@ -130,16 +131,18 @@
       }
 
       showMsg('Compte créé avec succès ! Redirection…', 'success');
-      btnSubmit2.textContent = 'S\'inscrire';
-      btnSubmit2.disabled = false;
+      submitted = true;
 
       setTimeout(() => {
         window.location.href = '/login';
       }, 1200);
     } catch (err) {
       showMsg('Erreur réseau. Réessayez.', 'error');
-      btnSubmit2.textContent = 'S\'inscrire';
-      btnSubmit2.disabled = false;
+    } finally {
+      if (!submitted) {
+        btnSubmit2.textContent = 'S\'inscrire';
+        btnSubmit2.disabled = false;
+      }
     }
   });
 

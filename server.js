@@ -15,7 +15,7 @@ const establishmentsLib = require('./src/establishments');
 
 const app = express();
 const port = process.env.PORT || 3000;
-app.set('trust proxy', true);
+app.set('trust proxy', process.env.TRUST_PROXY === 'true');
 
 // ---------------------------------------------------------------------------
 // Upload d'images (multer) : stockage sur disque dans public/uploads.
@@ -50,11 +50,12 @@ const establishments = loadCollection('establishments', seedEstablishments);
 const clickLogs = loadCollection('clickLogs', []);
 const blocks = loadCollection('blocks', []);
 const users = loadCollection('users', []);
-if (auth.ensureSuperAdmin(users)) {
+if (auth.ensureSuperAdmin(users, {
+  email: process.env.SUPERADMIN_EMAIL,
+  password: process.env.SUPERADMIN_PASSWORD,
+})) {
   saveCollection('users', users);
-  console.log(
-    `[auth] Super-admin amorcé : ${auth.DEFAULT_SUPERADMIN.email} / ${auth.DEFAULT_SUPERADMIN.password} (à changer après connexion)`
-  );
+  console.log('[auth] Compte super-admin initialisé depuis la configuration.');
 }
 
 const persistEstablishments = () => saveCollection('establishments', establishments);
@@ -111,6 +112,9 @@ function validateRedirectBody(body) {
 const SESSION_COOKIE = 'dd_session';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 jours
 const sessions = new Map(); // token -> { userId, createdAt }
+const loginAttempts = new Map();
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 5;
 
 function parseCookies(req) {
   const header = req.headers.cookie || '';
@@ -119,7 +123,11 @@ function parseCookies(req) {
     const idx = pair.indexOf('=');
     if (idx > -1) {
       const key = pair.slice(0, idx).trim();
-      out[key] = decodeURIComponent(pair.slice(idx + 1).trim());
+      try {
+        out[key] = decodeURIComponent(pair.slice(idx + 1).trim());
+      } catch (err) {
+        out[key] = '';
+      }
     }
   });
   return out;
@@ -134,6 +142,10 @@ function attachUser(req, _res, next) {
   const token = parseCookies(req)[SESSION_COOKIE];
   const session = token && sessions.get(token);
   if (session) {
+    if (Date.now() - session.createdAt >= SESSION_TTL_MS) {
+      sessions.delete(token);
+      return next();
+    }
     const user = findUserById(session.userId);
     if (user) {
       req.user = user;
@@ -177,7 +189,7 @@ function requirePageSuperAdmin(req, res, next) {
     return res.redirect('/login');
   }
   if (req.user.role !== auth.ROLES.SUPER_ADMIN) {
-    return res.redirect('/dashboard');
+    return res.redirect('/etablissement-dashboard');
   }
   next();
 }
@@ -193,11 +205,20 @@ function requireEtablissement(req, res, next) {
   next();
 }
 
+function requirePageEtablissement(req, res, next) {
+  if (!req.user) return res.redirect('/login');
+  if (req.user.role !== auth.ROLES.ETABLISSEMENT) {
+    return res.redirect('/dashboard');
+  }
+  next();
+}
+
 function setSessionCookie(res, token) {
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
   const cookie =
     `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${Math.floor(
       SESSION_TTL_MS / 1000
-    )}`;
+    )}${secure}`;
   res.setHeader('Set-Cookie', cookie);
 }
 
@@ -214,7 +235,9 @@ app.use(attachUser);
 // ---------------------------------------------------------------------------
 app.get('/login', (req, res) => {
   if (req.user) {
-    return res.redirect(req.user.role === auth.ROLES.SUPER_ADMIN ? '/dashboard' : '/dashboard');
+    return res.redirect(
+      req.user.role === auth.ROLES.SUPER_ADMIN ? '/dashboard' : '/etablissement-dashboard'
+    );
   }
   return res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
@@ -227,13 +250,41 @@ app.get('/api/auth/me', (req, res) => {
 });
 
 app.post('/api/auth/login', (req, res) => {
+  const key = req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  for (const [ip, attempt] of loginAttempts) {
+    if (now - attempt.startedAt >= LOGIN_WINDOW_MS) loginAttempts.delete(ip);
+  }
+  for (const [token, session] of sessions) {
+    if (now - session.createdAt >= SESSION_TTL_MS) sessions.delete(token);
+  }
+  const attempts = loginAttempts.get(key);
+  if (attempts && now - attempts.startedAt >= LOGIN_WINDOW_MS) {
+    loginAttempts.delete(key);
+  }
+  const currentAttempts = loginAttempts.get(key);
+  if (currentAttempts && currentAttempts.count >= LOGIN_MAX_ATTEMPTS) {
+    return res.status(429).json({ error: 'Trop de tentatives. Réessayez dans 15 minutes.' });
+  }
+
   const email = auth.normalizeEmail(req.body && req.body.email);
   const password = req.body && req.body.password;
 
   const user = users.find((u) => u.email === email && u.actif !== false);
-  if (!user || !auth.verifyPassword(password, user.password_salt, user.password_hash)) {
+  if (
+    typeof password !== 'string' ||
+    password.length > 1024 ||
+    !user ||
+    !auth.verifyPassword(password, user.password_salt, user.password_hash)
+  ) {
+    const previous = loginAttempts.get(key);
+    loginAttempts.set(key, {
+      startedAt: previous ? previous.startedAt : now,
+      count: (previous ? previous.count : 0) + 1,
+    });
     return res.status(401).json({ error: 'Identifiants invalides' });
   }
+  loginAttempts.delete(key);
 
   const token = crypto.randomBytes(32).toString('hex');
   sessions.set(token, { userId: user.id, createdAt: Date.now() });
@@ -255,8 +306,14 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/establishments', (req, res) => {
-  const limit = Math.min(Number(req.query.limit) || 50, 100);
-  const offset = Number(req.query.offset) || 0;
+  const requestedLimit = Number(req.query.limit);
+  const requestedOffset = Number(req.query.offset);
+  const limit = Number.isInteger(requestedLimit) && requestedLimit > 0
+    ? Math.min(requestedLimit, 100)
+    : 50;
+  const offset = Number.isInteger(requestedOffset) && requestedOffset >= 0
+    ? requestedOffset
+    : 0;
   const page = establishments.slice(offset, offset + limit);
   res.json({
     items: page,
@@ -309,8 +366,14 @@ app.post('/api/etablissements/inscription', upload.single('photo'), (req, res) =
   if (missing.length > 0) {
     return res.status(400).json({ error: `Champs requis manquants : ${missing.join(', ')}` });
   }
+  if (body.email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+    return res.status(400).json({ error: 'Adresse email invalide' });
+  }
+  if (body.password.length < 12 || body.password.length > 1024) {
+    return res.status(400).json({ error: 'Le mot de passe doit contenir 12 à 1024 caractères' });
+  }
 
-  const emailNorm = body.email.trim().toLowerCase();
+  const emailNorm = auth.normalizeEmail(body.email);
   if (users.find((u) => u.email === emailNorm)) {
     return res.status(409).json({ error: 'Cet email est déjà utilisé' });
   }
@@ -454,8 +517,9 @@ app.post('/api/etablissements/:etablissementId/produits', requireAuth, (req, res
   }
 
   const body = req.body || {};
-  if (!body.nom || !body.prix) {
-    return res.status(400).json({ error: 'nom et prix sont requis' });
+  const validationError = establishmentsLib.validateProductInput(body);
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
   }
 
   const product = {
@@ -496,6 +560,13 @@ app.put('/api/etablissements/:etablissementId/produits/:productId', requireAuth,
   }
 
   const body = req.body || {};
+  const validationError = establishmentsLib.validateProductInput({
+    ...establishments[index].products[productIndex],
+    ...body,
+  });
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
+  }
   establishments[index].products[productIndex] = {
     ...establishments[index].products[productIndex],
     nom: body.nom || establishments[index].products[productIndex].nom,
@@ -583,7 +654,7 @@ app.delete('/api/establishments/:id', requireSuperAdmin, (req, res) => {
   return res.json({ ok: true });
 });
 
-app.post('/api/blocks', (req, res) => {
+app.post('/api/blocks', requireSuperAdmin, (req, res) => {
   const body = req.body || {};
 
   const establishment = establishments.find((item) => item.id === body.establishmentId);
@@ -689,7 +760,7 @@ app.post('/api/redirect', (req, res) => {
   });
 });
 
-app.get('/api/dashboard', requireAuth, (req, res) => {
+app.get('/api/dashboard', requireSuperAdmin, (req, res) => {
   // On expose les totaux de base + les collections brutes et les blocs.
   // L'agrégation avancée (§9) est faite côté client dans dashboard.js (Étape 3).
   const stats = {
@@ -708,32 +779,10 @@ app.get('/api/dashboard', requireAuth, (req, res) => {
   });
 });
 
-app.get('/dashboard', requirePageAuth, (req, res) => {
+app.get('/dashboard', requirePageSuperAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-<<<<<<< HEAD
-// ---------------------------------------------------------------------------
-// Gestion des établissements (réservé au super-admin) + upload d'images
-// ---------------------------------------------------------------------------
-app.get('/manage', requirePageSuperAdmin, (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'manage.html'));
-});
-
-// Upload d'une image (réservé au super-admin) -> renvoie l'URL /uploads/<fichier>.
-app.post('/api/upload', requireSuperAdmin, (req, res) => {
-  const handler = upload.single('photo');
-  handler(req, res, (err) => {
-    if (err) {
-      return res.status(400).json({ error: err.message || 'Upload échoué' });
-    }
-    if (!req.file) {
-      return res.status(400).json({ error: 'Aucun fichier reçu' });
-    }
-    return res.json({ url: '/uploads/' + req.file.filename });
-  });
-});
-=======
 // ---------------------------------------------------------------------------
 // Gestion des établissements (réservé au super-admin) + upload d'images
 // ---------------------------------------------------------------------------
@@ -747,12 +796,12 @@ app.get('/inscription', (req, res) => {
 });
 
 // Page de profil établissement (protégée : tout utilisateur authentifié).
-app.get('/profil-etablissement', requirePageAuth, (req, res) => {
+app.get('/profil-etablissement', requirePageEtablissement, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'profil-etablissement.html'));
 });
 
 // Tableau de bord établissement (son propre rendement uniquement).
-app.get('/etablissement-dashboard', requirePageAuth, (req, res) => {
+app.get('/etablissement-dashboard', requirePageEtablissement, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'etablissement-dashboard.html'));
 });
 
@@ -769,7 +818,6 @@ app.post('/api/upload', requireSuperAdmin, (req, res) => {
     return res.json({ url: '/uploads/' + req.file.filename });
   });
 });
->>>>>>> refs/remotes/origin/main
 // API fiche produit dédiée (§10.2).
 app.get('/api/product/:establishmentId/:productId', (req, res) => {
   const { establishment, product } = findProduct(req.params.establishmentId, req.params.productId);
@@ -805,6 +853,12 @@ app.get('/produit/:establishmentId/:productId', (req, res) => {
 
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.use((err, req, res, _next) => {
+  console.error(`[http] ${req.method} ${req.path}: ${err.message}`);
+  if (res.headersSent) return;
+  return res.status(500).json({ error: 'Erreur interne du serveur' });
 });
 
 app.listen(port, () => {

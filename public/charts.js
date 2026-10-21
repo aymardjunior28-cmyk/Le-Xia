@@ -48,7 +48,9 @@
     items.forEach((it) => {
       const s = document.createElement('span');
       s.className = 'legend-item';
-      s.innerHTML = `<i style="background:${it.color}"></i>${it.label}`;
+      const marker = document.createElement('i');
+      marker.style.backgroundColor = it.color;
+      s.append(marker, document.createTextNode(it.label));
       w.appendChild(s);
     });
     container.appendChild(w);

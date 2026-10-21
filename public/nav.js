@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * nav.js — Adapte la barre de navigation selon la session (auth).
  * Appelle /api/auth/me puis reconstitue les liens : masque/affiche "Dashboard",
@@ -12,70 +11,44 @@
   try {
     const res = await fetch('/api/auth/me');
     if (res.ok) user = (await res.json()).user;
+    else if (res.status !== 401) throw new Error(`HTTP ${res.status}`);
   } catch (err) {
+    console.error('Impossible de charger la session :', err);
     user = null;
   }
 
-  let html = '<a href="/">Accueil</a>';
-  if (user) {
-    html += '<a href="/dashboard">Dashboard</a>';
-    if (user.role === 'super_admin') {
-      html += '<a href="/manage">Gérer</a>';
-    }
-    html += `<span class="nav-user" title="${user.email}">${user.nom || user.email}</span>`;
-    html += '<a href="#" id="nav-logout" class="nav-logout">Déconnexion</a>';
-  } else {
-    html += '<a href="/login">Espace admin</a>';
-  }
-  nav.innerHTML = html;
-
-  const logout = document.getElementById('nav-logout');
-  if (logout) {
-    logout.addEventListener('click', async (event) => {
-      event.preventDefault();
-      try {
-        await fetch('/api/auth/logout', { method: 'POST' });
-      } catch (err) {
-        /* ignore */
-      }
-      window.location.href = '/login';
-    });
-  }
-})();
-=======
-/**
- * nav.js — Adapte la barre de navigation selon la session (auth).
- * Appelle /api/auth/me puis reconstitue les liens : masque/affiche "Dashboard",
- * "Admins" (super-admin) et ajoute un bouton de déconnexion.
- */
-(async function bootNav() {
-  const nav = document.querySelector('.topbar nav');
-  if (!nav) return;
-
-  let user = null;
-  try {
-    const res = await fetch('/api/auth/me');
-    if (res.ok) user = (await res.json()).user;
-  } catch (err) {
-    user = null;
-  }
-
-  let html = '<a href="/">Accueil</a>';
+  nav.replaceChildren();
+  const addLink = (href, text, id) => {
+    const link = document.createElement('a');
+    link.href = href;
+    link.textContent = text;
+    if (id) link.id = id;
+    nav.appendChild(link);
+  };
+  addLink('/', 'Accueil');
   if (user) {
     if (user.role === 'super_admin') {
-      html += '<a href="/dashboard">Dashboard</a>';
-      html += '<a href="/manage">Gérer</a>';
+      addLink('/dashboard', 'Dashboard');
+      addLink('/manage', 'Gérer');
     } else if (user.role === 'etablissement') {
-      html += '<a href="/etablissement-dashboard">Tableau de bord</a>';
-      html += '<a href="/profil-etablissement">Mon profil</a>';
+      addLink('/etablissement-dashboard', 'Tableau de bord');
+      addLink('/profil-etablissement', 'Mon profil');
     }
-    html += `<span class="nav-user" title="${user.email}">${user.nom || user.email}</span>`;
-    html += '<a href="#" id="nav-logout" class="nav-logout">Déconnexion</a>';
+    const userLabel = document.createElement('span');
+    userLabel.className = 'nav-user';
+    userLabel.title = user.email || '';
+    userLabel.textContent = user.nom || user.email || '';
+    nav.appendChild(userLabel);
+    const logoutLink = document.createElement('a');
+    logoutLink.href = '#';
+    logoutLink.id = 'nav-logout';
+    logoutLink.className = 'nav-logout';
+    logoutLink.textContent = 'Déconnexion';
+    nav.appendChild(logoutLink);
   } else {
-    html += '<a href="/login">Espace admin</a>';
-    html += '<a href="/inscription">Inscription établissement</a>';
+    addLink('/login', 'Espace admin');
+    addLink('/inscription', 'Inscription établissement');
   }
-  nav.innerHTML = html;
 
   const logout = document.getElementById('nav-logout');
   if (logout) {
@@ -90,4 +63,3 @@
     });
   }
 })();
->>>>>>> refs/remotes/origin/main

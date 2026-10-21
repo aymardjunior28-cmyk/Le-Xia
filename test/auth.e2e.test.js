@@ -12,6 +12,8 @@ const os = require('node:os');
 const ROOT = path.join(__dirname, '..');
 const PORT = 3999;
 const BASE = `http://127.0.0.1:${PORT}`;
+const ADMIN_EMAIL = 'admin-test@douala.cm';
+const ADMIN_PASSWORD = 'Test-SuperAdmin-2026!';
 
 let server;
 let tmpDataDir;
@@ -39,7 +41,12 @@ test.before(async () => {
     fs.renameSync(DATA_DIR, DATA_BACKUP);
   }
   server = spawn(process.execPath, [path.join(ROOT, 'server.js')], {
-    env: { ...process.env, PORT: String(PORT) },
+    env: {
+      ...process.env,
+      PORT: String(PORT),
+      SUPERADMIN_EMAIL: ADMIN_EMAIL,
+      SUPERADMIN_PASSWORD: ADMIN_PASSWORD,
+    },
     stdio: 'ignore',
   });
   await waitReady(`${BASE}/api/health`);
@@ -65,14 +72,14 @@ test('login super-admin puis accès dashboard', async () => {
   const bad = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'mauvais' }),
+    body: JSON.stringify({ email: ADMIN_EMAIL, password: 'mauvais' }),
   });
   assert.strictEqual(bad.status, 401);
 
   const res = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'Admin@2026' }),
+    body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
   });
   assert.strictEqual(res.status, 200);
   const { user } = await res.json();
@@ -91,11 +98,52 @@ test('login super-admin puis accès dashboard', async () => {
   assert.ok(data.stats);
 });
 
+test('un compte établissement ne peut pas accéder au dashboard admin', async () => {
+  const form = new FormData();
+  form.set('email', `owner-${Date.now()}@douala.cm`);
+  form.set('password', 'Proprietaire-2026!');
+  form.set('nom', 'Établissement test');
+  form.set('type', 'restaurant');
+  form.set('quartier', 'Bonanjo');
+  form.set('whatsapp', '237655999111');
+  const signup = await fetch(`${BASE}/api/etablissements/inscription`, {
+    method: 'POST',
+    body: form,
+  });
+  assert.strictEqual(signup.status, 201);
+
+  const ownerEmail = form.get('email');
+  const login = await fetch(`${BASE}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: ownerEmail, password: 'Proprietaire-2026!' }),
+  });
+  assert.strictEqual(login.status, 200);
+  const cookie = login.headers.get('set-cookie');
+
+  const api = await fetch(`${BASE}/api/dashboard`, { headers: { cookie } });
+  assert.strictEqual(api.status, 403);
+  const page = await fetch(`${BASE}/dashboard`, {
+    headers: { cookie },
+    redirect: 'manual',
+  });
+  assert.strictEqual(page.status, 302);
+  assert.match(page.headers.get('location') || '', /\/etablissement-dashboard$/);
+  const ownDashboard = await fetch(`${BASE}/api/etablissement/mes-stats`, { headers: { cookie } });
+  assert.strictEqual(ownDashboard.status, 200);
+  const block = await fetch(`${BASE}/api/blocks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', cookie },
+    body: JSON.stringify({ establishmentId: 'rest-1', nombreConversations: 10 }),
+  });
+  assert.strictEqual(block.status, 403);
+});
+
 test('super-admin : CRUD complet d un établissement', async () => {
   const login = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'Admin@2026' }),
+    body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
   });
   const cookie = login.headers.get('set-cookie');
 
@@ -182,7 +230,7 @@ test('upload d image : refusé sans session, accepté par le super-admin, rejet�
   const login = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'Admin@2026' }),
+    body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
   });
   const cookie = login.headers.get('set-cookie');
 
@@ -211,4 +259,21 @@ test('upload d image : refusé sans session, accepté par le super-admin, rejet�
     })(),
   });
   assert.strictEqual(bad.status, 400);
+});
+
+test('les tentatives de connexion sont limitées par adresse réseau', async () => {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const res = await fetch(`${BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: ADMIN_EMAIL, password: 'incorrect' }),
+    });
+    assert.strictEqual(res.status, 401);
+  }
+  const blocked = await fetch(`${BASE}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: ADMIN_EMAIL, password: 'incorrect' }),
+  });
+  assert.strictEqual(blocked.status, 429);
 });

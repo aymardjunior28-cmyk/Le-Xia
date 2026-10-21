@@ -10,25 +10,6 @@ let currentMaxPrice = 'all';
 let allItems = [];
 
 /**
- * Score déterministe (cosmétique) façon comparateur, dérivé de l'id produit.
- * Stable d'un rendu à l'autre : 6.0 → 9.9, avec un verdict associé.
- */
-function scoreFor(id) {
-  let hash = 0;
-  const key = String(id);
-  for (let i = 0; i < key.length; i += 1) {
-    hash = (hash * 31 + key.charCodeAt(i)) % 100000;
-  }
-  const score = (6 + (hash % 39) / 10).toFixed(1);
-  const value = Number(score);
-  let word = 'Correct';
-  if (value >= 8.5) word = 'Excellent';
-  else if (value >= 7.5) word = 'Très bien';
-  else if (value >= 6.8) word = 'Bien';
-  return { score, word };
-}
-
-/**
  * Verdict associé à une note réelle (0-10) saisie par le super-admin.
  */
 function noteVerdict(note) {
@@ -108,13 +89,36 @@ function updateHeroOffers(establishments) {
 }
 
 async function fetchEstablishments() {
-  const response = await fetch('/api/establishments');
-  const data = await response.json();
-  const items = Array.isArray(data) ? data : data.items;
-  allItems = flattenProducts(items);
-  populateQuartiers(items);
-  updateHeroOffers(items);
-  renderEstablishments();
+  try {
+    const items = [];
+    let offset = 0;
+    let total = Infinity;
+    while (offset < total) {
+      const response = await fetch(`/api/establishments?limit=100&offset=${offset}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      if (!Array.isArray(data.items)) throw new Error('Réponse catalogue invalide');
+      items.push(...data.items);
+      total = Number(data.total) || 0;
+      if (data.items.length === 0) break;
+      offset += data.items.length;
+    }
+    if (items.length === 0) {
+      establishmentsContainer.textContent = 'Aucun établissement disponible pour le moment.';
+      establishmentsContainer.classList.add('empty-state');
+      return;
+    }
+    establishmentsContainer.classList.remove('empty-state');
+    allItems = flattenProducts(items);
+    populateQuartiers(items);
+    updateHeroOffers(items);
+    renderEstablishments();
+  } catch (err) {
+    establishmentsContainer.textContent =
+      'Impossible de charger le catalogue. Vérifiez votre connexion puis actualisez la page.';
+    establishmentsContainer.classList.add('empty-state');
+    console.error('Erreur de chargement du catalogue :', err);
+  }
 }
 
 /**
@@ -153,11 +157,15 @@ function renderEstablishments() {
     clone.querySelector('.location').textContent = `${item.quartier} • ${item.availability}`;
     clone.querySelector('.description').textContent = item.description;
 
-    // Note réelle saisie par le super-admin si elle existe, sinon score cosmétique.
-    const { score, word } =
-      item.note != null ? noteVerdict(item.note) : scoreFor(item.productId);
-    clone.querySelector('.score-box').textContent = score;
-    clone.querySelector('.score-word').textContent = word;
+    // N'afficher que les notes réellement renseignées.
+    if (item.note != null) {
+      const { score, word } = noteVerdict(item.note);
+      clone.querySelector('.score-box').textContent = score;
+      clone.querySelector('.score-word').textContent = word;
+      clone.querySelector('.score-verdict small').textContent = 'note de l’établissement';
+    } else {
+      clone.querySelector('.score').remove();
+    }
 
     // Clic sur la carte → fiche produit dédiée (§10.2).
     card.style.cursor = 'pointer';

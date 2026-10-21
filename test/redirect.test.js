@@ -12,6 +12,8 @@ const os = require('node:os');
 const ROOT = path.join(__dirname, '..');
 const PORT = 3998;
 const BASE = `http://127.0.0.1:${PORT}`;
+const ADMIN_EMAIL = 'admin-test@douala.cm';
+const ADMIN_PASSWORD = 'Test-SuperAdmin-2026!';
 
 let server;
 let tmpDataDir;
@@ -37,7 +39,12 @@ test.before(async () => {
     fs.renameSync(DATA_DIR, DATA_BACKUP);
   }
   server = spawn(process.execPath, [path.join(ROOT, 'server.js')], {
-    env: { ...process.env, PORT: String(PORT) },
+    env: {
+      ...process.env,
+      PORT: String(PORT),
+      SUPERADMIN_EMAIL: ADMIN_EMAIL,
+      SUPERADMIN_PASSWORD: ADMIN_PASSWORD,
+    },
     stdio: 'ignore',
   });
   await waitReady(`${BASE}/api/health`);
@@ -54,7 +61,7 @@ test('POST /api/redirect : clic valide crée un événement et consomme un bloc'
   const login = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'superadmin@douala.cm', password: 'Admin@2026' }),
+    body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
   });
   assert.strictEqual(login.status, 200);
   const cookie = login.headers.get('set-cookie');

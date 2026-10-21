@@ -57,6 +57,7 @@ function saveCollection(name, data) {
     if (fs.existsSync(tmpPath)) {
       fs.rmSync(tmpPath, { force: true });
     }
+    throw err;
   }
 }
 

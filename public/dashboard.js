@@ -1,5 +1,13 @@
 const FCFA = (value) => `${Number(value || 0).toLocaleString('fr-CM')} FCFA`;
 const pct = (value) => `${(Number(value || 0) * 100).toFixed(1)} %`;
+const escapeHtml = (value) =>
+  String(value ?? '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[char]);
 
 /**
  * Retourne la clé de jour (YYYY-MM-DD) d'un timestamp ISO.
@@ -127,20 +135,33 @@ function renderTable(container, headers, rows) {
     container.innerHTML = '<p class="empty-state">Aucune donnée pour le moment.</p>';
     return;
   }
-  const head = headers.map((h) => `<th>${h}</th>`).join('');
+  const head = headers.map((h) => `<th>${escapeHtml(h)}</th>`).join('');
   const body = rows
-    .map((cells) => `<tr>${cells.map((cell) => `<td>${cell}</td>`).join('')}</tr>`)
+    .map((cells) => `<tr>${cells.map((cell) => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`)
     .join('');
   container.innerHTML = `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
 async function loadDashboard() {
-  const response = await fetch('/api/dashboard');
-  if (response.status === 401) {
-    window.location.href = '/login';
+  let data;
+  try {
+    const response = await fetch('/api/dashboard');
+    if (response.status === 401) {
+      window.location.href = '/login';
+      return;
+    }
+    if (response.status === 403) {
+      window.location.href = '/etablissement-dashboard';
+      return;
+    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    data = await response.json();
+  } catch (err) {
+    const metricsContainer = document.getElementById('metrics');
+    metricsContainer.textContent = 'Impossible de charger le tableau de bord. Réessayez plus tard.';
+    console.error('Erreur de chargement du dashboard :', err);
     return;
   }
-  const data = await response.json();
   const view = computeDashboard(data);
 
   const metricsContainer = document.getElementById('metrics');

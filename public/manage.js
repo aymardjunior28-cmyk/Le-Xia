@@ -4,6 +4,20 @@
  */
 (function () {
   const FCFA = (value) => `${Number(value || 0).toLocaleString('fr-CM')} FCFA`;
+  const escapeHtml = (value) =>
+    String(value ?? '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    })[char]);
+  const safeImageUrl = (value) => {
+    const url = String(value || '');
+    return url.startsWith('/') && !url.startsWith('//') || /^https?:\/\//i.test(url)
+      ? url
+      : '';
+  };
 
   const els = {
     list: document.getElementById('establishments-list'),
@@ -61,10 +75,26 @@
   }
 
   async function load() {
-    const res = await fetch('/api/establishments');
-    establishments = await res.json();
-    els.count.textContent = establishments.length;
-    render();
+    try {
+      const items = [];
+      let offset = 0;
+      let hasMore = true;
+      while (hasMore) {
+        const res = await fetch(`/api/establishments?limit=100&offset=${offset}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const page = await res.json();
+        if (!Array.isArray(page.items)) throw new Error('Réponse catalogue invalide');
+        items.push(...page.items);
+        offset += page.items.length;
+        hasMore = Boolean(page.hasMore) && page.items.length > 0;
+      }
+      establishments = items;
+      els.count.textContent = String(establishments.length);
+      render();
+    } catch (err) {
+      showError('Impossible de charger les établissements.');
+      console.error('Erreur de chargement des établissements :', err);
+    }
   }
 
   function render() {
@@ -74,27 +104,30 @@
     }
     els.list.innerHTML = establishments
       .map(
-        (e) => `
+        (e) => {
+          const photo = safeImageUrl(e.photo);
+          return `
       <article class="manage-item">
-        <div class="manage-thumb" style="background-image:url('${e.photo || ''}')">
-          ${e.photo ? '' : '<span class="manage-thumb-empty">🖼️</span>'}
-        </div>
+          <div class="manage-thumb">
+            ${photo ? `<img class="manage-thumb-image" src="${escapeHtml(photo)}" alt="" />` : ''}
+            ${photo ? '' : '<span class="manage-thumb-empty">🖼️</span>'}
+          </div>
         <div class="manage-info">
           <div class="meta-row">
             <span class="badge">${e.type === 'restaurant' ? 'Restaurant' : 'Meublé'}</span>
-            ${e.note != null ? `<span class="score-box">${e.note}</span>` : ''}
-            <span class="muted">${e.quartier}</span>
+            ${e.note != null ? `<span class="score-box">${escapeHtml(e.note)}</span>` : ''}
+            <span class="muted">${escapeHtml(e.quartier)}</span>
           </div>
-          <h3 class="title">${e.nom}</h3>
-          <p class="location">WhatsApp ${e.whatsapp} • ${(e.products || []).length} produit(s)</p>
-          ${e.description ? `<p class="description">${e.description}</p>` : ''}
+          <h3 class="title">${escapeHtml(e.nom)}</h3>
+          <p class="location">WhatsApp ${escapeHtml(e.whatsapp)} • ${(e.products || []).length} produit(s)</p>
+          ${e.description ? `<p class="description">${escapeHtml(e.description)}</p>` : ''}
         </div>
         <div class="manage-item-actions">
-          <button class="btn-small" data-action="edit" data-id="${e.id}">Modifier</button>
-          <button class="btn-small btn-danger" data-action="delete" data-id="${e.id}">Supprimer</button>
+          <button class="btn-small" data-action="edit" data-id="${escapeHtml(e.id)}">Modifier</button>
+          <button class="btn-small btn-danger" data-action="delete" data-id="${escapeHtml(e.id)}">Supprimer</button>
         </div>
-      </article>`
-      )
+      </article>`;
+        })
       .join('');
   }
 
@@ -106,7 +139,7 @@
       openForm(establishments.find((e) => e.id === id));
     } else if (btn.dataset.action === 'delete') {
       if (confirm('Supprimer définitivement cet établissement et ses produits ?')) {
-        const res = await fetch('/api/establishments/' + id, { method: 'DELETE' });
+        const res = await fetch('/api/establishments/' + encodeURIComponent(id), { method: 'DELETE' });
         if (res.ok) load();
         else showError('Suppression impossible');
       }
@@ -117,17 +150,18 @@
   // Chaque produit : inputs texte + un champ fichier photo (upload immédiat).
   function productRow(product, index) {
     const p = product || {};
-    const hasPhoto = p.photo ? '' : 'hidden';
+    const photo = safeImageUrl(p.photo);
+    const hasPhoto = photo ? '' : 'hidden';
     return `
-      <div class="product-row" data-index="${index}" data-photo-url="${p.photo || ''}">
-        <input type="text" class="p-nom" placeholder="Nom du produit" value="${p.nom || ''}" />
-        <input type="number" class="p-prix" placeholder="Prix (FCFA)" value="${p.prix != null ? p.prix : ''}" />
-        <input type="text" class="p-dispo" placeholder="Disponibilité" value="${p.disponibilite || ''}" />
+      <div class="product-row" data-index="${index}" data-photo-url="${escapeHtml(photo)}">
+        <input type="text" class="p-nom" placeholder="Nom du produit" value="${escapeHtml(p.nom)}" />
+        <input type="number" class="p-prix" placeholder="Prix (FCFA)" value="${escapeHtml(p.prix != null ? p.prix : '')}" />
+        <input type="text" class="p-dispo" placeholder="Disponibilité" value="${escapeHtml(p.disponibilite)}" />
         <input type="file" class="p-photo" accept="image/*" title="Choisir une photo" />
-        <input type="text" class="p-desc" placeholder="Description" value="${p.description || ''}" />
-        <input type="text" class="p-tags" placeholder="Tags (séparés par des virgules)" value="${(p.tags || []).join(', ')}" />
+        <input type="text" class="p-desc" placeholder="Description" value="${escapeHtml(p.description)}" />
+        <input type="text" class="p-tags" placeholder="Tags (séparés par des virgules)" value="${escapeHtml((p.tags || []).join(', '))}" />
         <button type="button" class="btn-small btn-danger p-remove">×</button>
-        <img class="p-photo-preview photo-preview ${hasPhoto}" alt="" src="${p.photo || ''}" />
+        <img class="p-photo-preview photo-preview ${hasPhoto}" alt="" src="${escapeHtml(photo)}" />
       </div>`;
   }
 
