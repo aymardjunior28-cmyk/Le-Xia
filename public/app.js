@@ -9,6 +9,13 @@ let currentQuartier = 'all';
 let currentMaxPrice = 'all';
 let allItems = [];
 
+function safeImageUrl(value) {
+  const url = String(value || '');
+  return (url.startsWith('/') && !url.startsWith('//')) || /^https?:\/\//i.test(url)
+    ? url
+    : '';
+}
+
 /**
  * Verdict associé à une note réelle (0-10) saisie par le super-admin.
  */
@@ -148,7 +155,7 @@ function renderEstablishments() {
     const clone = template.content.cloneNode(true);
     const card = clone.querySelector('.card');
     // Aucune classe d'animation : rendu immédiat.
-    clone.querySelector('.card-image').src = item.photo;
+    clone.querySelector('.card-image').src = safeImageUrl(item.photo);
     clone.querySelector('.card-image').alt = item.name;
     clone.querySelector('.badge').textContent =
       item.type === 'restaurant' ? 'Restaurant' : 'Meublé';
@@ -171,7 +178,8 @@ function renderEstablishments() {
     card.style.cursor = 'pointer';
     card.addEventListener('click', (event) => {
       if (event.target.classList.contains('primary-btn')) return;
-      window.location.href = `/produit/${item.establishmentId}/${item.productId}`;
+      window.location.href =
+        `/produit/${encodeURIComponent(item.establishmentId)}/${encodeURIComponent(item.productId)}`;
     });
 
     // Bouton "Découvrir plus" → redirection WhatsApp attribuée.

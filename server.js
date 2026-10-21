@@ -63,6 +63,42 @@ const persistClicks = () => saveCollection('clickLogs', clickLogs);
 const persistBlocks = () => saveCollection('blocks', blocks);
 const persistUsers = () => saveCollection('users', users);
 
+function mutateAndPersistMany(changes) {
+  const snapshots = changes.map(({ collection, skipSnapshot }) =>
+    skipSnapshot ? null : structuredClone(collection)
+  );
+  let savedCount = 0;
+  try {
+    changes.forEach(({ mutate }) => mutate());
+    for (const change of changes) {
+      change.persist();
+      savedCount += 1;
+    }
+  } catch (err) {
+    changes.forEach(({ collection }, index) => {
+      if (snapshots[index] === null) {
+        changes[index].rollback();
+        return;
+      }
+      collection.length = 0;
+      snapshots[index].forEach((item) => collection.push(item));
+    });
+    for (let index = 0; index < savedCount; index += 1) {
+      if (snapshots[index] === null) continue;
+      try {
+        changes[index].persistSnapshot(snapshots[index]);
+      } catch (rollbackError) {
+        console.error(`[store] Échec du rollback : ${rollbackError.message}`);
+      }
+    }
+    throw err;
+  }
+}
+
+function mutateAndPersist(collection, persist, mutate, persistSnapshot) {
+  mutateAndPersistMany([{ collection, persist, mutate, persistSnapshot }]);
+}
+
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -175,14 +211,6 @@ function requireSuperAdmin(req, res, next) {
   next();
 }
 
-/** Garde de page HTML : redirige vers /login si non connecté. */
-function requirePageAuth(req, res, next) {
-  if (!req.user) {
-    return res.redirect('/login');
-  }
-  next();
-}
-
 /** Garde de page HTML : réserve au super-admin (sinon redirection dashboard). */
 function requirePageSuperAdmin(req, res, next) {
   if (!req.user) {
@@ -223,12 +251,32 @@ function setSessionCookie(res, token) {
 }
 
 function clearSessionCookie(res) {
-  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`);
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  res.setHeader(
+    'Set-Cookie',
+    `${SESSION_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0${secure}`
+  );
 }
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(attachUser);
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
+app.get('/dashboard.html', requirePageSuperAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+app.get('/manage.html', requirePageSuperAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'manage.html'));
+});
+app.get('/profil-etablissement.html', requirePageEtablissement, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'profil-etablissement.html'));
+});
+app.get('/etablissement-dashboard.html', requirePageEtablissement, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'etablissement-dashboard.html'));
+});
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ---------------------------------------------------------------------------
 // Authentification (login / logout / session courante)
@@ -250,7 +298,7 @@ app.get('/api/auth/me', (req, res) => {
 });
 
 app.post('/api/auth/login', (req, res) => {
-  const key = req.socket.remoteAddress || 'unknown';
+  const key = req.ip || req.socket.remoteAddress || 'unknown';
   const now = Date.now();
   for (const [ip, attempt] of loginAttempts) {
     if (now - attempt.startedAt >= LOGIN_WINDOW_MS) loginAttempts.delete(ip);
@@ -349,8 +397,7 @@ app.post('/api/establishments', requireSuperAdmin, (req, res) => {
 
   const establishment = establishmentsLib.buildEstablishment(body, id);
 
-  establishments.push(establishment);
-  persistEstablishments();
+  mutateAndPersist(establishments, persistEstablishments, () => establishments.push(establishment));
 
   return res.status(201).json(establishment);
 });
@@ -393,12 +440,9 @@ app.post('/api/etablissements/inscription', upload.single('photo'), (req, res) =
     { ...body, photo: photoUrl },
     establishmentId
   );
-  establishments.push(establishment);
-  persistEstablishments();
-
   const { salt, hash } = auth.hashPassword(body.password);
-  const userId = `user_${Date.now().toString(36)}`;
-  users.push({
+  const userId = `user_${crypto.randomUUID()}`;
+  const user = {
     id: userId,
     email: emailNorm,
     password_hash: hash,
@@ -408,8 +452,21 @@ app.post('/api/etablissements/inscription', upload.single('photo'), (req, res) =
     nom: body.nom,
     actif: true,
     date_creation: new Date().toISOString(),
-  });
-  persistUsers();
+  };
+  mutateAndPersistMany([
+    {
+      collection: establishments,
+      mutate: () => establishments.push(establishment),
+      persist: persistEstablishments,
+      persistSnapshot: (snapshot) => saveCollection('establishments', snapshot),
+    },
+    {
+      collection: users,
+      mutate: () => users.push(user),
+      persist: persistUsers,
+      persistSnapshot: (snapshot) => saveCollection('users', snapshot),
+    },
+  ]);
 
   return res.status(201).json({
     user: { id: userId, email: emailNorm, role: 'etablissement' },
@@ -436,8 +493,9 @@ app.put('/api/establishments/:id', requireSuperAdmin, (req, res) => {
     existing.id
   );
 
-  establishments[index] = updated;
-  persistEstablishments();
+  mutateAndPersist(establishments, persistEstablishments, () => {
+    establishments[index] = updated;
+  });
 
   return res.json(updated);
 });
@@ -474,8 +532,9 @@ app.put('/api/etablissement/moi', requireEtablissement, (req, res) => {
     existing.id
   );
 
-  establishments[index] = updated;
-  persistEstablishments();
+  mutateAndPersist(establishments, persistEstablishments, () => {
+    establishments[index] = updated;
+  });
 
   return res.json(updated);
 });
@@ -535,9 +594,10 @@ app.post('/api/etablissements/:etablissementId/produits', requireAuth, (req, res
     statut: body.statut || 'actif',
   };
 
-  establishments[index].products = establishments[index].products || [];
-  establishments[index].products.push(product);
-  persistEstablishments();
+  mutateAndPersist(establishments, persistEstablishments, () => {
+    establishments[index].products = establishments[index].products || [];
+    establishments[index].products.push(product);
+  });
 
   return res.status(201).json(product);
 });
@@ -567,7 +627,7 @@ app.put('/api/etablissements/:etablissementId/produits/:productId', requireAuth,
   if (validationError) {
     return res.status(400).json({ error: validationError });
   }
-  establishments[index].products[productIndex] = {
+  const updatedProduct = {
     ...establishments[index].products[productIndex],
     nom: body.nom || establishments[index].products[productIndex].nom,
     prix: body.prix !== undefined ? Number(body.prix) : establishments[index].products[productIndex].prix,
@@ -577,7 +637,9 @@ app.put('/api/etablissements/:etablissementId/produits/:productId', requireAuth,
     tags: body.tags || establishments[index].products[productIndex].tags,
     statut: body.statut || establishments[index].products[productIndex].statut,
   };
-  persistEstablishments();
+  mutateAndPersist(establishments, persistEstablishments, () => {
+    establishments[index].products[productIndex] = updatedProduct;
+  });
 
   return res.json(establishments[index].products[productIndex]);
 });
@@ -599,8 +661,9 @@ app.delete('/api/etablissements/:etablissementId/produits/:productId', requireAu
     return res.status(404).json({ error: 'Produit introuvable' });
   }
 
-  establishments[index].products.splice(productIndex, 1);
-  persistEstablishments();
+  mutateAndPersist(establishments, persistEstablishments, () => {
+    establishments[index].products.splice(productIndex, 1);
+  });
 
   return res.json({ ok: true });
 });
@@ -621,7 +684,7 @@ app.get('/api/etablissement/mes-stats', requireEtablissement, (req, res) => {
   const totalRemaining = totalPurchased - totalConsumed;
   const totalRevenue = estBlocks.reduce((sum, b) => sum + b.montant_total, 0);
 
-  const activeBlocks = estBlocks.filter((b) => b.statut === 'active');
+  const activeBlocks = estBlocks.filter((block) => billing.isBlockUsable(block));
 
   res.json({
     establishmentId,
@@ -648,8 +711,9 @@ app.delete('/api/establishments/:id', requireSuperAdmin, (req, res) => {
     return res.status(404).json({ error: 'Établissement introuvable' });
   }
 
-  establishments.splice(index, 1);
-  persistEstablishments();
+  mutateAndPersist(establishments, persistEstablishments, () => {
+    establishments.splice(index, 1);
+  });
 
   return res.json({ ok: true });
 });
@@ -673,8 +737,7 @@ app.post('/api/blocks', requireSuperAdmin, (req, res) => {
     return res.status(400).json({ error: result.error });
   }
 
-  blocks.push(result.block);
-  persistBlocks();
+  mutateAndPersist(blocks, persistBlocks, () => blocks.push(result.block));
 
   return res.status(201).json(result.block);
 });
@@ -728,15 +791,26 @@ app.post('/api/redirect', (req, res) => {
   // Le lien WhatsApp étant effectivement servi, la conversation est attribuée.
   const attributedClick = attribution.markAttributed(clickEvent);
 
-  // Journalisation serveur (append) + persistance immuable sur disque.
-  clickLogs.push(attributedClick);
-  persistClicks();
-
-  // Consommation du bloc prépayé de l'établissement (facturation réelle).
-  const consumption = billing.consumeConversation(blocks, establishmentId);
-  if (consumption.ok) {
-    persistBlocks();
+  let consumption = { ok: false, reason: 'aucun_bloc_actif' };
+  const changes = [];
+  if (billing.findActiveBlock(blocks, establishmentId)) {
+    changes.push({
+      collection: blocks,
+      mutate: () => {
+        consumption = billing.consumeConversation(blocks, establishmentId);
+      },
+      persist: persistBlocks,
+      persistSnapshot: (snapshot) => saveCollection('blocks', snapshot),
+    });
   }
+  changes.push({
+    collection: clickLogs,
+    skipSnapshot: true,
+    mutate: () => clickLogs.push(attributedClick),
+    rollback: () => clickLogs.pop(),
+    persist: persistClicks,
+  });
+  mutateAndPersistMany(changes);
 
   const whatsappUrl = buildWhatsappUrl(establishment.whatsapp, attributedClick.id_clic, establishment.nom);
 
@@ -768,7 +842,7 @@ app.get('/api/dashboard', requireSuperAdmin, (req, res) => {
     totalClicks: clickLogs.length,
     totalAttributed: clickLogs.filter((click) => click.is_attributed).length,
     totalRevenue: blocks.reduce((sum, block) => sum + block.montant_total, 0),
-    activeBlocks: blocks.filter((block) => block.statut === 'active').length,
+    activeBlocks: blocks.filter((block) => billing.isBlockUsable(block)).length,
   };
 
   res.json({
@@ -835,6 +909,7 @@ app.get('/api/product/:establishmentId/:productId', (req, res) => {
       adresse: establishment.adresse,
       whatsapp: establishment.whatsapp,
       categorie: establishment.categorie,
+      note: establishment.note,
     },
     product,
   });

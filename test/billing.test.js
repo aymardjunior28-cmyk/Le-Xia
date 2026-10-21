@@ -82,6 +82,25 @@ test('consumeConversation échoue sans bloc actif', () => {
   assert.strictEqual(result.reason, 'aucun_bloc_actif');
 });
 
+test('isBlockUsable exclut les blocs expirés ou épuisés', () => {
+  const now = Date.now();
+  const block = {
+    statut: 'active',
+    conversations_consommees: 0,
+    nombre_conversations: 3,
+    date_expiration: new Date(now + 60_000).toISOString(),
+  };
+  assert.strictEqual(billing.isBlockUsable(block, now), true);
+  assert.strictEqual(
+    billing.isBlockUsable({ ...block, date_expiration: new Date(now - 1).toISOString() }, now),
+    false
+  );
+  assert.strictEqual(
+    billing.isBlockUsable({ ...block, conversations_consommees: 3 }, now),
+    false
+  );
+});
+
 test('consumeConversation ne puise pas dans le bloc d un autre établissement', () => {
   const blocks = [];
   blocks.push(

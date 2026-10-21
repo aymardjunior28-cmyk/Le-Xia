@@ -259,7 +259,7 @@
     els.adresse.value = establishment ? establishment.adresse || '' : '';
     els.whatsapp.value = establishment ? establishment.whatsapp : '';
     els.note.value = establishment && establishment.note != null ? establishment.note : '';
-    establishmentPhotoUrl = establishment ? establishment.photo || '' : '';
+    establishmentPhotoUrl = establishment ? safeImageUrl(establishment.photo) : '';
     if (establishmentPhotoUrl) {
       els.photoPreview.src = establishmentPhotoUrl;
       els.photoPreview.hidden = false;

@@ -8,6 +8,7 @@
  */
 
 const VALID_TYPES = ['restaurant', 'meuble'];
+const crypto = require('crypto');
 const FIELD_LIMITS = {
   nom: 120,
   quartier: 100,
@@ -82,15 +83,19 @@ function validateEstablishmentInput(body) {
   if (!VALID_TYPES.includes(body.type)) {
     return 'type doit être "restaurant" ou "meublé"';
   }
+  if (body.id !== undefined && (typeof body.id !== 'string' || !/^[\w-]{1,100}$/.test(body.id))) {
+    return 'id contient des caractères non autorisés';
+  }
   for (const [field, max] of Object.entries(FIELD_LIMITS)) {
     if (body[field] !== undefined && (typeof body[field] !== 'string' || body[field].length > max)) {
       return `${field} doit être une chaîne de ${max} caractères maximum`;
     }
-    if (body.photo !== undefined && !isSafeMediaUrl(body.photo)) {
-      return 'photo doit être une URL HTTP(S) ou un chemin local';
-    }
   }
-  if (cleanPhone(body.whatsapp).length < 6) {
+  if (body.photo !== undefined && !isSafeMediaUrl(body.photo)) {
+    return 'photo doit être une URL HTTP(S) ou un chemin local';
+  }
+  const phoneLength = cleanPhone(body.whatsapp).length;
+  if (phoneLength < 6 || phoneLength > 20) {
     return 'Numéro WhatsApp invalide';
   }
   if (body.note !== undefined && body.note !== null && body.note !== '') {
@@ -113,6 +118,10 @@ function validateProductInput(product) {
   if (!product || typeof product !== 'object' || Array.isArray(product)) {
     return 'Produit invalide';
   }
+  if (product.id !== undefined &&
+    (typeof product.id !== 'string' || !/^[\w-]{1,120}$/.test(product.id))) {
+    return 'id de produit contient des caractères non autorisés';
+  }
   if (typeof product.nom !== 'string' || !product.nom.trim() || product.nom.length > 120) {
     return 'Le nom du produit est requis (120 caractères maximum)';
   }
@@ -130,9 +139,9 @@ function validateProductInput(product) {
     if (product[field] !== undefined && (typeof product[field] !== 'string' || product[field].length > max)) {
       return `${field} doit être une chaîne de ${max} caractères maximum`;
     }
-    if (product.photo !== undefined && !isSafeMediaUrl(product.photo)) {
-      return 'photo doit être une URL HTTP(S) ou un chemin local';
-    }
+  }
+  if (product.photo !== undefined && !isSafeMediaUrl(product.photo)) {
+    return 'photo doit être une URL HTTP(S) ou un chemin local';
   }
   if (product.tags !== undefined &&
     (!Array.isArray(product.tags) || product.tags.length > 30 ||
@@ -178,7 +187,7 @@ function buildEstablishment(body, establishmentId) {
 /** Génère un id lisible et unique pour un établissement. */
 function generateId(type) {
   const prefix = type === 'restaurant' ? 'rest' : 'meuble';
-  return `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+  return `${prefix}_${crypto.randomBytes(12).toString('hex')}`;
 }
 
 module.exports = {

@@ -1,4 +1,10 @@
 const FCFA = (value) => `${Number(value || 0).toLocaleString('fr-CM')} FCFA`;
+const safeImageUrl = (value) => {
+  const url = String(value || '');
+  return (url.startsWith('/') && !url.startsWith('//')) || /^https?:\/\//i.test(url)
+    ? url
+    : '';
+};
 
 /**
  * Verdict associé à une note réelle (0-10) saisie par le super-admin.
@@ -83,7 +89,7 @@ async function loadProduct() {
       ? { score: null, word: null }
       : noteVerdict(establishment.note);
     const image = container.querySelector('.product-page-image');
-    image.src = product.photo || '';
+    image.src = safeImageUrl(product.photo);
     image.alt = product.nom || '';
     container.querySelector('.badge').textContent =
       establishment.type === 'restaurant' ? 'Restaurant' : 'Meublé';

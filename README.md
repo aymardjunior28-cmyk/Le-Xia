@@ -9,15 +9,30 @@ Feed de découverte locale pour **Douala** (restaurants & meublés), avec :
 
 ## Démarrage
 
+Au premier démarrage, fournissez les identifiants d'initialisation du super-admin
+via l'environnement. Utilisez un mot de passe aléatoire d'au moins 12 caractères ;
+il est haché puis seul le hash est conservé. Aucune identité/mot de passe par défaut
+n'est fourni par l'application.
+
 ```bash
 npm install
+export SUPERADMIN_EMAIL="admin@votre-domaine.cm"
+export SUPERADMIN_PASSWORD="<mot-de-passe-aléatoire-d'au-moins-12-caractères>"
 npm start          # démarre le serveur sur http://localhost:3000
 ```
+
+Après la création initiale, le compte est conservé dans `data/users.json` et ces
+variables ne sont plus nécessaires. Si l'application est déployée derrière un
+reverse proxy qui remplace les en-têtes `X-Forwarded-*`, configurez
+`TRUST_PROXY=true`. Ne l'activez pas derrière un proxy qui transmet ces en-têtes
+sans les valider.
+Une ancienne installation utilisant le compte super-admin historique doit
+fournir ces variables une fois pour renouveler et renommer ce compte.
 
 ## Tests
 
 ```bash
-npm test           # 15 tests (attribution + facturation) via node:test
+npm test           # tests unitaires et d'intégration via node:test
 ```
 
 ## Architecture
@@ -60,7 +75,7 @@ Les blocs sont valables 90 jours. Toute conversation attribuée consomme une uni
 | GET     | `/api/establishments`                      | Liste des établissements (+ produits)        |
 | GET     | `/api/establishment/:id`                   | Détail d'un établissement                    |
 | POST    | `/api/establishments`                      | Créer un établissement (produits embarqués)  |
-| POST    | `/api/blocks`                              | Acheter un bloc prépayé                      |
+| POST    | `/api/blocks`                              | Créer un bloc prépayé (super-admin)          |
 | POST    | `/api/redirect`                            | Clic attribué → URL WhatsApp + consommation  |
 | GET     | `/api/dashboard`                           | Données brutes pour le dashboard             |
 | GET     | `/api/product/:establishmentId/:productId` | Fiche produit                                |

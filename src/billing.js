@@ -91,17 +91,22 @@ function createBlock({ establishmentId, verticale, nombreConversations, prixUnit
  * @returns {object|null}
  */
 function findActiveBlock(blocks, establishmentId) {
-  const now = Date.now();
   return (
     blocks
       .filter(
         (block) =>
           block.id_etablissement === establishmentId &&
-          block.statut === 'active' &&
-          block.conversations_consommees < block.nombre_conversations &&
-          new Date(block.date_expiration).getTime() > now
+          isBlockUsable(block)
       )
       .sort((a, b) => new Date(a.date_achat) - new Date(b.date_achat))[0] || null
+  );
+}
+
+function isBlockUsable(block, now = Date.now()) {
+  return (
+    block.statut === 'active' &&
+    block.conversations_consommees < block.nombre_conversations &&
+    new Date(block.date_expiration).getTime() > now
   );
 }
 
@@ -132,5 +137,6 @@ module.exports = {
   resolveUnitPrice,
   createBlock,
   findActiveBlock,
+  isBlockUsable,
   consumeConversation,
 };

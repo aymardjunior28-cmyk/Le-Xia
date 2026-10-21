@@ -63,6 +63,9 @@ test('dashboard protégé : 302 vers /login et API 401 sans session', async () =
   const page = await fetch(`${BASE}/dashboard`, { redirect: 'manual' });
   assert.strictEqual(page.status, 302);
   assert.match(page.headers.get('location') || '', /\/login$/);
+  const directPage = await fetch(`${BASE}/dashboard.html`, { redirect: 'manual' });
+  assert.strictEqual(directPage.status, 302);
+  assert.match(directPage.headers.get('location') || '', /\/login$/);
 
   const api = await fetch(`${BASE}/api/dashboard`);
   assert.strictEqual(api.status, 401);
@@ -206,6 +209,8 @@ test('routes sensibles protégées : /manage et /api/upload sans session', async
 
   const upload = await fetch(`${BASE}/api/upload`, { method: 'POST' });
   assert.strictEqual(upload.status, 401);
+  const block = await fetch(`${BASE}/api/blocks`, { method: 'POST' });
+  assert.strictEqual(block.status, 401);
 });
 
 test('upload d image : refusé sans session, accepté par le super-admin, rejeté si non-image', async () => {
@@ -247,6 +252,7 @@ test('upload d image : refusé sans session, accepté par le super-admin, rejet�
   assert.strictEqual(ok.status, 200);
   const { url } = await ok.json();
   assert.match(url, /^\/uploads\/.+\.png$/);
+  fs.rmSync(path.join(ROOT, 'public', url.slice(1)), { force: true });
 
   // Non-image -> 400
   const bad = await fetch(`${BASE}/api/upload`, {

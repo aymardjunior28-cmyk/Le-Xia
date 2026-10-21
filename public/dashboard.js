@@ -32,12 +32,16 @@ function computeDashboard(data) {
   const uniqueClicks = new Set(clicks.map((c) => c.session_id)).size;
   const attributed = clicks.filter((c) => c.is_attributed);
   const totalAttributed = attributed.length;
-  const payingConversations = attributed.length; // MVP : toute attribuée est facturable
+  const payingConversations = blocks.reduce((sum, block) => sum + (Number(block.conversations_consommees) || 0), 0);
   const conversionRate = totalClicks > 0 ? totalAttributed / totalClicks : 0;
 
   const totalRevenue = blocks.reduce((sum, b) => sum + b.montant_total, 0);
   const consumed = blocks.reduce((sum, b) => sum + b.conversations_consommees, 0);
-  const avgCostPerConversation = consumed > 0 ? totalRevenue / consumed : 0;
+  const consumedValue = blocks.reduce(
+    (sum, block) => sum + block.prix_unitaire * block.conversations_consommees,
+    0
+  );
+  const avgCostPerConversation = consumed > 0 ? consumedValue / consumed : 0;
 
   // --- Performance par verticale ---
   const byVertical = {};
@@ -62,6 +66,10 @@ function computeDashboard(data) {
     const eBlocks = blocks.filter((b) => b.id_etablissement === e.id);
     const revenue = eBlocks.reduce((sum, b) => sum + b.montant_total, 0);
     const consumedHere = eBlocks.reduce((sum, b) => sum + b.conversations_consommees, 0);
+    const consumedValueHere = eBlocks.reduce(
+      (sum, block) => sum + block.prix_unitaire * block.conversations_consommees,
+      0
+    );
     return {
       id: e.id,
       nom: e.nom,
@@ -71,7 +79,7 @@ function computeDashboard(data) {
       attributed: eAttributed.length,
       revenue,
       consumed: consumedHere,
-      costPerConversation: consumedHere > 0 ? revenue / consumedHere : 0,
+      costPerConversation: consumedHere > 0 ? consumedValueHere / consumedHere : 0,
       conversion: eClicks.length > 0 ? eAttributed.length / eClicks.length : 0,
     };
   });

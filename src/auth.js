@@ -14,6 +14,7 @@ const ROLES = {
   SUPER_ADMIN: 'super_admin',
   ETABLISSEMENT: 'etablissement',
 };
+const LEGACY_SUPERADMIN_EMAIL = 'superadmin@douala.cm';
 
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
@@ -68,16 +69,35 @@ function publicUser(user) {
  * @returns {boolean} true si un super-admin a été créé
  */
 function ensureSuperAdmin(users, { email, password, nom = 'Super Administrateur' } = {}) {
-  if (Array.isArray(users) && users.some((u) => u.role === ROLES.SUPER_ADMIN)) {
+  const existingSuperAdmin = Array.isArray(users)
+    ? users.find((user) => user.role === ROLES.SUPER_ADMIN)
+    : null;
+  if (existingSuperAdmin && normalizeEmail(existingSuperAdmin.email) !== LEGACY_SUPERADMIN_EMAIL) {
     return false;
   }
   const normalizedEmail = normalizeEmail(email);
-  if (!normalizedEmail || !password || password.length < 12) {
+  if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) ||
+    normalizedEmail.length > 254 ||
+    typeof password !== 'string' ||
+    password.length < 12 ||
+    password.length > 1024
+  ) {
     throw new Error(
-      'Initialisez le super-admin avec SUPERADMIN_EMAIL et un SUPERADMIN_PASSWORD de 12 caractères minimum.'
+      'Initialisez le super-admin avec une adresse SUPERADMIN_EMAIL valide et un SUPERADMIN_PASSWORD de 12 à 1024 caractères.'
     );
   }
   const { salt, hash } = hashPassword(password);
+  if (existingSuperAdmin) {
+    if (users.some((user) => user !== existingSuperAdmin && normalizeEmail(user.email) === normalizedEmail)) {
+      throw new Error('SUPERADMIN_EMAIL est déjà utilisé par un autre compte.');
+    }
+    existingSuperAdmin.email = normalizedEmail;
+    existingSuperAdmin.password_salt = salt;
+    existingSuperAdmin.password_hash = hash;
+    existingSuperAdmin.nom = nom;
+    return true;
+  }
   users.push({
     id: `user_${crypto.randomUUID()}`,
     email: normalizedEmail,
