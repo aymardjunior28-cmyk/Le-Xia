@@ -91,6 +91,33 @@
           </div>
         </form>
       </section>
+
+      <section class="panel profile-products-panel">
+        <h2>Mes produits et offres</h2>
+        <p class="panel-sub">Seuls les établissements ayant au moins un produit ou une offre apparaissent dans le catalogue public.</p>
+        <div id="profile-products" class="profile-products-list" aria-live="polite"></div>
+        <form id="profile-product-form" class="profile-product-form">
+          <h3>Ajouter une offre</h3>
+          <label class="field">
+            <span>Nom du produit ou de l’offre *</span>
+            <input type="text" name="nom" maxlength="120" required />
+          </label>
+          <label class="field">
+            <span>Prix en FCFA *</span>
+            <input type="number" name="prix" min="1" max="100000000" step="1" required />
+          </label>
+          <label class="field">
+            <span>Disponibilité</span>
+            <input type="text" name="disponibilite" maxlength="160" value="Disponible" />
+          </label>
+          <label class="field">
+            <span>Description</span>
+            <textarea name="description" rows="2" maxlength="2000"></textarea>
+          </label>
+          <button class="primary-btn" type="submit">Ajouter au catalogue</button>
+          <p id="profile-products-msg" class="msg" role="status" hidden></p>
+        </form>
+      </section>
     </main>
 
     <script src="/profil-etablissement.js"></script>

@@ -83,9 +83,11 @@
     const type = form2.elements.type.value;
     const quartier = form2.elements.quartier.value.trim();
     const whatsapp = form2.elements.whatsapp.value.trim();
+    const productName = form2.elements.produit_nom.value.trim();
+    const productPrice = Number(form2.elements.produit_prix.value);
 
-    if (!type || !quartier || !whatsapp) {
-      showMsg('Veuillez remplir les champs obligatoires de l\'étape 2.', 'error');
+    if (!type || !quartier || !whatsapp || !productName || !Number.isFinite(productPrice) || productPrice <= 0) {
+      showMsg('Veuillez compléter les informations de l’établissement et ajouter une offre avec un prix valide.', 'error');
       return false;
     }
     showMsg('', '');

@@ -3270,8 +3270,101 @@ tbody tr:hover {
   flex-wrap: nowrap;
 }
 
+.topbar .nav nav {
+  min-width: 0;
+  overflow: visible;
+}
+
+.nav-overflow {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.nav-overflow[hidden] {
+  display: none;
+}
+
+.nav-overflow summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.nav-overflow summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-overflow summary::after {
+  content: '⌄';
+  margin-left: 7px;
+}
+
+.nav-overflow[open] summary,
+.nav-overflow summary:hover {
+  background: rgba(47, 109, 246, 0.08);
+  color: var(--primary);
+}
+
+.nav-overflow-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  display: grid;
+  min-width: max-content;
+  max-width: min(320px, calc(100vw - 32px));
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow-hover);
+  white-space: normal;
+}
+
+.nav-overflow-menu a,
+.nav-overflow-menu .nav-user {
+  display: block;
+  max-width: 100%;
+  padding: 9px 12px;
+  overflow: hidden;
+  border-radius: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-overflow-menu a:hover {
+  background: rgba(47, 109, 246, 0.08);
+  color: var(--primary);
+}
+
 .points-balance-card {
   grid-column: span 2;
+}
+
+.dashboard-points-card {
+  grid-column: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  border-color: rgba(16, 163, 127, 0.24);
+}
+
+.dashboard-points-card .metric-value {
+  color: var(--success);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+.dashboard-points-details {
+  max-width: 52ch;
 }
 
 .points-balance-card small {
@@ -3318,6 +3411,99 @@ tbody tr:hover {
   min-width: 600px;
 }
 
+.signup-product {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+}
+
+.profile-products-panel {
+  margin-top: 24px;
+}
+
+.profile-products-list {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 24px;
+}
+
+.profile-product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.profile-product-row p,
+.profile-product-row small {
+  display: block;
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.profile-product-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+.profile-product-form h3,
+.profile-product-form button,
+.profile-product-form .msg {
+  grid-column: 1 / -1;
+}
+
+.profile-product-form .field {
+  min-width: 0;
+}
+
+@media (max-width: 560px) {
+  .profile-product-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile-product-form h3,
+  .profile-product-form button,
+  .profile-product-form .msg {
+    grid-column: auto;
+  }
+
+  .profile-product-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.signup-product legend,
+.signup-product > .field-hint {
+  grid-column: 1 / -1;
+}
+
+.signup-product .field {
+  min-width: 0;
+  margin: 0;
+}
+
+@media (max-width: 560px) {
+  .signup-product {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .signup-product legend,
+  .signup-product > .field-hint {
+    grid-column: auto;
+  }
+}
+
 html {
   overflow-x: clip;
 }
@@ -3360,15 +3546,6 @@ html {
 
   .metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .topbar .nav.nav-authenticated {
-    flex-wrap: wrap;
-  }
-
-  .topbar .nav.nav-authenticated nav {
-    flex: 1 0 100%;
-    justify-content: center;
   }
 
   .manage-page .product-row {
@@ -3415,10 +3592,10 @@ html {
   }
 
   .topbar .nav nav {
-    flex: 1 0 100%;
-    width: 100%;
+    flex: 0 1 auto;
+    width: auto;
     min-width: 0;
-    justify-content: center;
+    justify-content: flex-end;
   }
 
   .topbar .nav nav a {
@@ -3434,6 +3611,12 @@ html {
 
   .points-balance-card {
     grid-column: auto;
+  }
+
+  .dashboard-points-card {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .points-recharge-form {

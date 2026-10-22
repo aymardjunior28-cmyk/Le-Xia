@@ -73,6 +73,8 @@ Les blocs sont valables 90 jours. Toute conversation attribuée consomme une uni
 
 Chaque établissement commence avec 1 000 points. Un clic accepté par l'anti-fraude et redirigé vers WhatsApp débite 50 points ; les clics refusés ne débitent rien. À moins de 50 points, le bouton de redirection est désactivé. Le super-admin recharge les soldes par multiples de 50 depuis `/manage`.
 
+Une inscription établissement doit inclure au moins un produit ou une offre avec un prix. Les établissements sans produit ne sont pas affichés dans le catalogue public ni dans ses filtres. Le propriétaire peut ajouter ou supprimer ses offres depuis `/profil-etablissement` ; s'il supprime toutes ses offres, sa fiche disparaît du catalogue jusqu'à l'ajout d'une nouvelle offre.
+
 ## API
 
 | Méthode | Route                                      | Description                                  |

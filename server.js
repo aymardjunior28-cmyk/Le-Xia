@@ -480,6 +480,20 @@ app.post('/api/etablissements/inscription', upload.single('photo'), (req, res) =
   if (estError) {
     return res.status(400).json({ error: estError });
   }
+  const firstProduct = {
+    nom: typeof body.produit_nom === 'string' ? body.produit_nom.trim() : '',
+    prix: body.produit_prix,
+    disponibilite: typeof body.produit_disponibilite === 'string'
+      ? body.produit_disponibilite.trim()
+      : 'Disponible',
+    description: typeof body.produit_description === 'string'
+      ? body.produit_description.trim()
+      : '',
+  };
+  const productError = establishmentsLib.validateProductInput(firstProduct);
+  if (productError) {
+    return res.status(400).json({ error: `Première offre invalide : ${productError}` });
+  }
 
   const establishmentId = establishmentsLib.generateId(body.type);
   if (establishments.some((item) => item.id === establishmentId)) {
@@ -488,7 +502,7 @@ app.post('/api/etablissements/inscription', upload.single('photo'), (req, res) =
 
   const photoUrl = req.file ? '/uploads/' + req.file.filename : '';
   const establishment = establishmentsLib.buildEstablishment(
-    { ...body, photo: photoUrl },
+    { ...body, photo: photoUrl, products: [firstProduct] },
     establishmentId
   );
   const { salt, hash } = auth.hashPassword(body.password);

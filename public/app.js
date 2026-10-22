@@ -117,10 +117,19 @@ async function fetchEstablishments() {
       establishmentsContainer.classList.add('empty-state');
       return;
     }
+    const catalogEstablishments = items.filter(
+      (establishment) => Array.isArray(establishment.products) && establishment.products.length > 0
+    );
+    if (catalogEstablishments.length === 0) {
+      establishmentsContainer.textContent = 'Aucun établissement avec une offre disponible pour le moment.';
+      establishmentsContainer.classList.add('empty-state');
+      allItems = [];
+      return;
+    }
     establishmentsContainer.classList.remove('empty-state');
-    allItems = flattenProducts(items);
-    populateQuartiers(items);
-    updateHeroOffers(items);
+    allItems = flattenProducts(catalogEstablishments);
+    populateQuartiers(catalogEstablishments);
+    updateHeroOffers(catalogEstablishments);
     renderEstablishments();
   } catch (err) {
     establishmentsContainer.textContent =
@@ -194,8 +203,10 @@ function renderEstablishments() {
     card.style.cursor = 'pointer';
     card.addEventListener('click', (event) => {
       if (event.target.classList.contains('primary-btn')) return;
-      window.location.href =
-        `/produit/${encodeURIComponent(item.establishmentId)}/${encodeURIComponent(item.productId)}`;
+      if (item.productId) {
+        window.location.href =
+          `/produit/${encodeURIComponent(item.establishmentId)}/${encodeURIComponent(item.productId)}`;
+      }
     });
 
     // Bouton "Découvrir plus" → redirection WhatsApp attribuée.

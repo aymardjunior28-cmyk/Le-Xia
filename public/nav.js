@@ -47,8 +47,38 @@
     logoutLink.textContent = 'Déconnexion';
     nav.appendChild(logoutLink);
   } else {
-    addLink('/login', 'Espace admin');
-    addLink('/inscription', 'Inscription établissement');
+    addLink('/login', 'Inscription/Connexion');
+  }
+
+  const overflow = document.createElement('details');
+  overflow.className = 'nav-overflow';
+  const summary = document.createElement('summary');
+  summary.textContent = 'Plus';
+  summary.setAttribute('aria-label', 'Afficher les autres liens de navigation');
+  const overflowMenu = document.createElement('div');
+  overflowMenu.className = 'nav-overflow-menu';
+  overflowMenu.setAttribute('aria-label', 'Autres liens de navigation');
+  overflow.append(summary, overflowMenu);
+  const primaryItems = Array.from(nav.children);
+  nav.appendChild(overflow);
+
+  function fitNavigation() {
+    primaryItems.forEach((item) => nav.insertBefore(item, overflow));
+    overflowMenu.replaceChildren();
+    overflow.hidden = true;
+    overflow.open = false;
+
+    if (nav.clientWidth === 0) return;
+    for (let index = primaryItems.length - 1; nav.scrollWidth > nav.clientWidth && index > 0; index -= 1) {
+      overflowMenu.insertBefore(primaryItems[index], overflowMenu.firstChild);
+      overflow.hidden = false;
+    }
+  }
+
+  fitNavigation();
+  window.addEventListener('resize', fitNavigation);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fitNavigation);
   }
 
   const logout = document.getElementById('nav-logout');

@@ -216,6 +216,50 @@ test('POST /api/redirect : refuse un bot (User-Agent curl)', async () => {
       sessionId: 'session-bot-1',
     }),
   });
+
+  test('POST /api/redirect : refuse un établissement sans produit', async () => {
+    const login = await fetch(`${BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
+    });
+    const cookie = login.headers.get('set-cookie');
+    const createEst = await fetch(`${BASE}/api/establishments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', cookie },
+      body: JSON.stringify({
+        nom: 'Test Contact Direct',
+        type: 'restaurant',
+        quartier: 'Bonanjo',
+        whatsapp: '237655000088',
+      }),
+    });
+    assert.strictEqual(createEst.status, 201);
+    const establishment = await createEst.json();
+
+    const missingProduct = await fetch(`${BASE}/api/redirect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        establishmentId: establishment.id,
+        source: 'home_feed',
+        sessionId: 'session-direct-contact',
+      }),
+    });
+    assert.strictEqual(missingProduct.status, 400);
+
+    const rejectUnknownProduct = await fetch(`${BASE}/api/redirect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        establishmentId: establishment.id,
+        productId: 'nonexistent',
+        source: 'home_feed',
+        sessionId: 'session-invalid-product',
+      }),
+    });
+    assert.strictEqual(rejectUnknownProduct.status, 404);
+  });
   assert.strictEqual(redirectRes.status, 429);
   const data = await redirectRes.json();
   assert.strictEqual(data.error, 'Clic refusé');

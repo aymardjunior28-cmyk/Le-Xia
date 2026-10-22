@@ -109,6 +109,11 @@ test('un compte établissement ne peut pas accéder au dashboard admin', async (
   form.set('type', 'restaurant');
   form.set('quartier', 'Bonanjo');
   form.set('whatsapp', '237655999111');
+  form.set('produit_nom', 'Plat du jour');
+  form.set('produit_prix', '3500');
+  form.set('produit_disponibilite', 'Disponible');
+  form.set('produit_description', 'Offre de bienvenue');
+  form.set('role', 'super_admin');
   const signup = await fetch(`${BASE}/api/etablissements/inscription`, {
     method: 'POST',
     body: form,
@@ -116,6 +121,18 @@ test('un compte établissement ne peut pas accéder au dashboard admin', async (
   assert.strictEqual(signup.status, 201);
   const signupData = await signup.json();
   assert.strictEqual(signupData.establishment.points_solde, 1000);
+  assert.strictEqual(signupData.establishment.products.length, 1);
+  assert.strictEqual(signupData.establishment.products[0].nom, 'Plat du jour');
+  assert.strictEqual(signupData.user.role, 'etablissement');
+  const publicEstablishments = await fetch(`${BASE}/api/establishments`);
+  assert.strictEqual(publicEstablishments.status, 200);
+  const publicCatalog = await publicEstablishments.json();
+  const registeredEstablishment = publicCatalog.items.find(
+    (item) => item.id === signupData.establishment.id
+  );
+  assert.ok(registeredEstablishment, 'L’établissement inscrit doit apparaître dans le catalogue public');
+  assert.strictEqual(registeredEstablishment.products.length, 1);
+  assert.strictEqual(registeredEstablishment.products[0].nom, 'Plat du jour');
 
   const ownerEmail = form.get('email');
   const login = await fetch(`${BASE}/api/auth/login`, {
@@ -125,6 +142,38 @@ test('un compte établissement ne peut pas accéder au dashboard admin', async (
   });
   assert.strictEqual(login.status, 200);
   const cookie = login.headers.get('set-cookie');
+
+  const initialProduct = signupData.establishment.products[0];
+  const removeProduct = await fetch(
+    `${BASE}/api/etablissements/${signupData.establishment.id}/produits/${initialProduct.id}`,
+    { method: 'DELETE', headers: { cookie } }
+  );
+  assert.strictEqual(removeProduct.status, 200);
+  const catalogWithoutProducts = await fetch(`${BASE}/api/establishments`);
+  const hiddenEstablishment = (await catalogWithoutProducts.json()).items.find(
+    (item) => item.id === signupData.establishment.id
+  );
+  assert.deepStrictEqual(hiddenEstablishment.products, []);
+
+  const addProduct = await fetch(
+    `${BASE}/api/etablissements/${signupData.establishment.id}/produits`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', cookie },
+      body: JSON.stringify({
+        nom: 'Plat réactivé',
+        prix: 4200,
+        disponibilite: 'Disponible',
+      }),
+    }
+  );
+  assert.strictEqual(addProduct.status, 201);
+  const restoredProduct = await addProduct.json();
+  const catalogWithProduct = await fetch(`${BASE}/api/establishments`);
+  const visibleEstablishment = (await catalogWithProduct.json()).items.find(
+    (item) => item.id === signupData.establishment.id
+  );
+  assert.strictEqual(visibleEstablishment.products[0].id, restoredProduct.id);
 
   const profile = await fetch(`${BASE}/api/etablissement/moi`, { headers: { cookie } });
   assert.strictEqual(profile.status, 200);
@@ -190,6 +239,11 @@ test('un compte établissement ne peut pas accéder au dashboard admin', async (
   assert.match(page.headers.get('location') || '', /\/etablissement-dashboard$/);
   const ownDashboard = await fetch(`${BASE}/api/etablissement/mes-stats`, { headers: { cookie } });
   assert.strictEqual(ownDashboard.status, 200);
+  const ownDashboardData = await ownDashboard.json();
+  assert.strictEqual(ownDashboardData.pointsSolde, 1000);
+  const ownDashboardPage = await fetch(`${BASE}/etablissement-dashboard`, { headers: { cookie } });
+  assert.strictEqual(ownDashboardPage.status, 200);
+  assert.match(await ownDashboardPage.text(), /id="stat-points"/);
   const block = await fetch(`${BASE}/api/blocks`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', cookie },

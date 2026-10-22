@@ -128,12 +128,32 @@
             </div>
             <small class="field-hint">JPG, PNG, WEBP — 5 Mo maximum</small>
           </div>
+          <fieldset class="field field-full signup-product">
+            <legend>Votre première offre</legend>
+            <p class="field-hint">Ajoutez au moins un produit ou une offre pour que votre établissement apparaisse dans le catalogue.</p>
+            <label class="field">
+              <span>Nom du produit ou de l’offre *</span>
+              <input type="text" name="produit_nom" required maxlength="120" placeholder="Ex. Poulet braisé ou Studio meublé" />
+            </label>
+            <label class="field">
+              <span>Prix en FCFA *</span>
+              <input type="number" name="produit_prix" required min="1" max="100000000" step="1" placeholder="Ex. 3500" />
+            </label>
+            <label class="field">
+              <span>Disponibilité</span>
+              <input type="text" name="produit_disponibilite" maxlength="160" value="Disponible" />
+            </label>
+            <label class="field">
+              <span>Description de l’offre</span>
+              <textarea name="produit_description" rows="2" maxlength="2000" placeholder="Détaillez votre produit ou votre offre…"></textarea>
+            </label>
+          </fieldset>
 
           <div class="form-actions step-nav">
             <button type="button" class="ghost-btn" id="btn-prev-2"><span class="arrow">‹</span> Précédent</button>
             <button type="submit" class="primary-btn" id="btn-submit-2">S'inscrire <span class="arrow">›</span></button>
           </div>
-          <p class="auth-link">Vous avez un compte ? <a href="/login">Se connecter</a></p>
+          <p class="auth-link">Vous avez déjà un compte ? <a href="/login">Se connecter</a></p>
         </form>
       </section>
     </main>
