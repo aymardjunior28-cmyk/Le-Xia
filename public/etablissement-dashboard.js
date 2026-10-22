@@ -60,6 +60,8 @@
     document.getElementById('stat-consommees').textContent = data.totalConsumed;
     document.getElementById('stat-restantes').textContent = data.totalRemaining;
     document.getElementById('stat-revenus').textContent = FCFA(data.totalRevenue);
+    document.getElementById('stat-points').textContent =
+      `${Number(data.pointsSolde || 0).toLocaleString('fr-CM')} points`;
 
     renderTable(
       document.getElementById('table-blocs'),

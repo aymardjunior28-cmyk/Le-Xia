@@ -36,3 +36,27 @@ test('validateEstablishmentInput rejects invalid fields and media URLs', () => {
     null
   );
 });
+
+test('note provisoire must be boolean and is stored only with a note', () => {
+  assert.match(
+    establishments.validateEstablishmentInput({
+      ...validEstablishment,
+      note_provisoire: 'true',
+    }),
+    /note_provisoire doit être un booléen/
+  );
+  assert.equal(
+    establishments.buildEstablishment(
+      { ...validEstablishment, note: 8.5, note_provisoire: true },
+      'test-id'
+    ).note_provisoire,
+    true
+  );
+  assert.equal(
+    establishments.buildEstablishment(
+      { ...validEstablishment, note_provisoire: true },
+      'test-id'
+    ).note_provisoire,
+    false
+  );
+});

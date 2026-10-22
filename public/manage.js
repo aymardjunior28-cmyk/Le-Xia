@@ -39,6 +39,13 @@
     adresse: document.getElementById('est-adresse'),
     whatsapp: document.getElementById('est-whatsapp'),
     note: document.getElementById('est-note'),
+    noteProvisoire: document.getElementById('est-note-provisoire'),
+    pointsForm: document.getElementById('points-recharge-form'),
+    pointsEstablishment: document.getElementById('points-establishment'),
+    pointsAmount: document.getElementById('points-amount'),
+    pointsBalances: document.getElementById('points-balances'),
+    pointsError: document.getElementById('points-error'),
+    pointsSuccess: document.getElementById('points-success'),
     photo: document.getElementById('est-photo'),
     photoPreview: document.getElementById('est-photo-preview'),
     description: document.getElementById('est-description'),
@@ -91,9 +98,42 @@
       establishments = items;
       els.count.textContent = String(establishments.length);
       render();
+      await loadPointBalances();
     } catch (err) {
       showError('Impossible de charger les établissements.');
       console.error('Erreur de chargement des établissements :', err);
+    }
+  }
+
+  async function loadPointBalances() {
+    try {
+      const response = await fetch('/api/admin/points');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Impossible de charger les soldes.');
+      const items = data.items || [];
+      const previousSelection = els.pointsEstablishment.value;
+      els.pointsEstablishment.innerHTML =
+        '<option value="">Choisir un établissement</option>' +
+        items.map((item) =>
+          `<option value="${escapeHtml(item.establishmentId)}">${escapeHtml(item.nom)} — ${escapeHtml(item.type)} (${Number(item.points_solde).toLocaleString('fr-CM')} points)</option>`
+        ).join('');
+      if (items.some((item) => item.establishmentId === previousSelection)) {
+        els.pointsEstablishment.value = previousSelection;
+      }
+      els.pointsBalances.innerHTML = `
+        <table>
+          <thead><tr><th>Établissement</th><th>Compte</th><th>Solde</th></tr></thead>
+          <tbody>${items.map((item) => `
+            <tr>
+              <td>${escapeHtml(item.nom)} (${escapeHtml(item.type)})</td>
+              <td>${escapeHtml(item.email || 'Compte non associé')}</td>
+              <td>${Number(item.points_solde).toLocaleString('fr-CM')} points</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+    } catch (err) {
+      els.pointsError.textContent = err.message;
+      els.pointsError.hidden = false;
     }
   }
 
@@ -120,6 +160,7 @@
           </div>
           <h3 class="title">${escapeHtml(e.nom)}</h3>
           <p class="location">WhatsApp ${escapeHtml(e.whatsapp)} • ${(e.products || []).length} produit(s)</p>
+          <p class="location">${Number(e.points_solde || 0).toLocaleString('fr-CM')} points au solde</p>
           ${e.description ? `<p class="description">${escapeHtml(e.description)}</p>` : ''}
         </div>
         <div class="manage-item-actions">
@@ -259,6 +300,7 @@
     els.adresse.value = establishment ? establishment.adresse || '' : '';
     els.whatsapp.value = establishment ? establishment.whatsapp : '';
     els.note.value = establishment && establishment.note != null ? establishment.note : '';
+    els.noteProvisoire.checked = Boolean(establishment && establishment.note_provisoire);
     establishmentPhotoUrl = establishment ? safeImageUrl(establishment.photo) : '';
     if (establishmentPhotoUrl) {
       els.photoPreview.src = establishmentPhotoUrl;
@@ -312,6 +354,7 @@
       adresse: els.adresse.value,
       whatsapp: els.whatsapp.value,
       note: els.note.value,
+      note_provisoire: els.noteProvisoire.checked,
       photo: establishmentPhotoUrl,
       description: els.description.value,
       visibilites: buildVisibilites(els.visibilites.value),
@@ -334,6 +377,32 @@
       load();
     } else {
       showError(data.error || 'Enregistrement impossible', els.formError);
+    }
+  });
+
+  els.pointsForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    els.pointsError.hidden = true;
+    els.pointsSuccess.hidden = true;
+    try {
+      const response = await fetch('/api/admin/points/recharge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          establishmentId: els.pointsEstablishment.value,
+          points: Number(els.pointsAmount.value),
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Recharge impossible.');
+      els.pointsSuccess.textContent =
+        `Recharge effectuée : +${data.points_recharges.toLocaleString('fr-CM')} points. Nouveau solde : ${data.points_solde.toLocaleString('fr-CM')} points.`;
+      els.pointsSuccess.hidden = false;
+      els.pointsAmount.value = '';
+      await load();
+    } catch (err) {
+      els.pointsError.textContent = err.message;
+      els.pointsError.hidden = false;
     }
   });
 

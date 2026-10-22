@@ -18,6 +18,7 @@
   }
 
   nav.replaceChildren();
+  nav.classList.toggle('nav-authenticated', Boolean(user));
   const addLink = (href, text, id) => {
     const link = document.createElement('a');
     link.href = href;

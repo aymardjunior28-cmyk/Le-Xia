@@ -114,6 +114,8 @@ test('un compte établissement ne peut pas accéder au dashboard admin', async (
     body: form,
   });
   assert.strictEqual(signup.status, 201);
+  const signupData = await signup.json();
+  assert.strictEqual(signupData.establishment.points_solde, 1000);
 
   const ownerEmail = form.get('email');
   const login = await fetch(`${BASE}/api/auth/login`, {
@@ -123,6 +125,60 @@ test('un compte établissement ne peut pas accéder au dashboard admin', async (
   });
   assert.strictEqual(login.status, 200);
   const cookie = login.headers.get('set-cookie');
+
+  const profile = await fetch(`${BASE}/api/etablissement/moi`, { headers: { cookie } });
+  assert.strictEqual(profile.status, 200);
+  const profileData = await profile.json();
+  const photoForm = new FormData();
+  photoForm.set('nom', profileData.nom);
+  photoForm.set('type', profileData.type);
+  photoForm.set('quartier', profileData.quartier);
+  photoForm.set('whatsapp', profileData.whatsapp);
+  photoForm.set('adresse', profileData.adresse || '');
+  photoForm.set('categorie', profileData.categorie || '');
+  photoForm.set('description', profileData.description || '');
+  photoForm.set('photoUrl', profileData.photo || '');
+  photoForm.set('statut', profileData.statut || 'actif');
+  photoForm.append(
+    'photo',
+    new Blob([
+      Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgWJ9awAAAABJRU5ErkJggg==',
+        'base64'
+      ),
+    ], { type: 'image/png' }),
+    'profile.png'
+  );
+  const profileUpdate = await fetch(`${BASE}/api/etablissement/moi`, {
+    method: 'PUT',
+    headers: { cookie },
+    body: photoForm,
+  });
+  assert.strictEqual(profileUpdate.status, 200);
+  const updatedProfile = await profileUpdate.json();
+  assert.match(updatedProfile.photo, /^\/uploads\/.+\.png$/);
+  fs.rmSync(path.join(ROOT, 'public', updatedProfile.photo.slice(1)), { force: true });
+
+  const keepPhoto = await fetch(`${BASE}/api/etablissement/moi`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', cookie },
+    body: JSON.stringify({
+      nom: updatedProfile.nom,
+      type: updatedProfile.type,
+      quartier: updatedProfile.quartier,
+      whatsapp: updatedProfile.whatsapp,
+      adresse: updatedProfile.adresse,
+      categorie: updatedProfile.categorie,
+      description: updatedProfile.description,
+      photoUrl: updatedProfile.photo,
+      statut: updatedProfile.statut,
+      points_solde: 999999,
+    }),
+  });
+  assert.strictEqual(keepPhoto.status, 200);
+  const keptProfile = await keepPhoto.json();
+  assert.strictEqual(keptProfile.photo, updatedProfile.photo);
+  assert.strictEqual(keptProfile.points_solde, 1000);
 
   const api = await fetch(`${BASE}/api/dashboard`, { headers: { cookie } });
   assert.strictEqual(api.status, 403);
@@ -209,6 +265,8 @@ test('routes sensibles protégées : /manage et /api/upload sans session', async
 
   const upload = await fetch(`${BASE}/api/upload`, { method: 'POST' });
   assert.strictEqual(upload.status, 401);
+  const points = await fetch(`${BASE}/api/admin/points`);
+  assert.strictEqual(points.status, 401);
   const block = await fetch(`${BASE}/api/blocks`, { method: 'POST' });
   assert.strictEqual(block.status, 401);
 });

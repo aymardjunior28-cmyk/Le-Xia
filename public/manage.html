@@ -20,11 +20,8 @@
     <header class="topbar">
       <div class="container nav">
         <div class="brand-wrap">
-          <div class="brand-mark">D</div>
-          <div>
-            <div class="brand-name">Douala Discovery</div>
-            <small>Super-admin</small>
-          </div>
+          <div class="brand-logo-placeholder" role="img" aria-label="Emplacement du logo"></div>
+          <small>Super-admin</small>
         </div>
         <nav>
           <a href="/">Accueil</a>
@@ -44,6 +41,27 @@
       </div>
 
       <p class="auth-error" id="manage-error" hidden></p>
+
+      <section class="panel points-admin-panel">
+        <h2>Recharger les points d’un établissement</h2>
+        <p class="panel-sub">Chaque compte dispose de son propre solde. Les recharges sont saisies par multiples de 50 points.</p>
+        <form id="points-recharge-form" class="points-recharge-form">
+          <label class="field">
+            <span>Établissement</span>
+            <select id="points-establishment" required>
+              <option value="">Choisir un établissement</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Points à recharger</span>
+            <input type="number" id="points-amount" min="50" step="50" required placeholder="Ex. 1000" />
+          </label>
+          <button class="primary-btn" type="submit">Recharger</button>
+        </form>
+        <p class="auth-error" id="points-error" hidden></p>
+        <p class="auth-success" id="points-success" hidden></p>
+        <div class="table-wrap" id="points-balances"></div>
+      </section>
 
       <!-- Formulaire (création / édition) -->
       <section class="panel reveal" id="establishment-form-panel" data-reveal-index="1" hidden>
@@ -87,6 +105,11 @@
           <label class="field">
             <span>Note (0 – 10)</span>
             <input type="number" id="est-note" min="0" max="10" step="0.1" placeholder="Ex : 8.5" />
+          </label>
+
+          <label class="field-full note-provisional-field">
+            <input type="checkbox" id="est-note-provisoire" />
+            <span>Note provisoire (démonstration, à remplacer)</span>
           </label>
 
           <label class="field field-full">
@@ -133,7 +156,6 @@
 
     <script src="/ui.js"></script>
     <script src="/nav.js"></script>
-    <script src="/scramble.js"></script>
     <script src="/manage.js"></script>
   </body>
 </html>

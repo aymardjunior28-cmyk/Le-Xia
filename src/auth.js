@@ -72,7 +72,11 @@ function ensureSuperAdmin(users, { email, password, nom = 'Super Administrateur'
   const existingSuperAdmin = Array.isArray(users)
     ? users.find((user) => user.role === ROLES.SUPER_ADMIN)
     : null;
-  if (existingSuperAdmin && normalizeEmail(existingSuperAdmin.email) !== LEGACY_SUPERADMIN_EMAIL) {
+  const hasConfig = email !== undefined || password !== undefined;
+  const isLegacySuperAdmin =
+    existingSuperAdmin &&
+    normalizeEmail(existingSuperAdmin.email) === LEGACY_SUPERADMIN_EMAIL;
+  if (existingSuperAdmin && !hasConfig && !isLegacySuperAdmin) {
     return false;
   }
   const normalizedEmail = normalizeEmail(email);

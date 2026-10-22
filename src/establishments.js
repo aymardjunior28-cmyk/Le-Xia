@@ -9,6 +9,7 @@
 
 const VALID_TYPES = ['restaurant', 'meuble'];
 const crypto = require('crypto');
+const INITIAL_POINTS_BALANCE = 1000;
 const FIELD_LIMITS = {
   nom: 120,
   quartier: 100,
@@ -104,6 +105,9 @@ function validateEstablishmentInput(body) {
       return 'note doit être comprise entre 0 et 10';
     }
   }
+  if (body.note_provisoire !== undefined && typeof body.note_provisoire !== 'boolean') {
+    return 'note_provisoire doit être un booléen';
+  }
   if (body.products !== undefined) {
     if (!Array.isArray(body.products)) return 'products doit être une liste';
     for (const product of body.products) {
@@ -173,6 +177,8 @@ function buildEstablishment(body, establishmentId) {
     categorie: str(body.categorie),
     photo: str(body.photo),
     note: normalizeNote(body.note),
+    note_provisoire: body.note_provisoire === true && normalizeNote(body.note) !== null,
+    points_solde: INITIAL_POINTS_BALANCE,
     description: str(body.description),
     visibilites,
     horaires: str(body.horaires),
@@ -192,6 +198,7 @@ function generateId(type) {
 
 module.exports = {
   VALID_TYPES,
+  INITIAL_POINTS_BALANCE,
   str,
   cleanPhone,
   normalizeNote,

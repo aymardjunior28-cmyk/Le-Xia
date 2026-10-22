@@ -5,21 +5,25 @@ Feed de découverte locale pour **Douala** (restaurants & meublés), avec :
 - **Attribution WhatsApp** : chaque clic génère un identifiant unique embarqué dans le message WhatsApp envoyé au professionnel, permettant de tracer la conversation jusqu'à son origine.
 - **Facturation par blocs prépayés** : le professionnel achète un bloc de conversations, consommé automatiquement à chaque conversation attribuée.
 - **Anti-fraude** : filtrage des bots, des doublons et des bursts de clics.
+- **Solde de points** : 1 000 points à la création d'un établissement, débit de 50 points par redirection acceptée et recharges réservées au super-admin.
 - **Dashboard** : mesures de performance (conversion, coût/conversation, rentabilité par verticale/établissement/quartier).
 
 ## Démarrage
 
-Au premier démarrage, fournissez les identifiants d'initialisation du super-admin
-via l'environnement. Utilisez un mot de passe aléatoire d'au moins 12 caractères ;
-il est haché puis seul le hash est conservé. Aucune identité/mot de passe par défaut
-n'est fourni par l'application.
+En développement local, le premier démarrage crée un mot de passe aléatoire pour
+le super-admin et l'affiche une seule fois dans le terminal. Conservez-le : seul
+son hash est persisté. En production, les identifiants doivent être configurés
+explicitement via l'environnement.
 
 ```bash
 npm install
-export SUPERADMIN_EMAIL="admin@votre-domaine.cm"
-export SUPERADMIN_PASSWORD="<mot-de-passe-aléatoire-d'au-moins-12-caractères>"
 npm start          # démarre le serveur sur http://localhost:3000
 ```
+
+Pour contrôler les identifiants en développement, ou initialiser le compte en
+production, fournissez `SUPERADMIN_EMAIL` et `SUPERADMIN_PASSWORD` avant le
+démarrage. Utilisez une adresse valide et un mot de passe aléatoire de 12 à
+1024 caractères.
 
 Après la création initiale, le compte est conservé dans `data/users.json` et ces
 variables ne sont plus nécessaires. Si l'application est déployée derrière un
@@ -53,7 +57,7 @@ data/                Données persistées (générées, ignorées par git)
 
 ## Modèle de données (schéma français)
 
-- **Établissement** (`§8.1`) : `id`, `nom`, `type` (restaurant|meuble), `quartier`, `whatsapp`, `products[]`.
+- **Établissement** (`§8.1`) : `id`, `nom`, `type` (restaurant|meuble), `quartier`, `whatsapp`, `points_solde`, `products[]`.
 - **Produit** (`§8.2`) : `id`, `id_etablissement`, `nom`, `prix`, `disponibilite`, `photo`, `description`.
 - **Clic** (`§8.3`) : `id_clic` (format `YYYYMMDD_HHMMSS_xxxx`), `id_etablissement`, `id_produit`, `source`, `canal`, `zone_geo`, `session_id`, `is_attributed`, `status` (pending|attributed), `id_conversation`.
 - **Bloc** (`§8.4`) : `id_bloc`, `id_etablissement`, `type_verticale`, `nombre_conversations`, `conversations_consommees`, `prix_unitaire`, `montant_total`, `statut`.
@@ -67,6 +71,8 @@ data/                Données persistées (générées, ignorées par git)
 
 Les blocs sont valables 90 jours. Toute conversation attribuée consomme une unité du bloc actif (FIFO).
 
+Chaque établissement commence avec 1 000 points. Un clic accepté par l'anti-fraude et redirigé vers WhatsApp débite 50 points ; les clics refusés ne débitent rien. À moins de 50 points, le bouton de redirection est désactivé. Le super-admin recharge les soldes par multiples de 50 depuis `/manage`.
+
 ## API
 
 | Méthode | Route                                      | Description                                  |
@@ -76,6 +82,8 @@ Les blocs sont valables 90 jours. Toute conversation attribuée consomme une uni
 | GET     | `/api/establishment/:id`                   | Détail d'un établissement                    |
 | POST    | `/api/establishments`                      | Créer un établissement (produits embarqués)  |
 | POST    | `/api/blocks`                              | Créer un bloc prépayé (super-admin)          |
+| GET     | `/api/admin/points`                        | Soldes des établissements (super-admin)      |
+| POST    | `/api/admin/points/recharge`               | Recharger un solde (super-admin)              |
 | POST    | `/api/redirect`                            | Clic attribué → URL WhatsApp + consommation  |
 | GET     | `/api/dashboard`                           | Données brutes pour le dashboard             |
 | GET     | `/api/product/:establishmentId/:productId` | Fiche produit                                |
@@ -87,6 +95,8 @@ Les blocs sont valables 90 jours. Toute conversation attribuée consomme une uni
 | `/`                            | Feed + filtres (type/quartier/prix) |
 | `/produit/:establishmentId/:productId` | Fiche produit dédiée    |
 | `/dashboard`                   | Dashboard administrateur       |
+| `/manage`                      | Gestion et recharge des établissements |
+| `/etablissement-dashboard`     | Statistiques et solde de points de l'établissement |
 
 ## Exemple d'attribution
 

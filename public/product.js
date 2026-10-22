@@ -109,7 +109,14 @@ async function loadProduct() {
       scoreContainer.querySelector('small').textContent = 'note de l’établissement';
     }
 
-    document.getElementById('whatsapp-btn').addEventListener('click', async () => {
+    const whatsappButton = document.getElementById('whatsapp-btn');
+    if (establishment.points_actifs === false) {
+      whatsappButton.disabled = true;
+      whatsappButton.textContent = 'Solde épuisé';
+      whatsappButton.title = 'Cet établissement doit être rechargé par le super-admin.';
+      whatsappButton.classList.add('points-exhausted');
+    }
+    whatsappButton.addEventListener('click', async () => {
       try {
         const redirectResponse = await fetch('/api/redirect', {
           method: 'POST',
@@ -126,6 +133,11 @@ async function loadProduct() {
         if (redirectResponse.ok && result.whatsappUrl) {
           window.location.href = result.whatsappUrl;
         } else {
+          if (result.reason === 'insufficient_points') {
+            whatsappButton.disabled = true;
+            whatsappButton.classList.add('points-exhausted');
+            whatsappButton.textContent = 'Solde épuisé';
+          }
           alert(result.error || 'Redirection impossible pour le moment.');
         }
       } catch (err) {

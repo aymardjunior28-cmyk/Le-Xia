@@ -79,7 +79,17 @@ test('POST /api/redirect : clic valide crée un événement et consomme un bloc'
   });
   assert.strictEqual(createEst.status, 201);
   const est = await createEst.json();
+  assert.strictEqual(est.points_solde, 1000);
   const productId = (est.products || [])[0].id;
+  const publicEstablishments = await fetch(`${BASE}/api/establishments`);
+  const publicItems = await publicEstablishments.json();
+  const publicEst = publicItems.items.find((item) => item.id === est.id);
+  assert.strictEqual(publicEst.points_actifs, true);
+  assert.strictEqual(publicEst.points_solde, undefined);
+  const publicProduct = await fetch(`${BASE}/api/product/${est.id}/${productId}`);
+  const productData = await publicProduct.json();
+  assert.strictEqual(productData.establishment.points_actifs, true);
+  assert.strictEqual(productData.establishment.points_solde, undefined);
 
   // Créer un bloc de 2 conversations
   const createBlock = await fetch(`${BASE}/api/blocks`, {
@@ -111,6 +121,85 @@ test('POST /api/redirect : clic valide crée un événement et consomme un bloc'
   assert.ok(data.whatsappUrl.includes(data.clickId), 'whatsappUrl doit contenir le clickId');
   assert.strictEqual(data.billing.consumed, true, 'Le bloc doit être consommé');
   assert.strictEqual(data.billing.remaining, 1, 'Il doit rester 1 conversation');
+  assert.strictEqual(data.pointsDebited, 50);
+  assert.strictEqual(data.pointsSolde, 950);
+
+  // Les tentatives rejetées (doublon) ne débitent rien.
+  const duplicate = await fetch(`${BASE}/api/redirect`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      establishmentId: est.id,
+      productId,
+      source: 'home_feed',
+      sessionId: 'session-test-1',
+    }),
+  });
+  assert.strictEqual(duplicate.status, 429);
+
+  // Dépenser exactement le solde, puis vérifier que les clics sont bloqués.
+  for (let index = 0; index < 19; index += 1) {
+    const response = await fetch(`${BASE}/api/redirect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        establishmentId: est.id,
+        productId,
+        source: 'home_feed',
+        sessionId: `session-exhaust-${index}`,
+      }),
+    });
+    assert.strictEqual(response.status, 200);
+  }
+  const exhausted = await fetch(`${BASE}/api/redirect`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      establishmentId: est.id,
+      productId,
+      source: 'home_feed',
+      sessionId: 'session-no-points',
+    }),
+  });
+  assert.strictEqual(exhausted.status, 402);
+  assert.strictEqual((await exhausted.json()).reason, 'insufficient_points');
+
+  const inactiveListing = await fetch(`${BASE}/api/establishment/${est.id}`);
+  assert.strictEqual((await inactiveListing.json()).points_actifs, false);
+
+  // Recharge réservée au super-admin et utilisable dès la requête suivante.
+  const invalidRecharge = await fetch(`${BASE}/api/admin/points/recharge`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', cookie },
+    body: JSON.stringify({ establishmentId: est.id, points: 75 }),
+  });
+  assert.strictEqual(invalidRecharge.status, 400);
+  const recharge = await fetch(`${BASE}/api/admin/points/recharge`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', cookie },
+    body: JSON.stringify({ establishmentId: est.id, points: 50 }),
+  });
+  assert.strictEqual(recharge.status, 200);
+  assert.strictEqual((await recharge.json()).points_solde, 50);
+  const pointBalances = await fetch(`${BASE}/api/admin/points`, { headers: { cookie } });
+  const pointItems = await pointBalances.json();
+  assert.strictEqual(
+    pointItems.items.find((item) => item.establishmentId === est.id).points_solde,
+    50
+  );
+
+  const afterRecharge = await fetch(`${BASE}/api/redirect`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      establishmentId: est.id,
+      productId,
+      source: 'home_feed',
+      sessionId: 'session-after-recharge',
+    }),
+  });
+  assert.strictEqual(afterRecharge.status, 200);
+  assert.strictEqual((await afterRecharge.json()).pointsSolde, 0);
 });
 
 test('POST /api/redirect : refuse un bot (User-Agent curl)', async () => {

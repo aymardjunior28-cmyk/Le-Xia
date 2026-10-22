@@ -17,7 +17,7 @@ function safeImageUrl(value) {
 }
 
 /**
- * Verdict associé à une note réelle (0-10) saisie par le super-admin.
+ * Verdict associé à une note (0-10) saisie dans l'administration.
  */
 function noteVerdict(note) {
   const value = Number(note);
@@ -51,6 +51,8 @@ function flattenProducts(establishments) {
         photo: product.photo,
         description: product.description,
         note: establishment.note != null ? establishment.note : null,
+        noteProvisoire: establishment.note_provisoire === true,
+        pointsActifs: establishment.points_actifs !== false,
       });
     });
   });
@@ -154,6 +156,7 @@ function renderEstablishments() {
   items.forEach((item) => {
     const clone = template.content.cloneNode(true);
     const card = clone.querySelector('.card');
+    const discoverButton = clone.querySelector('.primary-btn');
     // Aucune classe d'animation : rendu immédiat.
     clone.querySelector('.card-image').src = safeImageUrl(item.photo);
     clone.querySelector('.card-image').alt = item.name;
@@ -163,15 +166,28 @@ function renderEstablishments() {
     clone.querySelector('.title').textContent = item.name;
     clone.querySelector('.location').textContent = `${item.quartier} • ${item.availability}`;
     clone.querySelector('.description').textContent = item.description;
+    if (!item.pointsActifs) {
+      card.classList.add('points-exhausted');
+      discoverButton.disabled = true;
+      discoverButton.textContent = 'Solde épuisé';
+      discoverButton.title = 'Cet établissement doit être rechargé par le super-admin.';
+    }
 
-    // N'afficher que les notes réellement renseignées.
-    if (item.note != null) {
-      const { score, word } = noteVerdict(item.note);
-      clone.querySelector('.score-box').textContent = score;
-      clone.querySelector('.score-word').textContent = word;
-      clone.querySelector('.score-verdict small').textContent = 'note de l’établissement';
+    const scoreBox = clone.querySelector('.score-box');
+    const scoreWord = clone.querySelector('.score-word');
+    const scoreSource = clone.querySelector('.score-verdict small');
+    const rating = Number(item.note);
+    if (item.note != null && Number.isFinite(rating) && rating >= 0 && rating <= 10) {
+      const { score, word } = noteVerdict(rating);
+      scoreBox.textContent = `${score}/10`;
+      scoreWord.textContent = word;
+      scoreSource.textContent = item.noteProvisoire
+        ? 'Note provisoire de démonstration'
+        : 'Note attribuée par l’administration';
     } else {
-      clone.querySelector('.score').remove();
+      scoreBox.textContent = '—';
+      scoreWord.textContent = 'Pas encore noté';
+      scoreSource.textContent = 'Aucune note renseignée';
     }
 
     // Clic sur la carte → fiche produit dédiée (§10.2).
@@ -183,7 +199,7 @@ function renderEstablishments() {
     });
 
     // Bouton "Découvrir plus" → redirection WhatsApp attribuée.
-    clone.querySelector('.primary-btn').addEventListener('click', async () => {
+    discoverButton.addEventListener('click', async () => {
       const payload = {
         establishmentId: item.establishmentId,
         productId: item.productId,
@@ -204,6 +220,11 @@ function renderEstablishments() {
         if (response.ok && result.whatsappUrl) {
           window.location.href = result.whatsappUrl;
         } else {
+          if (result.reason === 'insufficient_points') {
+            discoverButton.disabled = true;
+            card.classList.add('points-exhausted');
+            discoverButton.textContent = 'Solde épuisé';
+          }
           alert(result.error || 'Redirection impossible pour le moment.');
         }
       } catch (err) {

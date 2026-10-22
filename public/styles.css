@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 :root {
   --bg: #fdfbf7;
   --bg-2: #f3f6fb;
@@ -497,6 +496,9 @@ nav a:hover {
 
 .card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: var(--glass-bg);
   -webkit-backdrop-filter: blur(var(--glass-blur));
   backdrop-filter: blur(var(--glass-blur));
@@ -541,16 +543,15 @@ nav a:hover {
   opacity: 1;
 }
 
-/* Animation d'apparition au scroll (pilotée par ui.js). */
+/* Animations d'apparition désactivées dans ui.js : garder le contenu visible. */
 .reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 1;
+  transform: none;
 }
 
 .reveal.in-view {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
 /* Spotlight qui suit le curseur sur les cartes tilt (props --mx/--my de ui.js). */
@@ -574,7 +575,10 @@ nav a:hover {
 }
 
 .card-body {
-  padding: 18px 18px 20px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 14px 16px 16px;
   position: relative;
   z-index: 1;
 }
@@ -592,38 +596,40 @@ nav a:hover {
   background: rgba(47, 109, 246, 0.1);
   color: var(--primary);
   border-radius: 999px;
-  padding: 5px 12px;
-  font-size: 12px;
+  padding: 4px 9px;
+  font-size: 10px;
   font-weight: 700;
 }
 
 .pricing {
   font-weight: 800;
   color: var(--sale);
-  font-size: 1.15rem;
+  font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 /* Indice de confiance façon comparateur (carré coloré + verdict). */
 .score {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .score-box {
   background: linear-gradient(135deg, var(--success), #22c39a);
   color: #fff;
   font-weight: 800;
-  border-radius: 12px;
-  padding: 7px 10px;
-  font-size: 1.05rem;
-  min-width: 44px;
+  border-radius: 9px;
+  padding: 5px 7px;
+  font-size: 0.82rem;
+  min-width: 38px;
   text-align: center;
-  box-shadow: 0 6px 16px rgba(16, 163, 127, 0.32);
+  box-shadow: 0 3px 9px rgba(16, 163, 127, 0.22);
 }
 
 .score-verdict {
+  font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.1;
 }
@@ -632,40 +638,62 @@ nav a:hover {
   display: block;
   color: var(--muted);
   font-weight: 600;
+  font-size: 0.68rem;
+  margin-top: 3px;
 }
 
 .title {
-  margin: 16px 0 8px;
-  font-size: 1.4rem;
+  display: -webkit-box;
+  min-height: 2.5em;
+  margin: 10px 0 5px;
+  overflow: hidden;
+  font-size: 1.08rem;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .location {
-  margin: 0 0 12px;
+  display: -webkit-box;
+  min-height: 2.6em;
+  margin: 0 0 8px;
+  overflow: hidden;
   color: var(--muted);
+  font-size: 0.78rem;
   font-weight: 600;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .description {
-  margin: 0 0 18px;
+  display: -webkit-box;
+  min-height: 2.8em;
+  margin: 0 0 12px;
+  overflow: hidden;
   color: var(--muted);
-  line-height: 1.6;
-  min-height: 52px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .cta-row {
   display: flex;
   justify-content: flex-end;
+  margin-top: auto;
 }
 
 .primary-btn {
   position: relative;
   overflow: hidden;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: linear-gradient(135deg, var(--accent), #ff9d5c);
   color: white;
   font-weight: 700;
-  padding: 12px 20px;
+  padding: 9px 14px;
+  font-size: 0.82rem;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(255, 122, 47, 0.32);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -925,43 +953,6 @@ tbody tr:hover {
 
   nav a {
     padding: 7px 10px;
-  }
-}
-
-
-/* ---------------------------------------------------------------------------
-   Animation de décryptage "effet hacker" (pilotée par scramble.js).
-   Le texte apparaît d'abord sous forme de chiffres qui défilent, puis se
-   révèle lettre par lettre (gauche -> droite), avec un léger halo et un
-   curseur clignotant façon terminal pendant la résolution.
-   --------------------------------------------------------------------------- */
-.is-scrambling {
-  color: var(--primary);
-  text-shadow: 0 0 10px rgba(47, 109, 246, 0.35);
-  font-variant-numeric: tabular-nums;
-}
-
-.is-scrambling::after {
-  content: '';
-  display: inline-block;
-  width: 0.5em;
-  height: 0.95em;
-  margin-left: 3px;
-  vertical-align: -0.1em;
-  background: var(--primary);
-  box-shadow: 0 0 8px rgba(47, 109, 246, 0.55);
-  user-select: none;
-  animation: scramble-caret 0.1s steps(1) infinite;
-}
-
-@keyframes scramble-caret {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
   }
 }
 
@@ -1398,7 +1389,6 @@ tbody tr:hover {
   background: #fff;
   width: 100%;
 }
-=======
 :root {
   --bg: #fdfbf7;
   --bg-2: #f3f6fb;
@@ -2189,32 +2179,6 @@ tbody tr:hover {
 }
 
 
-/* ---------------------------------------------------------------------------
-   Animation de décryptage "effet hacker" (pilotée par scramble.js).
-   Le texte apparaît d'abord sous forme de chiffres qui défilent, puis se
-   révèle lettre par lettre (gauche -> droite), avec un léger halo et un
-   curseur clignotant façon terminal pendant la résolution.
-   --------------------------------------------------------------------------- */
-.is-scrambling {
-  color: var(--primary);
-  text-shadow: 0 0 10px rgba(47, 109, 246, 0.35);
-  font-variant-numeric: tabular-nums;
-}
-
-.is-scrambling::after {
-  content: '';
-  display: inline-block;
-  width: 0.5em;
-  height: 0.95em;
-  margin-left: 3px;
-  vertical-align: -0.1em;
-  background: var(--primary);
-  box-shadow: 0 0 8px rgba(47, 109, 246, 0.55);
-  user-select: none;
-}
-
-
-
 /* ===========================================================================
    Authentification, gestion des admins, graphiques & nav dynamique
    =========================================================================== */
@@ -2649,6 +2613,7 @@ tbody tr:hover {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0);
+}
 }
 
 /* --- Page gestion des admins --- */
@@ -3092,4 +3057,449 @@ tbody tr:hover {
     font-size: 1.45rem;
   }
 }
->>>>>>> refs/remotes/origin/main
+
+.dashboard-card {
+  width: 100%;
+  max-width: none;
+}
+
+.dashboard-card .metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dashboard-card .table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.dashboard-card #table-blocs table {
+  min-width: 780px;
+}
+
+.dashboard-card #table-clics table {
+  min-width: 650px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-card .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-card {
+    padding: 24px 16px;
+  }
+
+  .dashboard-card .metrics {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .dashboard-card .metric-card {
+    padding: 16px;
+  }
+
+  .dashboard-card .panel {
+    padding: 18px 14px;
+  }
+}
+
+/* Cartes du catalogue : hauteur et blocs cohérents, détails plus discrets. */
+.card-grid {
+  align-items: stretch;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-image {
+  flex: 0 0 auto;
+}
+
+.card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 14px 16px 16px;
+}
+
+.badge {
+  padding: 4px 9px;
+  font-size: 10px;
+}
+
+.pricing {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.title {
+  display: -webkit-box;
+  min-height: 2.5em;
+  margin: 10px 0 5px;
+  overflow: hidden;
+  font-size: 1.08rem;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.location {
+  display: -webkit-box;
+  min-height: 2.6em;
+  margin: 0 0 8px;
+  overflow: hidden;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.description {
+  display: -webkit-box;
+  min-height: 2.8em;
+  margin: 0 0 12px;
+  overflow: hidden;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.score {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.score-box {
+  min-width: 38px;
+  padding: 5px 7px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  box-shadow: 0 3px 9px rgba(16, 163, 127, 0.22);
+}
+
+.score-verdict {
+  font-size: 0.82rem;
+}
+
+.score-verdict small {
+  margin-top: 3px;
+  font-size: 0.68rem;
+}
+
+.cta-row {
+  margin-top: auto;
+}
+
+.cta-row .primary-btn {
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+}
+
+.card.points-exhausted .primary-btn,
+.primary-btn.points-exhausted {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.note-provisional-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.note-provisional-field input {
+  width: auto;
+  margin: 0;
+}
+
+.topbar .nav {
+  width: min(1240px, calc(100% - 32px));
+  max-width: 1240px;
+  flex-wrap: nowrap;
+}
+
+.brand-logo-placeholder {
+  display: grid;
+  flex: 0 0 170px;
+  width: 170px;
+  height: 46px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.brand-logo-placeholder::before {
+  content: 'Logo';
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.topbar .nav > .brand-wrap {
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.topbar .nav nav,
+.topbar .nav nav a,
+.nav-user {
+  white-space: nowrap;
+}
+
+.nav-user {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar .nav nav {
+  flex-wrap: nowrap;
+}
+
+.points-balance-card {
+  grid-column: span 2;
+}
+
+.points-balance-card small {
+  display: block;
+  max-width: 52ch;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.points-admin-panel h2 {
+  margin-top: 0;
+}
+
+.points-recharge-form {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr) auto;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.points-recharge-form .field {
+  min-width: 0;
+}
+
+.points-recharge-form input,
+.points-recharge-form select {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.points-recharge-form .primary-btn {
+  white-space: nowrap;
+}
+
+.points-admin-panel .table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.points-admin-panel table {
+  min-width: 600px;
+}
+
+html {
+  overflow-x: clip;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: none;
+}
+
+.profile-card #form-profil {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 18px;
+}
+
+.profile-card #form-profil .field {
+  min-width: 0;
+}
+
+.profile-card #form-profil input,
+.profile-card #form-profil select,
+.profile-card #form-profil textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.profile-card #form-profil .field:nth-of-type(7),
+.profile-card #form-profil .form-actions {
+  grid-column: 1 / -1;
+}
+
+.dashboard-page .table-wrap table {
+  min-width: 760px;
+}
+
+@media (max-width: 900px) {
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topbar .nav.nav-authenticated {
+    flex-wrap: wrap;
+  }
+
+  .topbar .nav.nav-authenticated nav {
+    flex: 1 0 100%;
+    justify-content: center;
+  }
+
+  .manage-page .product-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .points-recharge-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .points-recharge-form .primary-btn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .profile-card #form-profil {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile-card #form-profil .field:nth-of-type(7),
+  .profile-card #form-profil .form-actions {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .topbar .nav {
+    flex-wrap: wrap;
+  }
+
+  .brand-logo-placeholder {
+    flex-basis: 130px;
+    width: 130px;
+    height: 40px;
+  }
+
+  .topbar .nav > .brand-wrap {
+    flex: 1 1 auto;
+  }
+
+  .topbar .nav > small {
+    display: none;
+  }
+
+  .topbar .nav nav {
+    flex: 1 0 100%;
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .topbar .nav nav a {
+    padding: 7px 9px;
+    font-size: 0.82rem;
+  }
+
+  .nav-user {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .points-balance-card {
+    grid-column: auto;
+  }
+
+  .points-recharge-form {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .points-recharge-form .primary-btn {
+    grid-column: auto;
+  }
+
+  .card-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .card-image {
+    height: 165px;
+  }
+
+  .card-body {
+    padding: 13px 14px 14px;
+  }
+
+  .card .cta-row {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 380px) {
+  .card-grid {
+    gap: 12px;
+  }
+
+  .card-image {
+    height: 145px;
+  }
+
+  .card-body {
+    padding: 12px;
+  }
+
+  .card .meta-row {
+    gap: 6px;
+  }
+
+  .card .pricing {
+    font-size: 0.88rem;
+  }
+
+  .card .title {
+    font-size: 1rem;
+  }
+
+  .card .cta-row .primary-btn {
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-page .panel {
+    padding: 18px 14px;
+  }
+}

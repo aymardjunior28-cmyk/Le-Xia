@@ -13,11 +13,8 @@
     <header class="topbar">
       <div class="container nav">
         <div class="brand-wrap">
-          <div class="brand-mark">D</div>
-          <div>
-            <div class="brand-name">Douala Discovery</div>
-            <small>Mon établissement</small>
-          </div>
+          <div class="brand-logo-placeholder" role="img" aria-label="Emplacement du logo"></div>
+          <small>Mon établissement</small>
         </div>
         <nav>
           <a href="/">Accueil</a>
@@ -26,7 +23,7 @@
     </header>
 
     <main class="container page">
-      <section class="auth-card">
+      <section class="auth-card profile-card">
         <h2>Mon profil établissement</h2>
         <p class="auth-sub">Gérez les informations de votre établissement. Vos clients vous retrouveront via ce profil.</p>
 
@@ -71,8 +68,15 @@
           </div>
 
           <div class="field">
-            <span>Photo (URL)</span>
-            <input type="url" name="photo" />
+            <span>Photo de l’établissement</span>
+            <label class="file-label profile-photo-label">
+              <span class="field-icon" aria-hidden="true">📷</span>
+              Choisir une photo
+              <input type="file" name="photo" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" />
+            </label>
+            <input type="hidden" name="photoUrl" />
+            <small class="field-hint">JPG, PNG, WEBP, GIF ou AVIF — 5 Mo maximum. Laissez vide pour conserver la photo actuelle.</small>
+            <img id="profile-photo-preview" class="photo-preview" alt="Aperçu de la photo de l’établissement" hidden />
           </div>
           <div class="field">
             <span>Statut</span>

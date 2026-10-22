@@ -13,11 +13,8 @@
     <header class="topbar">
       <div class="container nav">
         <div class="brand-wrap">
-          <div class="brand-mark">D</div>
-          <div>
-            <div class="brand-name">Douala Discovery</div>
-            <small>Mon tableau de bord</small>
-          </div>
+          <div class="brand-logo-placeholder" role="img" aria-label="Emplacement du logo"></div>
+          <small>Mon tableau de bord</small>
         </div>
         <nav>
           <a href="/">Accueil</a>
@@ -26,7 +23,7 @@
     </header>
 
     <main class="container page">
-      <section class="auth-card">
+      <section class="auth-card dashboard-card">
         <h2>Mon tableau de bord</h2>
         <p class="auth-sub">Suivez vos clics, vos conversations attribuées et la consommation de votre bloc prépayé.</p>
 
@@ -60,6 +57,12 @@
           <div class="metric-card">
             <span class="metric-label">Revenus (blocs achetés)</span>
             <strong class="metric-value" id="stat-revenus">0 FCFA</strong>
+          </div>
+          <div class="metric-card points-balance-card">
+            <span class="metric-label">Solde de points</span>
+            <strong class="metric-value" id="stat-points">1 000 points</strong>
+            <small id="points-policy">Chaque clic accepté sur « Découvrir plus » coûte 50 points. À 0 point, le bouton est désactivé. Seul le super-admin peut recharger votre solde.</small>
+            <span class="metric-label">Rechargez votre compte auprès de l’équipe d’administration.</span>
           </div>
         </div>
 

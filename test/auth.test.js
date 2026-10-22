@@ -46,3 +46,26 @@ test('ensureSuperAdmin réinitialise le compte super-admin historique', () => {
     true
   );
 });
+
+test('ensureSuperAdmin permet de réinitialiser un compte existant via configuration', () => {
+  const users = [{
+    id: 'admin-existing',
+    email: 'previous@example.cm',
+    role: auth.ROLES.SUPER_ADMIN,
+    password_hash: 'old',
+    password_salt: 'old',
+  }];
+  assert.strictEqual(
+    auth.ensureSuperAdmin(users, {
+      email: 'current@example.cm',
+      password: 'Another-secure-password!',
+    }),
+    true
+  );
+  assert.strictEqual(users.length, 1);
+  assert.strictEqual(users[0].email, 'current@example.cm');
+  assert.strictEqual(
+    auth.verifyPassword('Another-secure-password!', users[0].password_salt, users[0].password_hash),
+    true
+  );
+});

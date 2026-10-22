@@ -50,18 +50,55 @@ const establishments = loadCollection('establishments', seedEstablishments);
 const clickLogs = loadCollection('clickLogs', []);
 const blocks = loadCollection('blocks', []);
 const users = loadCollection('users', []);
-if (auth.ensureSuperAdmin(users, {
+const hasSuperAdmin = users.some((user) => user.role === auth.ROLES.SUPER_ADMIN);
+const hasLegacySuperAdmin = users.some(
+  (user) =>
+    user.role === auth.ROLES.SUPER_ADMIN &&
+    auth.normalizeEmail(user.email) === 'superadmin@douala.cm'
+);
+let superAdminConfig = {
   email: process.env.SUPERADMIN_EMAIL,
   password: process.env.SUPERADMIN_PASSWORD,
-})) {
+};
+let generatedSuperAdminPassword;
+if (
+  (!hasSuperAdmin || hasLegacySuperAdmin) &&
+  !superAdminConfig.email &&
+  !superAdminConfig.password
+) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('En production, configure SUPERADMIN_EMAIL et SUPERADMIN_PASSWORD avant le démarrage.');
+  }
+  superAdminConfig = {
+    email: 'superadmin@localhost.local',
+    password: crypto.randomBytes(24).toString('base64url'),
+  };
+  generatedSuperAdminPassword = superAdminConfig.password;
+}
+if (auth.ensureSuperAdmin(users, superAdminConfig)) {
   saveCollection('users', users);
-  console.log('[auth] Compte super-admin initialisé depuis la configuration.');
+  if (generatedSuperAdminPassword) {
+    console.warn(
+      `[auth] Compte super-admin local créé : ${superAdminConfig.email} / ${generatedSuperAdminPassword}\n` +
+      '[auth] Conservez ce mot de passe ; il ne sera plus affiché après ce démarrage.'
+    );
+  } else {
+    console.log('[auth] Compte super-admin initialisé depuis la configuration.');
+  }
 }
 
 const persistEstablishments = () => saveCollection('establishments', establishments);
 const persistClicks = () => saveCollection('clickLogs', clickLogs);
 const persistBlocks = () => saveCollection('blocks', blocks);
 const persistUsers = () => saveCollection('users', users);
+let pointsBalanceMigrated = false;
+establishments.forEach((establishment) => {
+  if (!Number.isSafeInteger(establishment.points_solde) || establishment.points_solde < 0) {
+    establishment.points_solde = establishmentsLib.INITIAL_POINTS_BALANCE;
+    pointsBalanceMigrated = true;
+  }
+});
+if (pointsBalanceMigrated) persistEstablishments();
 
 function mutateAndPersistMany(changes) {
   const snapshots = changes.map(({ collection, skipSnapshot }) =>
@@ -114,6 +151,14 @@ function findProduct(establishmentId, productId) {
   }
   const product = (establishment.products || []).find((p) => p.id === productId);
   return { establishment, product };
+}
+
+function publicEstablishment(establishment) {
+  const { points_solde: pointsBalance, ...publicData } = establishment;
+  return {
+    ...publicData,
+    points_actifs: Number.isSafeInteger(pointsBalance) && pointsBalance >= 50,
+  };
 }
 
 /**
@@ -362,7 +407,13 @@ app.get('/api/establishments', (req, res) => {
   const offset = Number.isInteger(requestedOffset) && requestedOffset >= 0
     ? requestedOffset
     : 0;
-  const page = establishments.slice(offset, offset + limit);
+  const page = establishments
+    .slice(offset, offset + limit)
+    .map((establishment) =>
+      req.user && req.user.role === auth.ROLES.SUPER_ADMIN
+        ? establishment
+        : publicEstablishment(establishment)
+    );
   res.json({
     items: page,
     total: establishments.length,
@@ -379,7 +430,7 @@ app.get('/api/establishment/:id', (req, res) => {
     return res.status(404).json({ error: 'Établissement introuvable' });
   }
 
-  return res.json(establishment);
+  return res.json(publicEstablishment(establishment));
 });
 
 app.post('/api/establishments', requireSuperAdmin, (req, res) => {
@@ -489,9 +540,15 @@ app.put('/api/establishments/:id', requireSuperAdmin, (req, res) => {
   const existing = establishments[index];
   // On conserve la date d'ajout d'origine et le statut si non fourni.
   const updated = establishmentsLib.buildEstablishment(
-    { ...req.body, date_ajout: existing.date_ajout, statut: req.body.statut || existing.statut },
+    {
+      ...req.body,
+      date_ajout: existing.date_ajout,
+      statut: req.body.statut || existing.statut,
+      points_solde: existing.points_solde,
+    },
     existing.id
   );
+  updated.points_solde = existing.points_solde;
 
   mutateAndPersist(establishments, persistEstablishments, () => {
     establishments[index] = updated;
@@ -513,7 +570,16 @@ app.get('/api/etablissement/moi', requireEtablissement, (req, res) => {
   return res.json(establishment);
 });
 
-app.put('/api/etablissement/moi', requireEtablissement, (req, res) => {
+function uploadProfilePhoto(req, res, next) {
+  upload.single('photo')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message || 'Upload échoué' });
+    }
+    return next();
+  });
+}
+
+app.put('/api/etablissement/moi', requireEtablissement, uploadProfilePhoto, (req, res) => {
   const index = establishments.findIndex(
     (item) => item.id === req.user.etablissementId
   );
@@ -521,22 +587,77 @@ app.put('/api/etablissement/moi', requireEtablissement, (req, res) => {
     return res.status(404).json({ error: 'Établissement introuvable' });
   }
 
-  const error = establishmentsLib.validateEstablishmentInput(req.body);
+  const existing = establishments[index];
+  const body = {
+    ...req.body,
+    photo: req.file ? `/uploads/${req.file.filename}` : req.body.photoUrl || existing.photo || '',
+  };
+  const error = establishmentsLib.validateEstablishmentInput(body);
   if (error) {
     return res.status(400).json({ error });
   }
 
-  const existing = establishments[index];
   const updated = establishmentsLib.buildEstablishment(
-    { ...req.body, date_ajout: existing.date_ajout },
+    { ...existing, ...body, date_ajout: existing.date_ajout },
     existing.id
   );
+  updated.points_solde = existing.points_solde;
 
   mutateAndPersist(establishments, persistEstablishments, () => {
     establishments[index] = updated;
   });
 
   return res.json(updated);
+});
+
+app.get('/api/admin/points', requireSuperAdmin, (req, res) => {
+  return res.json({
+    items: establishments.map((establishment) => {
+      const owner = users.find(
+        (user) =>
+          user.role === auth.ROLES.ETABLISSEMENT &&
+          user.etablissementId === establishment.id
+      );
+      return {
+        establishmentId: establishment.id,
+        nom: establishment.nom,
+        type: establishment.type,
+        email: owner ? owner.email : '',
+        points_solde: establishment.points_solde,
+      };
+    }),
+  });
+});
+
+app.post('/api/admin/points/recharge', requireSuperAdmin, (req, res) => {
+  const { establishmentId, points } = req.body || {};
+  if (typeof establishmentId !== 'string' || !establishmentId.trim()) {
+    return res.status(400).json({ error: 'Établissement requis' });
+  }
+  if (!Number.isSafeInteger(points) || points < 50 || points % 50 !== 0) {
+    return res.status(400).json({ error: 'La recharge doit être un multiple de 50 points (minimum 50)' });
+  }
+
+  const establishment = establishments.find((item) => item.id === establishmentId);
+  if (!establishment) {
+    return res.status(404).json({ error: 'Établissement introuvable' });
+  }
+  if (!Number.isSafeInteger(establishment.points_solde) ||
+      establishment.points_solde + points > Number.MAX_SAFE_INTEGER) {
+    return res.status(400).json({ error: 'Solde maximal dépassé' });
+  }
+
+  const previousBalance = establishment.points_solde;
+  mutateAndPersist(establishments, persistEstablishments, () => {
+    establishment.points_solde += points;
+  });
+
+  return res.json({
+    establishmentId,
+    points_recharges: points,
+    points_solde: establishment.points_solde,
+    previousBalance,
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -688,6 +809,9 @@ app.get('/api/etablissement/mes-stats', requireEtablissement, (req, res) => {
 
   res.json({
     establishmentId,
+    pointsSolde: establishments.find((establishment) => establishment.id === establishmentId)
+      .points_solde,
+    costPerClick: 50,
     totalClicks,
     totalAttributed,
     conversion: totalClicks > 0 ? totalAttributed / totalClicks : 0,
@@ -775,6 +899,12 @@ app.post('/api/redirect', (req, res) => {
   if (!fraudCheck.allowed) {
     return res.status(429).json({ error: 'Clic refusé', reason: fraudCheck.reason });
   }
+  if (!Number.isSafeInteger(establishment.points_solde) || establishment.points_solde < 50) {
+    return res.status(402).json({
+      error: 'Solde de points insuffisant. Contactez l’équipe pour une recharge.',
+      reason: 'insufficient_points',
+    });
+  }
 
   // Création de l'événement de clic (statut "pending").
   const clickEvent = attribution.createClickEvent({
@@ -790,9 +920,21 @@ app.post('/api/redirect', (req, res) => {
 
   // Le lien WhatsApp étant effectivement servi, la conversation est attribuée.
   const attributedClick = attribution.markAttributed(clickEvent);
+  const whatsappUrl = buildWhatsappUrl(
+    establishment.whatsapp,
+    attributedClick.id_clic,
+    establishment.nom
+  );
 
   let consumption = { ok: false, reason: 'aucun_bloc_actif' };
-  const changes = [];
+  const changes = [{
+    collection: establishments,
+    mutate: () => {
+      establishment.points_solde -= 50;
+    },
+    persist: persistEstablishments,
+    persistSnapshot: (snapshot) => saveCollection('establishments', snapshot),
+  }];
   if (billing.findActiveBlock(blocks, establishmentId)) {
     changes.push({
       collection: blocks,
@@ -812,11 +954,11 @@ app.post('/api/redirect', (req, res) => {
   });
   mutateAndPersistMany(changes);
 
-  const whatsappUrl = buildWhatsappUrl(establishment.whatsapp, attributedClick.id_clic, establishment.nom);
-
   res.json({
     clickId: attributedClick.id_clic,
     whatsappUrl,
+    pointsSolde: establishment.points_solde,
+    pointsDebited: 50,
     establishment: {
       id: establishment.id,
       name: establishment.nom,
@@ -910,6 +1052,7 @@ app.get('/api/product/:establishmentId/:productId', (req, res) => {
       whatsapp: establishment.whatsapp,
       categorie: establishment.categorie,
       note: establishment.note,
+      points_actifs: establishment.points_solde >= 50,
     },
     product,
   });

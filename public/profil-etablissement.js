@@ -5,6 +5,10 @@
 (function bootProfil() {
   const form = document.getElementById('form-profil');
   const msg = document.getElementById('msg-profil');
+  const photoInput = form && form.elements.photo;
+  const photoUrl = form && form.elements.photoUrl;
+  const photoPreview = document.getElementById('profile-photo-preview');
+  let previewObjectUrl = '';
 
   if (!form) return;
 
@@ -47,7 +51,14 @@
       form.elements.adresse.value = est.adresse || '';
       form.elements.categorie.value = est.categorie || '';
       form.elements.description.value = est.description || '';
-      form.elements.photo.value = est.photo || '';
+      photoUrl.value = est.photo || '';
+      if (est.photo) {
+        photoPreview.src = est.photo;
+        photoPreview.hidden = false;
+      } else {
+        photoPreview.removeAttribute('src');
+        photoPreview.hidden = true;
+      }
       form.elements.statut.value = est.statut || 'actif';
       form.elements.id.value = est.id;
     } catch (err) {
@@ -55,28 +66,34 @@
     }
   }
 
+  photoInput.addEventListener('change', () => {
+    if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl = '';
+    const file = photoInput.files[0];
+    if (!file) {
+      if (photoUrl.value) {
+        photoPreview.src = photoUrl.value;
+        photoPreview.hidden = false;
+      }
+      return;
+    }
+
+    previewObjectUrl = URL.createObjectURL(file);
+    photoPreview.src = previewObjectUrl;
+    photoPreview.hidden = false;
+  });
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     showMsg('', '');
 
     const formData = new FormData(form);
-    const body = {
-      nom: formData.get('nom'),
-      type: formData.get('type'),
-      quartier: formData.get('quartier'),
-      whatsapp: formData.get('whatsapp'),
-      adresse: formData.get('adresse'),
-      categorie: formData.get('categorie'),
-      description: formData.get('description'),
-      photo: formData.get('photo'),
-      statut: formData.get('statut'),
-    };
+    formData.set('photo', photoInput.files[0] || '');
 
     try {
       const res = await fetch('/api/etablissement/moi', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: formData,
       });
 
       const data = await res.json();
@@ -86,6 +103,14 @@
         return;
       }
 
+      photoUrl.value = data.photo || '';
+      photoInput.value = '';
+      if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+      previewObjectUrl = '';
+      if (data.photo) {
+        photoPreview.src = data.photo;
+        photoPreview.hidden = false;
+      }
       showMsg('Profil mis à jour avec succès.', 'success');
     } catch (err) {
       showMsg('Erreur réseau. Réessayez.', 'error');
