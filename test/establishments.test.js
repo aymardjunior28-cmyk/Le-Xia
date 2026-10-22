@@ -2,7 +2,10 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const establishments = require('../src/establishments');
+const { seedEstablishments } = require('../src/seed');
 
 const validEstablishment = {
   nom: 'Test',
@@ -59,4 +62,16 @@ test('note provisoire must be boolean and is stored only with a note', () => {
     ).note_provisoire,
     false
   );
+});
+
+test('seed catalog photos are local files', () => {
+  for (const establishment of seedEstablishments) {
+    for (const product of establishment.products || []) {
+      assert.match(product.photo, /^\/images\/[^/]+$/);
+      assert.ok(
+        fs.existsSync(path.join(__dirname, '..', 'public', product.photo.slice(1))),
+        `Missing local image ${product.photo}`
+      );
+    }
+  }
 });

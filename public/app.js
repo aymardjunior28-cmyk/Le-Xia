@@ -48,7 +48,7 @@ function flattenProducts(establishments) {
         name: product.nom,
         price: product.prix,
         availability: product.disponibilite,
-        photo: product.photo,
+        photo: product.photo || establishment.photo,
         description: product.description,
         note: establishment.note != null ? establishment.note : null,
         noteProvisoire: establishment.note_provisoire === true,

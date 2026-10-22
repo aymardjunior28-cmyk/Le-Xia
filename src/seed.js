@@ -29,8 +29,7 @@ const seedEstablishments = [
         nom: 'Poisson braisé + plantains',
         prix: 420,
         disponibilite: 'Ouvert aujourd’hui',
-        photo:
-          'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/restaurant-grill.jpg',
         description: 'Poisson du jour braisé, accompagnement plantains et légumes.',
         tags: ['poisson', 'grill', 'local'],
         statut: 'actif',
@@ -59,8 +58,7 @@ const seedEstablishments = [
         nom: 'Menu camerounais du jour',
         prix: 380,
         disponibilite: 'Disponible ce soir',
-        photo:
-          'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/restaurant-dining.jpg',
         description: 'Plat complet, sauce arachide ou ndolé, à emporter ou sur place.',
         tags: ['camerounais', 'menu', 'emporter'],
         statut: 'actif',
@@ -89,8 +87,7 @@ const seedEstablishments = [
         nom: 'Burger frais + salade',
         prix: 350,
         disponibilite: 'Réservation rapide',
-        photo:
-          'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/restaurant-burger.jpg',
         description: 'Burger frais du jour, salade et options végétariennes.',
         tags: ['burger', 'frais', 'vegetarien'],
         statut: 'actif',
@@ -119,8 +116,7 @@ const seedEstablishments = [
         nom: 'Ndolé spécial + plantains',
         prix: 650,
         disponibilite: 'Ouvert ce soir',
-        photo:
-          'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/restaurant-ndole.jpg',
         description: 'Ndolé généreux préparé maison, servi avec plantains mûrs.',
         tags: ['ndole', 'maison', 'bonamoussadi'],
         statut: 'actif',
@@ -149,8 +145,7 @@ const seedEstablishments = [
         nom: 'Poulet braisé + attiéké',
         prix: 900,
         disponibilite: 'Disponible ce midi',
-        photo:
-          'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/restaurant-table.jpg',
         description: 'Poulet braisé au feu de bois, attiéké et sauce piment maison.',
         tags: ['grill', 'poulet', 'attieke'],
         statut: 'actif',
@@ -179,8 +174,7 @@ const seedEstablishments = [
         nom: 'Café + croissant du matin',
         prix: 450,
         disponibilite: 'Ouvert dès 7h',
-        photo:
-          'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/cafe-breakfast.jpg',
         description: 'Café fraîchement torréfié et viennoiseries servis toute la matinée.',
         tags: ['cafe', 'petit-dejeuner', 'akwa'],
         statut: 'actif',
@@ -209,8 +203,7 @@ const seedEstablishments = [
         nom: 'Studio meublé 1 chambre',
         prix: 1800,
         disponibilite: '1 chambre libre',
-        photo:
-          'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/apartment-bright.jpg',
         description: 'Studio propre, Wifi, eau chaude et parking sécurisé.',
         tags: ['studio', 'wifi', 'parking'],
         statut: 'actif',
@@ -239,8 +232,7 @@ const seedEstablishments = [
         nom: 'Appartement 2 chambres',
         prix: 1500,
         disponibilite: '2 chambres disponibles',
-        photo:
-          'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/studio-bedroom.jpg',
         description: 'Appartement meublé proche du centre, calme et bien équipé.',
         tags: ['appartement', 'centre', 'calme'],
         statut: 'actif',
@@ -269,8 +261,7 @@ const seedEstablishments = [
         nom: 'Chambre meublée',
         prix: 1600,
         disponibilite: 'Disponible cette semaine',
-        photo:
-          'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/apartment-kitchen.jpg',
         description: 'Meublé confortable pour courte ou longue durée.',
         tags: ['chambre', 'courte-duree', 'confort'],
         statut: 'actif',
@@ -299,8 +290,7 @@ const seedEstablishments = [
         nom: 'Studio meublé + balcon',
         prix: 2000,
         disponibilite: 'Studio disponible',
-        photo:
-          'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/studio-interior.jpg',
         description: 'Studio moderne avec balcon, climatisation et gardiennage 24h/24.',
         tags: ['studio', 'balcon', 'clim'],
         statut: 'actif',
@@ -329,8 +319,7 @@ const seedEstablishments = [
         nom: 'Chambre meublée lumineuse',
         prix: 1600,
         disponibilite: 'Disponible cette semaine',
-        photo:
-          'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/bedroom-light.jpg',
         description: 'Chambre calme et lumineuse, idéale pour un séjour court ou long.',
         tags: ['chambre', 'calme', 'bonaberi'],
         statut: 'actif',
@@ -359,8 +348,7 @@ const seedEstablishments = [
         nom: 'Appartement standing 2 chambres',
         prix: 2500,
         disponibilite: '2 chambres disponibles',
-        photo:
-          'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=900&q=80',
+        photo: '/images/standing-apartment.jpg',
         description: 'Appartement de standing : salon spacieux, cuisine équipée, parking.',
         tags: ['standing', 'parking', 'bonapriso'],
         statut: 'actif',
