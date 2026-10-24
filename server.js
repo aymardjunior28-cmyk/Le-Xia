@@ -50,6 +50,7 @@ const establishments = loadCollection('establishments', seedEstablishments);
 const clickLogs = loadCollection('clickLogs', []);
 const blocks = loadCollection('blocks', []);
 const users = loadCollection('users', []);
+const notifications = loadCollection('notifications', []);
 const hasSuperAdmin = users.some((user) => user.role === auth.ROLES.SUPER_ADMIN);
 const hasLegacySuperAdmin = users.some(
   (user) =>
@@ -450,6 +451,17 @@ app.post('/api/establishments', requireSuperAdmin, (req, res) => {
 
   mutateAndPersist(establishments, persistEstablishments, () => establishments.push(establishment));
 
+  try {
+    createNotification({
+      type: 'etablissement_created',
+      message: `Établissement créé par le superadmin : ${establishment.nom} (${establishment.type}) - ${establishment.quartier}`,
+      establishmentId: establishment.id,
+      establishmentName: establishment.nom,
+    });
+  } catch (e) {
+    console.error('[notif] creation:', e.message);
+  }
+
   return res.status(201).json(establishment);
 });
 
@@ -532,6 +544,18 @@ app.post('/api/etablissements/inscription', upload.single('photo'), (req, res) =
       persistSnapshot: (snapshot) => saveCollection('users', snapshot),
     },
   ]);
+
+  try {
+    createNotification({
+      type: 'etablissement_registered',
+      message: `Nouvel établissement inscrit : ${establishment.nom} (${establishment.type}) - ${establishment.quartier}`,
+      establishmentId: establishment.id,
+      establishmentName: establishment.nom,
+      userId: userId,
+    });
+  } catch (e) {
+    console.error('[notif] inscription:', e.message);
+  }
 
   return res.status(201).json({
     user: { id: userId, email: emailNorm, role: 'etablissement' },
@@ -1095,4 +1119,87 @@ app.use((err, req, res, _next) => {
 
 app.listen(port, () => {
   console.log(`Douala Discovery MVP running at http://localhost:${port}`);
+});
+
+
+// ---------------------------------------------------------------------------
+// Notifications (super-admin)
+// ---------------------------------------------------------------------------
+function createNotification({ type, message, establishmentId, establishmentName, userId } = {}) {
+  const notification = {
+    id: `notif_${crypto.randomUUID()}`,
+    type: type || 'etablissement_created',
+    message: message || '',
+    establishmentId: establishmentId || null,
+    establishmentName: establishmentName || null,
+    userId: userId || null,
+    read: false,
+    createdAt: new Date().toISOString(),
+  };
+  notifications.unshift(notification);
+  try {
+    saveCollection('notifications', notifications);
+  } catch (err) {
+    console.error('[notifications] Échec de sauvegarde :', err.message);
+  }
+  return notification;
+}
+
+app.get('/api/admin/notifications', requireSuperAdmin, (req, res) => {
+  const requestedLimit = Number(req.query.limit);
+  const requestedOffset = Number(req.query.offset);
+  const limit = Number.isInteger(requestedLimit) && requestedLimit > 0 ? Math.min(requestedLimit, 200) : 50;
+  const offset = Number.isInteger(requestedOffset) && requestedOffset >= 0 ? requestedOffset : 0;
+  const sorted = [...notifications].sort((a, b) => {
+    const ta = new Date(a.createdAt || 0).getTime();
+    const tb = new Date(b.createdAt || 0).getTime();
+    return tb - ta;
+  });
+  res.json({
+    items: sorted.slice(offset, offset + limit),
+    total: notifications.length,
+    unreadCount: notifications.filter((n) => !n.read).length,
+    limit,
+    offset,
+  });
+});
+
+app.get('/api/admin/notifications/unread-count', requireSuperAdmin, (req, res) => {
+  res.json({ count: notifications.filter((n) => !n.read).length });
+});
+
+app.post('/api/admin/notifications/mark-all-read', requireSuperAdmin, (req, res) => {
+  let changed = false;
+  notifications.forEach((n) => {
+    if (!n.read) {
+      n.read = true;
+      changed = true;
+    }
+  });
+  if (changed) {
+    saveCollection('notifications', notifications);
+  }
+  res.json({ ok: true, count: notifications.filter((n) => !n.read).length });
+});
+
+app.post('/api/admin/notifications/:id/read', requireSuperAdmin, (req, res) => {
+  const notif = notifications.find((n) => n.id === req.params.id);
+  if (!notif) {
+    return res.status(404).json({ error: 'Notification introuvable' });
+  }
+  if (!notif.read) {
+    notif.read = true;
+    saveCollection('notifications', notifications);
+  }
+  res.json({ ok: true });
+});
+
+app.delete('/api/admin/notifications/:id', requireSuperAdmin, (req, res) => {
+  const index = notifications.findIndex((n) => n.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Notification introuvable' });
+  }
+  notifications.splice(index, 1);
+  saveCollection('notifications', notifications);
+  res.json({ ok: true });
 });

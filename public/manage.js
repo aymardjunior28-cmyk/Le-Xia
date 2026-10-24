@@ -50,6 +50,12 @@
     photoPreview: document.getElementById('est-photo-preview'),
     description: document.getElementById('est-description'),
     visibilites: document.getElementById('est-visibilites'),
+    notifList: document.getElementById('notifications-list'),
+    notifBadge: document.getElementById('notif-badge'),
+    notifEmpty: document.getElementById('notifications-empty'),
+    notifError: document.getElementById('notifications-error'),
+    notifMarkAll: document.getElementById('notif-mark-all'),
+    notifRefresh: document.getElementById('notif-refresh'),
   };
 
   let establishments = [];
@@ -406,10 +412,119 @@
     }
   });
 
+  function formatDate(value) {
+    if (!value) return '';
+    try {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString('fr-FR');
+    } catch (_) {
+      return value;
+    }
+  }
+
+  function showNotifError(message) {
+    if (!els.notifError) return;
+    els.notifError.textContent = message || '';
+    els.notifError.hidden = !message;
+  }
+
+  async function loadNotifications() {
+    if (!els.notifList) return;
+    showNotifError('');
+    try {
+      const res = await fetch('/api/admin/notifications?limit=50');
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) return;
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      const items = Array.isArray(data.items) ? data.items : [];
+      const unread = typeof data.unreadCount === 'number' ? data.unreadCount : items.filter((n) => !n.read).length;
+      if (els.notifBadge) {
+        els.notifBadge.textContent = String(unread);
+        els.notifBadge.style.display = unread > 0 ? 'inline-flex' : 'none';
+      }
+      if (els.notifEmpty) els.notifEmpty.hidden = items.length > 0;
+      if (items.length === 0) {
+        els.notifList.innerHTML = '';
+        return;
+      }
+      els.notifList.innerHTML = items
+        .map((n) => {
+          const isUnread = !n.read;
+          const link = n.establishmentId ? `/etablissement/${escapeHtml(n.establishmentId)}` : '#';
+          const typeLabel = n.type === 'etablissement_registered' ? 'Inscription' : 'Création par super-admin';
+          return `
+            <article class="notification-item ${isUnread ? 'unread' : ''}" data-id="${escapeHtml(n.id)}">
+              <div class="notification-main">
+                <div class="notification-meta">
+                  <span class="notification-type">${escapeHtml(typeLabel)}</span>
+                  <span class="notification-time">${escapeHtml(formatDate(n.createdAt))}</span>
+                  ${isUnread ? '<span class="notification-dot"></span>' : ''}
+                </div>
+                <p class="notification-message">${escapeHtml(n.message || '')}</p>
+                ${n.establishmentId ? `<a class="notification-link" href="${link}">Voir la fiche</a>` : ''}
+              </div>
+              <div class="notification-actions">
+                ${isUnread ? `<button class="btn-small" data-action="notif-read">Marquer comme lu</button>` : ''}
+                <button class="btn-small btn-danger" data-action="notif-delete">Supprimer</button>
+              </div>
+            </article>`;
+        })
+        .join('');
+    } catch (err) {
+      console.error('Erreur chargement notifications :', err);
+      showNotifError('Impossible de charger les notifications.');
+    }
+  }
+
+  if (els.notifMarkAll) {
+    els.notifMarkAll.addEventListener('click', async () => {
+      try {
+        const res = await fetch('/api/admin/notifications/mark-all-read', { method: 'POST' });
+        if (res.ok) {
+          await loadNotifications();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
+  if (els.notifRefresh) {
+    els.notifRefresh.addEventListener('click', () => loadNotifications());
+  }
+  if (els.notifList) {
+    els.notifList.addEventListener('click', async (event) => {
+      const btn = event.target.closest('button[data-action]');
+      if (!btn) return;
+      const item = btn.closest('.notification-item');
+      if (!item) return;
+      const id = item.dataset.id;
+      if (btn.dataset.action === 'notif-read') {
+        try {
+          const res = await fetch('/api/admin/notifications/' + encodeURIComponent(id) + '/read', { method: 'POST' });
+          if (res.ok) loadNotifications();
+        } catch (err) {
+          console.error(err);
+        }
+      } else if (btn.dataset.action === 'notif-delete') {
+        if (!confirm('Supprimer cette notification ?')) return;
+        try {
+          const res = await fetch('/api/admin/notifications/' + encodeURIComponent(id), { method: 'DELETE' });
+          if (res.ok) loadNotifications();
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    });
+  }
+
   // ---- Init ----
   (async function init() {
     if (await ensureAccess()) {
       load();
+      loadNotifications();
     }
   })();
 })();

@@ -25,12 +25,29 @@
     link.textContent = text;
     if (id) link.id = id;
     nav.appendChild(link);
+    return link;
   };
   addLink('/', 'Accueil');
   if (user) {
     if (user.role === 'super_admin') {
       addLink('/dashboard', 'Dashboard');
-      addLink('/manage', 'Gérer');
+      const manageLink = addLink('/manage', 'Gérer');
+      (async () => {
+        try {
+          const res = await fetch('/api/admin/notifications/unread-count');
+          if (!res.ok) return;
+          const data = await res.json();
+          const count = Number(data.count) || 0;
+          if (count > 0) {
+            const badge = document.createElement('span');
+            badge.className = 'nav-badge';
+            badge.textContent = count > 99 ? '99+' : String(count);
+            manageLink.appendChild(badge);
+          }
+        } catch (err) {
+          /* ignore */
+        }
+      })();
     } else if (user.role === 'etablissement') {
       addLink('/etablissement-dashboard', 'Tableau de bord');
       addLink('/profil-etablissement', 'Mon profil');

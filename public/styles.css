@@ -3647,6 +3647,121 @@ html {
   }
 }
 
+/* Notifications (super-admin) */
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  margin-left: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.notifications-panel .panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.notifications-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.notifications-panel .badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.notifications-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(40, 60, 110, 0.05);
+}
+.notification-item.unread {
+  border-color: rgba(31, 111, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(31, 111, 255, 0.08);
+}
+.notification-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.notification-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.86rem;
+}
+.notification-type {
+  font-weight: 600;
+}
+.notification-time {
+  color: var(--muted);
+}
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.notification-message {
+  margin: 0;
+}
+.notification-link {
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+.notification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .notification-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .notification-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 380px) {
   .card-grid {
     gap: 12px;

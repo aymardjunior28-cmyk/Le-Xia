@@ -63,8 +63,25 @@
         <div class="table-wrap" id="points-balances"></div>
       </section>
 
+      <!-- Notifications -->
+      <section class="panel notifications-panel reveal" data-reveal-index="1">
+        <div class="panel-head notifications-head">
+          <div>
+            <h2>Notifications <span class="badge" id="notif-badge">0</span></h2>
+            <p class="panel-sub">Alertes à chaque inscription ou création d’établissement</p>
+          </div>
+          <div class="notifications-actions">
+            <button class="btn-small" id="notif-mark-all">Tout marquer comme lu</button>
+            <button class="btn-small" id="notif-refresh">Actualiser</button>
+          </div>
+        </div>
+        <div id="notifications-list" class="notifications-list"></div>
+        <p class="empty-state" id="notifications-empty" hidden>Aucune notification pour le moment.</p>
+        <p class="auth-error" id="notifications-error" hidden></p>
+      </section>
+
       <!-- Formulaire (création / édition) -->
-      <section class="panel reveal" id="establishment-form-panel" data-reveal-index="1" hidden>
+      <section class="panel reveal" id="establishment-form-panel" data-reveal-index="2" hidden>
         <h2 id="form-title">Nouvel établissement</h2>
         <form id="establishment-form" class="manage-form">
           <input type="hidden" id="est-id" />
@@ -148,7 +165,7 @@
       </section>
 
       <!-- Liste des établissements -->
-      <section class="panel reveal" data-reveal-index="2">
+      <section class="panel reveal" data-reveal-index="3">
         <h2>Établissements (<span id="est-count">0</span>)</h2>
         <div id="establishments-list" class="manage-list"></div>
       </section>
