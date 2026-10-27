@@ -1087,6 +1087,31 @@ tbody tr:hover {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.15);
 }
+.password-input-wrap {
+  position: relative;
+}
+.auth-card .password-input-wrap input {
+  padding-right: 88px;
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.password-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
 .auth-card .primary-btn {
   width: 100%;
   margin-top: 6px;

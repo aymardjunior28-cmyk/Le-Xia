@@ -44,6 +44,8 @@ function flattenProducts(establishments) {
         establishmentName: establishment.nom,
         type: establishment.type,
         quartier: establishment.quartier,
+        adresse: establishment.adresse,
+        establishmentPhotos: Array.isArray(establishment.photos) ? establishment.photos.slice(0, 3) : [],
         productId: product.id,
         name: product.nom,
         price: product.prix,
@@ -202,7 +204,7 @@ function renderEstablishments() {
     // Clic sur la carte → fiche produit dédiée (§10.2).
     card.style.cursor = 'pointer';
     card.addEventListener('click', (event) => {
-      if (event.target.classList.contains('primary-btn')) return;
+      if (event.target.closest('.primary-btn')) return;
       if (item.productId) {
         window.location.href =
           `/produit/${encodeURIComponent(item.establishmentId)}/${encodeURIComponent(item.productId)}`;

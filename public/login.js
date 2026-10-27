@@ -5,8 +5,16 @@
   const form = document.getElementById('login-form');
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
+  const passwordToggle = document.getElementById('password-toggle');
   const errorBox = document.getElementById('login-error');
   const submitBtn = document.getElementById('login-btn');
+
+  passwordToggle.addEventListener('click', () => {
+    const showPassword = passwordInput.type === 'password';
+    passwordInput.type = showPassword ? 'text' : 'password';
+    passwordToggle.textContent = showPassword ? 'Masquer' : 'Afficher';
+    passwordToggle.setAttribute('aria-pressed', String(showPassword));
+  });
 
   function showError(message) {
     errorBox.textContent = message;
