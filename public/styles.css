@@ -3307,25 +3307,13 @@ tbody tr:hover {
   flex-wrap: nowrap;
 }
 
-.brand-logo-placeholder {
-  display: grid;
+.brand-logo {
   flex: 0 0 170px;
   width: 170px;
   height: 46px;
-  place-items: center;
   overflow: hidden;
-  border: 1px dashed var(--border);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.55);
-}
-
-.brand-logo-placeholder::before {
-  content: 'Logo';
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  object-fit: contain;
+  object-position: center 43%;
 }
 
 .topbar .nav > .brand-wrap {
@@ -3656,7 +3644,7 @@ html {
     flex-wrap: wrap;
   }
 
-  .brand-logo-placeholder {
+  .brand-logo {
     flex-basis: 130px;
     width: 130px;
     height: 40px;
