@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des établissements — Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="aurora" aria-hidden="true">
+      <span class="b1"></span>
+      <span class="b2"></span>
+      <span class="b3"></span>
+      <span class="b4"></span>
+    </div>
+
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-logo-placeholder" role="img" aria-label="Emplacement du logo"></div>
+          <small>Super-admin</small>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+          <a href="/dashboard">Dashboard</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page manage-page">
+      <div class="manage-head reveal" data-reveal-index="0">
+        <div>
+          <span class="eyebrow">Super-admin</span>
+          <h1>Gestion des établissements</h1>
+          <p class="panel-sub">Créez et modifiez les restaurants &amp; meublés de la plateforme : photos, noms, descriptions, WhatsApp, localisations, notes…</p>
+        </div>
+        <button class="primary-btn" id="new-establishment-btn">+ Nouvel établissement</button>
+      </div>
+
+      <p class="auth-error" id="manage-error" hidden></p>
+
+      <section class="panel points-admin-panel">
+        <h2>Recharger les points d’un établissement</h2>
+        <p class="panel-sub">Chaque compte dispose de son propre solde. Les recharges sont saisies par multiples de 50 points.</p>
+        <form id="points-recharge-form" class="points-recharge-form">
+          <label class="field">
+            <span>Établissement</span>
+            <select id="points-establishment" required>
+              <option value="">Choisir un établissement</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Points à recharger</span>
+            <input type="number" id="points-amount" min="50" step="50" required placeholder="Ex. 1000" />
+          </label>
+          <button class="primary-btn" type="submit">Recharger</button>
+        </form>
+        <p class="auth-error" id="points-error" hidden></p>
+        <p class="auth-success" id="points-success" hidden></p>
+        <div class="table-wrap" id="points-balances"></div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="panel notifications-panel reveal" data-reveal-index="1">
+        <div class="panel-head notifications-head">
+          <div>
+            <h2>Notifications <span class="badge" id="notif-badge">0</span></h2>
+            <p class="panel-sub">Alertes à chaque inscription ou création d’établissement</p>
+          </div>
+          <div class="notifications-actions">
+            <button class="btn-small" id="notif-mark-all">Tout marquer comme lu</button>
+            <button class="btn-small" id="notif-refresh">Actualiser</button>
+          </div>
+        </div>
+        <div id="notifications-list" class="notifications-list"></div>
+        <p class="empty-state" id="notifications-empty" hidden>Aucune notification pour le moment.</p>
+        <p class="auth-error" id="notifications-error" hidden></p>
+      </section>
+
+      <!-- Formulaire (création / édition) -->
+      <section class="panel reveal" id="establishment-form-panel" data-reveal-index="2" hidden>
+        <h2 id="form-title">Nouvel établissement</h2>
+        <form id="establishment-form" class="manage-form">
+          <input type="hidden" id="est-id" />
+
+          <label class="field">
+            <span>Nom *</span>
+            <input type="text" id="est-nom" placeholder="Ex : Akwaba Grill" required />
+          </label>
+
+          <label class="field">
+            <span>Type *</span>
+            <select id="est-type">
+              <option value="restaurant">Restaurant</option>
+              <option value="meuble">Meublé</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Catégorie</span>
+            <input type="text" id="est-categorie" placeholder="Ex : Cuisine locale, Studio…" />
+          </label>
+
+          <label class="field">
+            <span>Quartier / localisation *</span>
+            <input type="text" id="est-quartier" placeholder="Ex : Bonanjo" required />
+          </label>
+
+          <label class="field">
+            <span>Adresse</span>
+            <input type="text" id="est-adresse" placeholder="Rue, repères…" />
+          </label>
+
+          <label class="field">
+            <span>WhatsApp *</span>
+            <input type="text" id="est-whatsapp" placeholder="237655000001" required />
+          </label>
+
+          <label class="field">
+            <span>Note (0 – 10)</span>
+            <input type="number" id="est-note" min="0" max="10" step="0.1" placeholder="Ex : 8.5" />
+          </label>
+
+          <label class="field-full note-provisional-field">
+            <input type="checkbox" id="est-note-provisoire" />
+            <span>Note provisoire (démonstration, à remplacer)</span>
+          </label>
+
+          <label class="field field-full">
+            <span>Photo principale</span>
+            <input type="file" id="est-photo" accept="image/*" />
+            <img id="est-photo-preview" class="photo-preview" alt="Aperçu" hidden />
+          </label>
+
+          <fieldset class="field-full establishment-gallery-editor">
+            <legend>Photos du décor (3 maximum)</legend>
+            <div class="establishment-gallery-inputs">
+              <label class="field"><span>Photo 1</span><input type="file" class="est-gallery-photo" accept="image/*" /><img class="photo-preview est-gallery-preview" alt="Aperçu photo 1" hidden /></label>
+              <label class="field"><span>Photo 2</span><input type="file" class="est-gallery-photo" accept="image/*" /><img class="photo-preview est-gallery-preview" alt="Aperçu photo 2" hidden /></label>
+              <label class="field"><span>Photo 3</span><input type="file" class="est-gallery-photo" accept="image/*" /><img class="photo-preview est-gallery-preview" alt="Aperçu photo 3" hidden /></label>
+            </div>
+          </fieldset>
+
+          <label class="field field-full">
+            <span>Description</span>
+            <textarea id="est-description" rows="3" placeholder="Décrivez l'établissement…"></textarea>
+          </label>
+
+          <label class="field field-full">
+            <span>Visibilité</span>
+            <select id="est-visibilites">
+              <option value="home_feed">Fil d'accueil</option>
+              <option value="restaurants">Page restaurants</option>
+              <option value="meubles">Page meublés</option>
+              <option value="all">Partout</option>
+            </select>
+          </label>
+
+          <fieldset class="field-full products-editor">
+            <legend>Produits / offres</legend>
+            <div id="products-list"></div>
+            <button type="button" class="btn-small" id="add-product-btn">+ Ajouter un produit</button>
+          </fieldset>
+
+          <div class="form-actions field-full">
+            <button class="primary-btn" type="submit" id="save-establishment-btn">Enregistrer</button>
+            <button class="btn-small" type="button" id="cancel-form-btn">Annuler</button>
+          </div>
+          <p class="auth-error field-full" id="form-error" hidden></p>
+        </form>
+      </section>
+
+      <!-- Liste des établissements -->
+      <section class="panel reveal" data-reveal-index="3">
+        <h2>Établissements (<span id="est-count">0</span>)</h2>
+        <div id="establishments-list" class="manage-list"></div>
+      </section>
+    </main>
+
+    <script src="/ui.js"></script>
+    <script src="/nav.js"></script>
+    <script src="/manage.js"></script>
+  </body>
+</html>

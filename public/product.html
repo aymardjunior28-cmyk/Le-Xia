@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Douala Discovery — Fiche produit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- Fond aurora animé (glassmorphism Clair Lumineux). -->
+    <div class="aurora" aria-hidden="true">
+      <span class="b1"></span>
+      <span class="b2"></span>
+      <span class="b3"></span>
+      <span class="b4"></span>
+    </div>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-logo-placeholder" role="img" aria-label="Emplacement du logo"></div>
+          <small>Restaurants & meublés</small>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+          <a href="/dashboard">Dashboard</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page">
+      <a href="/" class="back-link reveal" data-reveal-index="0">← Retour au fil</a>
+      <div id="product-detail" class="product-detail"></div>
+    </main>
+
+    <script src="/product.js"></script>
+    <script src="/ui.js"></script>
+    <script src="/nav.js"></script>
+  </body>
+</html>

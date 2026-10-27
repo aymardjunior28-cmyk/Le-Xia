@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau de bord établissement — Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-logo-placeholder" role="img" aria-label="Emplacement du logo"></div>
+          <small>Mon tableau de bord</small>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page">
+      <section class="auth-card dashboard-card">
+        <h2>Mon tableau de bord</h2>
+        <p class="auth-sub">Suivez vos clics, vos conversations attribuées et la consommation de votre bloc prépayé.</p>
+
+        <div id="msg-dashboard" class="msg auth-error"></div>
+
+        <section class="metric-card points-balance-card dashboard-points-card" aria-labelledby="points-title">
+          <div>
+            <span class="metric-label" id="points-title">Mon solde de points</span>
+            <strong class="metric-value" id="stat-points">1 000 points</strong>
+          </div>
+          <div class="dashboard-points-details">
+            <small id="points-policy">Chaque clic accepté sur « Découvrir plus » coûte 50 points. À 0 point, le bouton est désactivé. Seul le super-admin peut recharger votre solde.</small>
+            <span class="metric-label">Rechargez votre compte auprès de l’équipe d’administration.</span>
+          </div>
+        </section>
+
+        <div class="metrics">
+          <div class="metric-card">
+            <span class="metric-label">Clics reçus</span>
+            <strong class="metric-value" id="stat-clics">0</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Conversations attribuées</span>
+            <strong class="metric-value" id="stat-attribuees">0</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Taux de conversion</span>
+            <strong class="metric-value" id="stat-conversion">0 %</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Blocs actifs</span>
+            <strong class="metric-value" id="stat-blocs">0</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Conversations consommées</span>
+            <strong class="metric-value" id="stat-consommees">0</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Conversations restantes</span>
+            <strong class="metric-value" id="stat-restantes">0</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Revenus (blocs achetés)</span>
+            <strong class="metric-value" id="stat-revenus">0 FCFA</strong>
+          </div>
+        </div>
+
+        <section class="panel">
+          <h3>Blocs de facturation</h3>
+          <div id="table-blocs" class="table-wrap"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Derniers clics</h3>
+          <div id="table-clics" class="table-wrap"></div>
+        </section>
+
+        <p class="auth-link"><a href="/profil-etablissement">Modifier mon profil</a> • <a href="#" id="nav-logout-dash">Déconnexion</a></p>
+      </section>
+    </main>
+
+    <script src="/etablissement-dashboard.js"></script>
+    <script src="/nav.js"></script>
+  </body>
+</html>

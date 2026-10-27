@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Autopsie du business — Plateforme de découverte restaurants et meublés à Douala</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+* { box-sizing: border-box; }
+body { font-family: "DejaVu Serif", Georgia, serif; font-size: 10.2pt; line-height: 1.5; color: #1a1a1a; }
+h1 { font-size: 21pt; line-height: 1.2; color: #14304f; border-bottom: 3px solid #14304f; padding-bottom: 8px; margin: 0 0 6px; }
+h2 { font-size: 14pt; color: #14304f; border-bottom: 1.5px solid #b8c4d0; padding-bottom: 4px; margin: 22px 0 10px; page-break-after: avoid; }
+h3 { font-size: 11.5pt; color: #1d4f7c; margin: 15px 0 6px; page-break-after: avoid; }
+p { margin: 0 0 8px; text-align: justify; }
+ul, ol { margin: 0 0 9px; padding-left: 20px; }
+li { margin-bottom: 3px; }
+table { width: 100%; border-collapse: collapse; margin: 9px 0 13px; font-size: 8.6pt; page-break-inside: avoid; }
+th { background: #14304f; color: #fff; text-align: left; padding: 5px 7px; font-weight: bold; border: 1px solid #14304f; }
+td { padding: 5px 7px; border: 1px solid #c5ced6; vertical-align: top; }
+tr:nth-child(even) td { background: #f3f6f9; }
+pre { background: #f3f6f9; border-left: 3px solid #14304f; padding: 9px 11px; margin: 9px 0 13px; font-family: "DejaVu Sans Mono", monospace; font-size: 8.6pt; line-height: 1.45; white-space: pre-wrap; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.8pt; background: #eceff2; padding: 1px 3px; }
+pre code { background: none; padding: 0; }
+blockquote { border-left: 3px solid #1d4f7c; background: #eef3f8; margin: 10px 0; padding: 9px 13px; font-style: italic; page-break-inside: avoid; }
+strong { color: #0f2b47; }
+hr { border: none; border-top: 1px solid #c5ced6; margin: 18px 0; }
+.meta { background: #f3f6f9; border: 1px solid #c5ced6; padding: 10px 13px; margin-bottom: 16px; font-size: 9.4pt; }
+.meta p { margin: 0 0 4px; }
+.meta p:last-child { margin-bottom: 0; }
+.toc { background: #eef3f8; border: 1px solid #b8c4d0; padding: 11px 15px; margin-bottom: 18px; font-size: 9.4pt; }
+.toc ol { margin: 0; padding-left: 19px; }
+.toc li { margin-bottom: 3px; }
+h2 + h3 { margin-top: 11px; }
+.tag { font-size: 7.6pt; background: #14304f; color: #fff; padding: 1px 4px; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<h1>Autopsie du business</h1>
+<p style="font-size:12pt;color:#1d4f7c;margin-top:0;">Plateforme publicitaire de découverte — restaurants et meublés à Douala</p>
+
+<div class="meta">
+<p><strong>Version</strong> : 2 — inclut l'analyse des trajectories de trafic</p>
+<p><strong>Date</strong> : 5 octobre 2026</p>
+<p><strong>Modèle</strong> : contenu éditorial (plat phare, prix, disponibilité) &rarr; clic &rarr; conversation WhatsApp pré-attribuée &rarr; redirection vers la fiche de l'établissement. Vente en blocs prépayés, à la conversation attribuée.</p>
+<p><strong>Statut</strong> : la question « d'où vient le trafic ? » est ouverte. Ce document contient les six trajectories possibles, chiffrées, pour permettre la décision.</p>
+</div>
+
+<div class="toc">
+<strong>Sommaire</strong>
+<ol>
+<li>Verdict en une page</li>
+<li>Points forts</li>
+<li>Points faibles</li>
+<li>Les six sources de trafic possibles</li>
+<li>Comparer les trajectories</li>
+<li>Recommandation : la trajectoire mixte</li>
+<li>Ce qu'il faut construire, dans l'ordre</li>
+<li>Grille de décision</li>
+<li>Annexe A — Sources</li>
+<li>Annexe B — Ce qui n'a pas été tranché</li>
+</ol>
+</div>
+
+<h2>1. Verdict en une page</h2>
+
+<p><strong>Ce qui est solide.</strong> Un canal sans friction (WhatsApp, taux d'ouverture très élevé), un différenciateur produit réel (le prix et la disponibilité affichés <em>avant</em> le clic), zéro risque financier (aucun encaissement, aucun encours, aucune dépendance au rail de paiement), et une offre initiale de plus de 3 600 établissements nommément accessibles.</p>
+
+<p><strong>Ce qui est fragile.</strong> Le modèle ne survit qu'en trafic organique — et l'organique à l'échelle est le problème le plus difficile d'un marché à deux faces. En prime : tu ne possèdes aucun maillon de la chaîne (le contenu est au restaurant, la relation se passe dans WhatsApp sur son numéro, le canal est à Meta), les restaurateurs sont les <em>pires</em> clients payants d'un modèle au clic (marge faible, aucune capacité de mesure, départ rapide), et ta seule barrière — le catalogue vérifié — demande deux ans pour se construire.</p>
+
+<p><strong>La condition d'existence.</strong></p>
+
+<pre>Trafic acheté à 50 FCFA le clic ou plus  →  ROAS inférieur ou égal à 100 %  →  mort
+Trafic organique à coût marginal nul      →  viable</pre>
+
+<p><strong>Le chiffre de contrôle.</strong> L'unité de vente est la conversation attribuée, pas le clic. À 50 FCFA le clic, tu encaisses environ 10 FCFA par conversation (50 × 1/5, à 20 % de clic-conversation), alors qu'une conversation peut valoir 700 FCFA de marge de contribution. L'unité de vente est le problème, pas le prix seul.</p>
+
+<p><strong>La question ouverte.</strong> Elle fait l'objet de la section 4. Aucune des six trajectories n'est réellement acquise à ce jour. La section 5 les compare, la section 6 en propose une combinaison.</p>
+
+<h2>2. Points forts</h2>
+
+<h3>2.1 La pré-qualification — c'est ton actif défendable</h3>
+
+<p>C'est le seul endroit où ton produit bat Meta.</p>
+
+<table>
+<tr><th></th><th>Publicité Facebook Ads</th><th>Ton catalogue</th></tr>
+<tr><td>Ce qu'elle dit</td><td>« Restaurant X, 20 minutes de vous »</td><td>« Ndolè, 4 500 FCFA, disponible ce soir à Bonapriso »</td></tr>
+<tr><td>Moment du clic</td><td>Avant de savoir</td><td><strong>Après avoir le prix, le plat et l'accessibilité</strong></td></tr>
+<tr><td>Logique de prix</td><td>Coût de comparaison</td><td><strong>Réponse à une intention, sans comparaison</strong></td></tr>
+</table>
+
+<p>C'est ce qui justifie 400 FCFA là où une annonce Facebook en justifie 20. Et ce n'est pas reproductible par un copier-coller : il faut avoir constitué le catalogue vérifié.</p>
+
+<h3>2.2 WhatsApp : taux d'ouverture très élevé, zéro friction, zéro infrastructure</h3>
+
+<p>Aucun email à envoyer, aucun numéro à collecter, aucune application à télécharger. C'est le canal le plus utilisé au Cameroun — <strong>85 % ou plus des prospects internet</strong> l'utilisent <span class="tag">SOURCE</span>, contre 4,2 à 5,45 M d'utilisateurs Facebook pour tout le pays. Pour un utilisateur mobile (92 % des connexions), c'est le seul canal qui ne perd personne en route.</p>
+
+<h3>2.3 Tu n'as besoin d'aucun rail de paiement</h3>
+
+<p>Conséquence directe du recentrage en modèle média, et sous-estimée :</p>
+
+<table>
+<tr><th>Élément</th><th>Besoin ?</th></tr>
+<tr><td>Merchant of record (encaisement)</td><td>Non</td></tr>
+<tr><td>MTN MoMo / Orange Money</td><td>Non</td></tr>
+<tr><td>Frais aller-retour sur paiement</td><td>Non</td></tr>
+<tr><td>Licence BEAC d'encaissement</td><td>Non</td></tr>
+<tr><td>Risque de rejet de paiement</td><td>Non</td></tr>
+<tr><td>Contentieux sur des nuitées impayées</td><td>Non</td></tr>
+<tr><td>Encaissement de cartes</td><td>Non</td></tr>
+</table>
+
+<p><strong>Tout le risque financier de la première analyse a disparu du modèle.</strong> Ce n'est pas anecdotique : c'est ce qui rend le projet lançable avec un capital faible.</p>
+
+<h3>2.4 Le prépaiement en blocs supprime deux problèmes d'un coup</h3>
+
+<ul>
+<li><strong>Le risque de crédit</strong> : personne ne te doit d'argent.</li>
+<li><strong>Le risque de confiance</strong> : un restaurateur ne peut pas disparaître dans six mois avec une somme encaissée.</li>
+</ul>
+
+<p>Et c'est le seul moyen de vendre à un établissement à 2 000 FCFA de ticket moyen sans passer par une intégration bancaire. Blocs vendables : 200 conversations (petit compte) à 1 000 conversations (grand compte).</p>
+
+<h3>2.5 L'offre est abondante et nommément accessible</h3>
+
+<table>
+<tr><th>Catégorie</th><th>Volume <span class="tag">SOURCE</span></th></tr>
+<tr><td>Restauration</td><td>2 265</td></tr>
+<tr><td>Hôtels et hébergements</td><td>1 368</td></tr>
+<tr><td>— dont appartements et studios meublés</td><td><strong>662</strong></td></tr>
+<tr><td>Divertissements</td><td>437</td></tr>
+<tr><td><strong>Total catalogue de référence</strong></td><td><strong>≈ 3 840</strong></td></tr>
+</table>
+
+<p>Ce sont des prospects nommés, avec numéro de téléphone. <strong>Tu n'as pas un problème d'offre, tu as un problème de qualité d'offre.</strong> Un commercial peut appeler 100 établissements en une semaine.</p>
+
+<h3>2.6 La mauvaise qualité des données existantes est ton ouverture</h3>
+
+<p>Ce qu'on observe chez l'acteur principal du catalogue :</p>
+
+<ul>
+<li>Scores « 5.0 » affichés en regard de « 0.0 (3 mentions) » et « vous n'avez aucun commentaire ».</li>
+<li>Descriptions générées qui parlent d'autre chose (une fiche de grill à Yaoundé qui cite un marché de Douala).</li>
+<li>Horaires « Aucune disponibilité définie ».</li>
+<li>Parcours de conversion qui se termine sur WhatsApp, sans historique.</li>
+</ul>
+
+<p>C'est laid — et c'est exactement là qu'un acteur vérifié se positionne. <strong>Le contenu vérifié est mieux indexé <em>et</em> mieux cliqué.</strong> Ta phase 0 est presque gratuite : tu vérifies 100 fiches mieux que l'existant, et tu prends le trafic que l'existant perd.</p>
+
+<h3>2.7 Le trafic de recherche est structuré pour toi</h3>
+
+<p>Les requêtes de type « cuisine + quartier » ou « type + prix + ville » sont des requêtes de <strong>longue traîne</strong> : peu de volume unitaire, mais un cumul important, et une intention transactionnelle déjà formée. C'est un terrain où un acteur local vérifié peut se positionner vite, parce que la concurrence y est faible.</p>
+
+<h2>3. Points faibles</h2>
+
+<h3>3.1 Le modèle meurt si tu achètes ton trafic</h3>
+
+<pre>Prix de vente          50 FCFA par clic
+Coût d'acquisition     50 FCFA par clic ou plus (en auction)
+ROAS                   100 % ou moins</pre>
+
+<p>Tu vends exactement ce que tu achètes. Ce n'est pas une marge fine, c'est zéro. Et ce n'est pas un risque de marché : c'est une identité structurelle. <strong>Ce modèle ne fonctionne qu'en organique.</strong></p>
+
+<p>Le corollaire est qu'il faut distinguer deux choses qu'on confond souvent :</p>
+
+<table>
+<tr><th>Levier</th><th>Effet sur le coût du clic</th></tr>
+<tr><td>CTR élevé sur ton site</td><td>Le clic devient bon marché en CPC. <strong>Ne te sauve pas.</strong></td></tr>
+<tr><td>Trafic organique</td><td>Coût marginal nul. <strong>Seule chose qui sauve.</strong></td></tr>
+</table>
+
+<p>Un catalogue mieux indexé augmente ton CTR — donc ton coût par clic baisse sur le trafic acheté. Mais tant que tu achètes, ton ROAS reste plafonné par le prix de l'enchère.</p>
+
+<h3>3.2 Tu ne possèdes aucun maillon de la chaîne</h3>
+
+<table>
+<tr><th>Actif</th><th>Détenu par toi ?</th></tr>
+<tr><td>Le contenu (plat, prix, menu)</td><td>Non — le restaurant, retirable demain</td></tr>
+<tr><td>La relation avec le client final</td><td>Non — elle se passe dans WhatsApp, <strong>sur le numéro du restaurant</strong></td></tr>
+<tr><td>Le canal</td><td>Non — Meta</td></tr>
+<tr><td>La mesure</td><td>Partiellement — ton identifiant d'attribution, mais les faits restent chez Meta</td></tr>
+<tr><td>Les données de conversation</td><td>Non — elles appartiennent au restaurant</td></tr>
+</table>
+
+<p>Ce qui te reste : <strong>l'attribution et la relation commerciale avec l'établissement.</strong> C'est réel, et c'est mince.</p>
+
+<p><strong>Le risque Meta n'est pas théorique.</strong> Meta peut copier ton format de découverte, déclasser la redirection <code>wa.me</code> dans ses propres annonces, ou resserrer ses règles sur les liens externes. Tu es en dépendance sur ton fournisseur <em>et</em> sur ton canal de distribution.</p>
+
+<h3>3.3 Le restaurateur est le pire client payant pour un modèle au clic</h3>
+
+<p>Point structurant, souvent négligé :</p>
+
+<table>
+<tr><th></th><th>Restaurant</th><th>Meublé</th></tr>
+<tr><td>Ticket</td><td>7 000 FCFA</td><td>20 000 FCFA par nuit</td></tr>
+<tr><td>Marge de contribution</td><td>≈ 3 500 FCFA</td><td>≈ 15 000 FCFA</td></tr>
+<tr><td>Tolérance à la dépense publicitaire</td><td><strong>Très faible</strong></td><td>Normale (il fait déjà de la recherche)</td></tr>
+<tr><td>Réflexion avant achat</td><td>Aucune (« j'y vais »)</td><td>Longue (combien de nuits, où, quel prix)</td></tr>
+<tr><td>Capacité à mesurer son ROI</td><td><strong>Nulle</strong></td><td>Correcte</td></tr>
+<tr><td>Rétention sur la plateforme</td><td><strong>Faible</strong> — coupe dès que ça ne vient plus</td><td>Bonne</td></tr>
+</table>
+
+<p><strong>Le calcul qui décide de tout :</strong></p>
+
+<pre>Prix d'une conversation : 400 FCFA
+Taux de conversion conversation vers visite : 20 %
+Coût par client gagné      : 400 / 0,20 = 2 000 FCFA
+Marge de contribution      : 3 500 FCFA
+Part de la marge consommée : 57 %</pre>
+
+<p><strong>Le restaurant ne peut pas supporter ça longtemps.</strong> Il paie deux mois, puis coupe. Conséquence : ton coût d'acquisition client te coûte plus cher, sur les restaurants, que ce qu'il rapporte.</p>
+
+<p>Pour le meublé :</p>
+
+<pre>Prix d'une conversation : 1 500 FCFA
+Coût par client gagné    : 1 500 / 0,20 = 7 500 FCFA
+Marge de contribution    : 15 000 FCFA
+Part consommée           : 50 %</pre>
+
+<p>Même ratio, mais <strong>le meublé a plusieurs fois la capacité d'absorption</strong>, une réflexion longue qui allonge le cycle, et une capacité réelle à mesurer.</p>
+
+<blockquote><strong>Conclusion qui inverse l'intuition locale :</strong> les meublés devraient <strong>porter</strong> le modèle (la marge), et les restaurants le <strong>remplir</strong> (le volume). C'est l'inverse du réflexe — parce que le restaurant est le volume et le meublé est l'argent.</blockquote>
+
+<h3>3.4 Ton unité de vente repose sur une donnée que tu ne contrôles pas</h3>
+
+<p>Tu factures la « conversation attribuée ». Techniquement, c'est ton propre journal qui affirme cette attribution. Le restaurant voit ses conversations ; tu dis lesquelles sont à toi ; les deux chiffres ne se recoupent pas.</p>
+
+<p>Un restaurateur attentif finira par demander : « pourquoi 231 attribuées sur 240 quand j'en ai 265 ? »</p>
+
+<p><strong>Tu n'as pas de réponse technique.</strong> La seule parade est que le client paie d'abord, donc n'a pas à te croire. Le prépaiement ne masque pas le problème — il le rend tolérable. C'est important à savoir avant d'avoir 200 clients.</p>
+
+<h3>3.5 Le prix de 50 FCFA plafonne tout</h3>
+
+<p>Ce n'est pas un prix, c'est un symptôme. S'il s'agit du maximum qu'un restaurateur accepte :</p>
+
+<ul>
+<li>La facture mensuelle par établissement plafonne. À 1 000 clics par mois : 50 000 FCFA — une somme qu'on coupe sans délibérer.</li>
+<li><strong>Le chiffre d'affaires a un plafond dur lié au budget publicitaire total des restaurants de Douala</strong>, pas à ton trafic. Tu ne peux pas croître plus vite que la somme que le marché accepte de dépenser.</li>
+<li>Il n'existe aucune version premium naturelle. Passer à 400 FCFA le clic, c'est changer de marché.</li>
+</ul>
+
+<p>C'est pourquoi la recommandation centrale est de <strong>facturer la conversation, à deux grilles</strong> :</p>
+
+<table>
+<tr><th></th><th>Restaurant</th><th>Meublé</th></tr>
+<tr><td>Marge de contribution</td><td>3 500 FCFA</td><td>15 000 FCFA</td></tr>
+<tr><td>Taux de 10 à 12 %</td><td><strong>350 à 420 FCFA</strong></td><td><strong>1 500 à 1 800 FCFA</strong></td></tr>
+</table>
+
+<p><strong>Un seul taux, deux prix.</strong> Même logique que la commission justifiée dans l'analyse Booking, avec deux assiettes.</p>
+
+<h3>3.6 Pas de barrière à l'entrée, donc pas de défensibilité</h3>
+
+<p>Copier ton produit prend quelques semaines : un annuaire, une redirection <code>wa.me</code>, un compteur. Aucune donnée propriétaire au départ, aucun contrat d'exclusivité, aucune intégration impossible à répliquer.</p>
+
+<p>La seule chose qui se construit lentement, c'est le catalogue vérifié. C'est vrai — mais <strong>ça prend deux ans, pas deux mois</strong>. Pendant ces deux mois, ta seule défense est l'antériorité, qui ne vaut pas grand-chose sur un marché où la publicité de plateforme fonctionne très bien.</p>
+
+<h3>3.7 Aucun effet de réseau, ni dans un sens ni dans l'autre</h3>
+
+<p>Un utilisateur ne revient pas parce que le catalogue est grand : sur 3 840 fiches, il n'a aucune chance de tomber sur le bon meublé par hasard. Le catalogue n'a pas de <strong>valeur de réseau</strong>, seulement de valeur de <strong>couverture</strong>.</p>
+
+<p>Donc chaque établissement supplémentaire est une vente, pas un effet qui s'auto-alimente. L'argument « plus il y a de restaurants, plus les gens viennent » est faux ici.</p>
+
+<h3>3.8 Le marché numérique est plus étroit qu'il n'y paraît</h3>
+
+<table>
+<tr><th>Indicateur</th><th>Valeur <span class="tag">SOURCE</span></th></tr>
+<tr><td>Population</td><td>≈ 28 à 29,5 M</td></tr>
+<tr><td>Internautes</td><td>≈ 12,4 M (41,9 %)</td></tr>
+<tr><td>dont Douala (estimation)</td><td>≈ 2,1 M</td></tr>
+<tr><td>Utilisateurs de réseaux sociaux</td><td>5,45 M (18,5 %)</td></tr>
+<tr><td>— dont Facebook</td><td>4,2 à 5,45 M</td></tr>
+<tr><td>— dont Instagram</td><td>600 000 à 611 000</td></tr>
+<tr><td>— dont LinkedIn</td><td>1,4 M</td></tr>
+<tr><td>— dont X (Twitter)</td><td>185 000 à 199 000</td></tr>
+<tr><td>Messenger</td><td>665 000</td></tr>
+<tr><td>WhatsApp parmi les prospects internet</td><td><strong>85 % ou plus</strong></td></tr>
+<tr><td>Connexion mobile</td><td><strong>92 %</strong> des connexions</td></tr>
+<tr><td>Part du PC</td><td>moins de 8 %</td></tr>
+<tr><td>Couverture 3G et 4G</td><td>≈ 75 % de la population</td></tr>
+</table>
+
+<p>Ton marché adressable n'est pas 3,9 M d'habitants de Douala. C'est <strong>≈ 2,1 M d'internautes</strong>, dont une fraction qui cherche activement un plat ou un meublé un soir donné. Le reste de la population est hors de portée tant que le smartphone et la data ne sont pas le problème.</p>
+
+<h2>4. Les six sources de trafic possibles</h2>
+
+<p>C'est la section qui débloque la décision. Chacune est évaluée sur trois critères : <strong>coût pour le premier clic</strong>, <strong>volumétrie atteignable</strong>, et <strong>faisabilité pour toi aujourd'hui</strong>.</p>
+
+<h3>T1 — SEO de longue traîne (« cuisine + quartier »)</h3>
+
+<p><strong>Le principe.</strong> Tu construis une page par requête transactionnelle : « brunch Douala Bonamoussadi », « pizza Bonapriso », « studio meublé Akwa », « brunch pas cher Akwa ». L'utilisateur qui tape ça est <strong>en train d'acheter maintenant</strong>.</p>
+
+<table>
+<tr><th>Critère</th><th>Évaluation</th></tr>
+<tr><td>Coût du premier clic</td><td><strong>Zéro FCFA</strong> (temps de travail)</td></tr>
+<tr><td>Délai du premier clic</td><td><strong>2 à 4 mois</strong></td></tr>
+<tr><td>Volumétrie</td><td>Moyenne, en croissance</td></tr>
+<tr><td>Faisabilité</td><td>Élevée — aucune dépendance externe</td></tr>
+<tr><td>Coût récurrent</td><td>Production de contenu et photos</td></tr>
+</table>
+
+<p><strong>Forces</strong></p>
+<ul>
+<li>Requêtes d'intention déjà formée, donc taux de conversion élevé.</li>
+<li>Pas de coût d'acquisition : le prix du clic est exactement zéro, donc le ROAS est excellent sur ce segment.</li>
+<li>Un contenu vérifié se positionne mieux qu'une fiche générée — c'est ton avance structurelle.</li>
+<li>La longue traîne est par construction un marché de milliers de requêtes à faible volume unitaire, où un nouvel arrivant peut se glisser sans combat frontal.</li>
+</ul>
+
+<p><strong>Faiblesses</strong></p>
+<ul>
+<li>Délai de 2 à 4 mois avant le premier clic significatif. C'est long si tu manques de trésorerie.</li>
+<li>La production de contenu est un coût en travail, pas en argent. Il faut le compter.</li>
+<li>Dépend de Google, dont les règles changent.</li>
+<li>Si tu vends des clics aux restaurants, une page de qualité qui n'est pas tenue à jour risque d'être dépassée par les menus en PDF.</li>
+</ul>
+
+<p><strong>Verdict.</strong> <strong>Seule trajectoire avec un coût du clic réellement nul.</strong> C'est ta trajectoire principale, à lancer immédiatement, parce qu'elle se construit pendant que tu fais autre chose.</p>
+
+<h3>T2 — Contenu social organique (Facebook, TikTok, Instagram)</h3>
+
+<p><strong>Le principe.</strong> Un compte de découverte culinaire. Le format qui marche à Douala : une photo, un prix lisible, le quartier, et un lien vers la fiche.</p>
+
+<table>
+<tr><th>Critère</th><th>Évaluation</th></tr>
+<tr><td>Coût du premier clic</td><td><strong>Zéro FCFA</strong> (temps de travail)</td></tr>
+<tr><td>Délai du premier clic</td><td><strong>2 à 8 semaines</strong></td></tr>
+<tr><td>Volumétrie</td><td>Élevée <strong>si</strong> le format marche</td></tr>
+<tr><td>Faisabilité</td><td>Élevée</td></tr>
+<tr><td>Risque</td><td>L'algorithme peut te couper sans explication</td></tr>
+</table>
+
+<p><strong>Forces</strong></p>
+<ul>
+<li>Le clic le plus rapide à obtenir : c'est le canal le plus rapide de toute la liste après le terrain.</li>
+<li>L'utilisateur camerounais <strong>partage massivement</strong> — la pratique documentée est un partage environ deux fois plus fréquent qu'en Europe <span class="tag">SOURCE</span>. Chaque partage est une distribution gratuite.</li>
+<li>WhatsApp est utilisé par 85 % ou plus des prospects internet <span class="tag">SOURCE</span> : partager un lien vers WhatsApp est un mouvement naturel, pas forcé.</li>
+<li>Facebook reste dominant en Afrique francophone et en particulier au Cameroun, avec 4,2 à 5,45 M d'utilisateurs et une audience 25-45 ans — la cible exacte de ton catalogue <span class="tag">SOURCE</span>.</li>
+</ul>
+
+<p><strong>Faiblesses</strong></p>
+<ul>
+<li>Un compte sans historique ne distribue rien au départ. Il faut construire l'audience avant.</li>
+<li>Tu n'as aucun contrôle sur la distribution.</li>
+<li>Un restaurant influent peut te faire de la concurrence directe avant que tu aies un catalogue.</li>
+</ul>
+
+<p><strong>Verdict.</strong> <strong>Trajectoire d'activation, pas de croissance.</strong> Elle produit le premier clic en semaines, ce qui est essentiel pour valider le modèle, mais ne se met pas à l'échelle seule.</p>
+
+<h3>T3 — Viralité par le partage utilisateur</h3>
+
+<p><strong>Le principe.</strong> L'utilisateur partage la fiche, l'établissement voit le partage, et le partage devient une preuve de traction visible.</p>
+
+<table>
+<tr><th>Critère</th><th>Évaluation</th></tr>
+<tr><td>Coût du premier clic</td><td><strong>Zéro FCFA</strong></td></tr>
+<tr><td>Délai du premier clic</td><td><strong>Variable, dépend de l'adoption</strong></td></tr>
+<tr><td>Volumétrie</td><td><strong>Imprévisible</strong> — c'est tout ou rien</td></tr>
+<tr><td>Faisabilité</td><td>Élevée techniquement</td></tr>
+<tr><td>Verrou</td><td>Il faut déjà avoir du trafic pour que ça démarre</td></tr>
+</table>
+
+<p><strong>Forces</strong></p>
+<ul>
+<li>Coût marginal nul, et c'est la seule trajectoire dont la <strong>marge</strong> augmente avec le volume.</li>
+<li>Le partage est une recommandation personnelle : le taux d'ouverture d'un lien partagé par un proche est très supérieur à celui d'une affiche.</li>
+<li>Pré-qualification intégrée : on ne partage que ce qui a réussi, donc ce qui convertit.</li>
+</ul>
+
+<p><strong>Faiblesses</strong></p>
+<ul>
+<li><strong>Imprévisible.</strong> C'est la trajectoire la plus difficile à budgéter.</li>
+<li>Ne démarre qu'après avoir du trafic : c'est un multiplicateur, pas un point de départ.</li>
+<li>Un partage sans contrepartie est une demande de comportement que l'utilisateur ne va pas accorder.</li>
+</ul>
+
+<p><strong>Verdict.</strong> <strong>Amplificateur, jamais déclencheur.</strong> À activer une fois que T1 et T2 produisent.</p>
+
+<h3>T4 — Partenariats avec les communautés existantes</h3>
+
+<p><strong>Le principe.</strong> Les groupes WhatsApp de quartier, les associations, les pages de quartier, les influenceurs culinaires. Ils partagent, tu livres.</p>
+
+<table>
+<tr><th>Critère</th><th>Évaluation</th></tr>
+<tr><td>Coût du premier clic</td><td><strong>Zéro à faible</strong> (parfois un deal produit)</td></tr>
+<tr><td>Délai du premier clic</td><td><strong>1 à 4 semaines</strong></td></tr>
+<tr><td>Volumétrie</td><td><strong>Élevée et ciblée</strong></td></tr>
+<tr><td>Faisabilité</td><td>Élevée, mais chronophage</td></tr>
+<tr><td>Limite</td><td>Dépend d'un tiers, qui peut changer d'avis</td></tr>
+</table>
+
+<p><strong>Forces</strong></p>
+<ul>
+<li><strong>C'est le canal le plus pertinent du marché.</strong> Les groupes WhatsApp sont le lieu où se décident les sorties, les anniversaires, les dîners d'affaires. Y être présent, c'est être là où la décision se prend.</li>
+<li>Ciblage parfait : un groupe de Bonamoussadi ne voit que des gens de Bonamoussadi.</li>
+<li>Peut être gratuit : beaucoup de pages acceptent un échange de visibilité.</li>
+</ul>
+
+<p><strong>Faiblesses</strong></p>
+<ul>
+<li>Aucun contrat : un partenariat de bouche se rompt silencieusement.</li>
+<li>La qualité des audiences est variable : certains groupes sont peu actifs.</li>
+<li>Chronophage à négocier un par un.</li>
+<li>Risque de dépendance : si un seul influenceur fait 60 % de ton trafic, tu ne contrôles rien.</li>
+</ul>
+
+<p><strong>Verdict.</strong> <strong>Trajectoire la plus rentable du marché, et la plus négligée.</strong> C'est celle à prioriser après le SEO.</p>
+
+<h3>T5 — Publicité payante (Meta, TikTok)</h3>
+
+<p><strong>Le principe.</strong> Tu achètes des clics.</p>
+
+<table>
+<tr><th>Critère</th><th>Évaluation</th></tr>
+<tr><td>Coût du premier clic</td><td><strong>50 à 150 FCFA</strong> <span class="tag">ESTIMATION</span></td></tr>
+<tr><td>Délai du premier clic</td><td><strong>Immédiat</strong></td></tr>
+<tr><td>Volumétrie</td><td><strong>Sans limite</strong></td></tr>
+<tr><td>Faisabilité</td><td>Très élevée</td></tr>
+<tr><td>ROAS à 50 FCFA le clic</td><td><strong>33 % à 100 %</strong></td></tr>
+</table>
+
+<p><strong>Forces</strong></p>
+<ul>
+<li>Seule trajectoire qui donne du volume <strong>à la demande</strong>, sans dépendre d'un algorithme ou d'une recherche.</li>
+<li>Permet de tester le modèle rapidement et à coût maîtrisé.</li>
+</ul>
+
+<p><strong>Faiblesses</strong></p>
+<ul>
+<li><strong>À 50 FCFA le clic, ton ROAS est de 33 % à 100 %.</strong> Tu perds de l'argent sur chaque clic.</li>
+<li>Ce n'est pas une source de trafic, c'est une <strong>source de coût</strong>.</li>
+<li>Le coût du clic monte à mesure que tu montes en volume (enchères qui se raréfient). C'est une contrainte structurelle : le trafic acheté est le premier à disparaître.</li>
+</ul>
+
+<p><strong>Verdict.</strong> <strong>À proscrire comme source principale.</strong> Utile uniquement comme instrument de test mesuré, jamais comme socle.</p>
+
+<h3>T6 — Génération directe de trafic par le terrain</h3>
+
+<p><strong>Le principe.</strong> Ton équipe va dans les restaurants et les meublés, et pendant ce temps <strong>démontre</strong> la plateforme aux utilisateurs, donc crée le trafic localement.</p>
+
+<table>
+<tr><th>Critère</th><th>Évaluation</th></tr>
+<tr><td>Coût du premier clic</td><td><strong>Zéro en prospection directe, mais coût en salaires</strong></td></tr>
+<tr><td>Délai du premier clic</td><td><strong>1 à 3 mois</strong></td></tr>
+<tr><td>Volumétrie</td><td><strong>Bornée par la taille de l'équipe</strong></td></tr>
+<tr><td>Faisabilité</td><td>Élevée, exige de la motivation</td></tr>
+</table>
+
+<p><strong>Forces</strong></p>
+<ul>
+<li>Seul moyen d'obtenir du trafic <strong>en même temps</strong> que tu construis l'offre (ce qui résout le problème de la poule et de l'œuf).</li>
+<li>Un client qui vient parce qu'on lui a montré le plat au téléphone convertit bien mieux qu'un clic d'annonce.</li>
+<li>Zéro dépendance externe.</li>
+</ul>
+
+<p><strong>Faiblesses</strong></p>
+<ul>
+<li><strong>La plus lente à donner une vérité.</strong> Si le produit ne marche pas, tu le découvriras à tes propres frais, pas dans les métriques.</li>
+<li>La seule trajectoire dont la croissance est bornée linéairement par les effectifs.</li>
+<li>Coût réel élevé si tu comptes les salaires.</li>
+</ul>
+
+<p><strong>Verdict.</strong> <strong>Indispensable pour l'offre, insuffisante pour la demande.</strong> C'est le canal de l'offre, pas celui de la demande.</p>
+
+<h2>5. Comparer les trajectories</h2>
+
+<p><strong>Lequel des deux est le plus mauvais ?</strong></p>
+
+<table>
+<tr><th>Trajectoire</th><th>Coût du premier clic</th><th>Délai</th><th>Faisabilité seule</th><th>Ampleur possible</th><th>Verdict</th></tr>
+<tr><td><strong>T1 — SEO longue traîne</strong></td><td>Zéro</td><td>2 à 4 mois</td><td>Oui</td><td>Moyenne</td><td><strong>Socle principal</strong></td></tr>
+<tr><td><strong>T2 — Social organique</strong></td><td>Zéro</td><td>2 à 8 semaines</td><td>Oui</td><td>Élevée</td><td><strong>Activation</strong></td></tr>
+<tr><td><strong>T3 — Partage utilisateur</strong></td><td>Zéro</td><td>Variable</td><td>Oui</td><td>Imprévisible</td><td><strong>Amplificateur</strong></td></tr>
+<tr><td><strong>T4 — Partenariats WhatsApp</strong></td><td>Zéro à faible</td><td>1 à 4 semaines</td><td>Oui</td><td>Élevée et ciblée</td><td><strong>Le plus rentable</strong></td></tr>
+<tr><td><strong>T5 — Publicité payante</strong></td><td>50 à 150 FCFA</td><td>Immédiat</td><td>Oui</td><td>Illimitée</td><td><strong>Test uniquement</strong></td></tr>
+<tr><td><strong>T6 — Terrain</strong></td><td>Zéro + salaires</td><td>1 à 3 mois</td><td>Oui</td><td>Bornée</td><td><strong>Offre, pas demande</strong></td></tr>
+</table>
+
+<p><strong>Le constat qui tranche.</strong></p>
+
+<p><strong>Quatre trajectories sur six ont un coût du clic réellement nul.</strong> Ce n'est pas un hasard : le modèle <strong>conserve du sens à coût d'acquisition nul</strong>. Ce qui le tue, ce n'est pas le marché, c'est le budget publicitaire.</p>
+
+<blockquote>
+<p>La question « d'où vient ton trafic ? » n'a donc pas UNE réponse : elle a une réponse par quadrant.</p>
+<ul>
+<li><strong>Croissance à long terme</strong> &rarr; T1 (SEO). C'est la seule qui continue de payer sans toi.</li>
+<li><strong>Activation rapide</strong> &rarr; T4 puis T2. Les plus rapides à coût nul.</li>
+<li><strong>Amplification</strong> &rarr; T3, une fois qu'il y a du trafic à amplifier.</li>
+<li><strong>Test et mesure</strong> &rarr; T5, avec un budget plafonné et une erreur tolérée.</li>
+<li><strong>Offre</strong> &rarr; T6, en parallèle, pour résoudre la poule et l'œuf.</li>
+</ul>
+</blockquote>
+
+<h3>Pourquoi le mixte est obligatoire</h3>
+
+<pre>100 % en SEO seul     → 0 clic pendant 3 mois. Chiffre d'affaires mort.
+100 % en terrain seul → quelques centaines de clics par mois. Insuffisant.
+100 % en publicité    → ROAS de 33 %. Hémorragie.
+
+Mixte                 → de l'ordre de 60 000 clics par mois à M6, à coût marginal nul</pre>
+
+<h2>6. Recommandation : la trajectoire mixte</h2>
+
+<h3>6.1 Pourquoi aucune trajectoire seule ne suffit</h3>
+
+<table>
+<tr><th>Risque</th><th>T1 SEO</th><th>T2 Social</th><th>T3 Partage</th><th>T4 Partenariats</th><th>T5 Pub</th><th>T6 Terrain</th></tr>
+<tr><td>Délai</td><td>3 mois</td><td>Lent au départ</td><td>Nécessite du trafic</td><td>Rapide</td><td>Immédiat</td><td>2 mois</td></tr>
+<tr><td>Coût</td><td>Nul</td><td>Nul</td><td>Nul</td><td>Nul</td><td>50 à 150 F</td><td>Salaires</td></tr>
+<tr><td>Ampleur</td><td>Moyenne</td><td>Algorithmique</td><td>Imprévisible</td><td>Bornée</td><td>Illimitée</td><td>Bornée</td></tr>
+<tr><td>Contrôle</td><td>Google</td><td>Algo</td><td>Total</td><td>Tiers</td><td>Total</td><td>Total</td></tr>
+<tr><td>Risque de coupure</td><td>Majeur</td><td>Majeur</td><td>Faible</td><td>Moyen</td><td>Faible</td><td>Faible</td></tr>
+</table>
+
+<p><strong>Chaque colonne a une cellule rouge.</strong> C'est le signe qu'aucune trajectoire seule ne suffit, et c'est l'argument du mixte.</p>
+
+<h3>6.2 Le mixte recommandé</h3>
+
+<table>
+<tr><th>Phase</th><th>Trajectoire principale</th><th>Trajectoire secondaire</th><th>Objectif</th></tr>
+<tr><td><strong>M0 à M3</strong></td><td>T6 (terrain, pour l'offre) + T4 (partenariats WhatsApp)</td><td>T2 (compte social, amorcé)</td><td><strong>Validation.</strong> Prouver que des conversations se produisent et que des établissements veulent en acheter.</td></tr>
+<tr><td><strong>M3 à M9</strong></td><td><strong>T1 (SEO, en masse)</strong></td><td>T2 (contenu social régulier) + T4 (partenariats étendus)</td><td><strong>Croissance.</strong> Le SEO monte, le social alimente, les partenariats se déploient.</td></tr>
+<tr><td><strong>M9 à M12</strong></td><td>T1 + T3 (partage activé)</td><td>T4 + T5 (petit budget de test)</td><td><strong>Amplification.</strong> Mesurer et optimiser ce qui convertit.</td></tr>
+</table>
+
+<p><strong>Répartition cible du trafic à 12 mois</strong> <span class="tag">ESTIMATION</span> :</p>
+
+<pre>SEO (T1)              40 à 50 %   ← socle qui grossit sans coût
+Partenariats (T4)     25 à 30 %   ← le plus rentable, à entretenir
+Social (T2)           15 à 20 %   ← activation et test de format
+Partage (T3)           5 à 10 %   ← amplificateur
+Publicité (T5)         5 % maximum ← test uniquement, jamais plus
+Terrain (T6)          hors mesure ← l'offre, pas la demande</pre>
+
+<h3>6.3 Le coût du premier clic</h3>
+
+<table>
+<tr><th>Trajectoire</th><th>Coût</th></tr>
+<tr><td>T1</td><td><strong>0 FCFA</strong></td></tr>
+<tr><td>T2</td><td><strong>0 FCFA</strong></td></tr>
+<tr><td>T3</td><td><strong>0 FCFA</strong></td></tr>
+<tr><td>T4</td><td><strong>0 à 20 000 FCFA</strong> (si deal produit)</td></tr>
+<tr><td>T5</td><td><strong>50 à 150 FCFA</strong></td></tr>
+</table>
+
+<p><strong>Quatre trajectoires sur six sont à coût nul.</strong> C'est ce qui sauve le modèle. Si tu devais lancer une seule chose demain, ce serait <strong>T1 et T4 simultanément</strong> — le SEO pour la croissance future, les partenariats WhatsApp pour le revenu tout de suite.</p>
+
+<h2>7. Ce qu'il faut construire, dans l'ordre</h2>
+
+<p>Dans cet ordre, parce que chaque étape conditionne la suivante.</p>
+
+<table>
+<tr><th>#</th><th>Élément</th><th>Pourquoi en premier</th><th>Temps</th></tr>
+<tr><td>1</td><td><strong>Redirect serveur + identifiant de clic unique + journal horodaté</strong></td><td>Sans ça, tu ne peux ni mesurer ni facturer. Pas de JavaScript : c'est un redirect HTTP.</td><td>1 à 2 semaines</td></tr>
+<tr><td>2</td><td><strong>Lien <code>wa.me</code> portant l'identifiant</strong></td><td>C'est ce qui attribue la conversation à ta plateforme et à la fiche concernée.</td><td>1 semaine</td></tr>
+<tr><td>3</td><td><strong>Tableau de bord en chaîne</strong> (clics &rarr; conversations &rarr; attribuées)</td><td>L'attribution, pas le décompte, justifie la facturation. Afficher la chaîne, pas un chiffre.</td><td>1 à 2 semaines</td></tr>
+<tr><td>4</td><td><strong>Facturation par conversation attribuée, par blocs prépayés</strong></td><td>Deux grilles tarifaires (restaurant et meublé). Le prépaiement supprime le risque de crédit.</td><td>1 à 2 semaines</td></tr>
+<tr><td>5</td><td><strong>Sélection des établissements payants</strong></td><td>WhatsApp Business actif, menu à jour avec prix, photos correctes.</td><td>En continu</td></tr>
+<tr><td>6</td><td><strong>Instrumentation de mesure du trafic</strong></td><td>Tu dois pouvoir dire d'où vient chaque clic, sinon T1 à T6 sont indistinguables.</td><td>1 semaine</td></tr>
+</table>
+
+<p><strong>Les étapes 1 à 4 sont le socle.</strong> Elles ne dépendent d'aucune décision stratégique et ne changent pas quel que soit ton choix de trajectoire de trafic.</p>
+
+<h3>7.1 Contre-mesures obligatoires</h3>
+
+<table>
+<tr><th>Risque</th><th>Parade</th></tr>
+<tr><td>Fraude au clic</td><td>Redirect serveur, un clic par utilisateur et établissement et par jour, exclusion des sessions vers le même numéro, journal serveur non modifiable.</td></tr>
+<tr><td>Le restaurant dit « j'ai eu 265 conversations, vous en comptez 231 »</td><td>Prépaiement (il paie d'abord, donc n'a pas à te croire). Et assumer l'écart publiquement : <strong>afficher les conversations brutes du restaurant à côté des attribuées.</strong></td></tr>
+<tr><td>Copie du produit</td><td>Catalogue vérifié (lent, deux ans). Contrats d'exclusivité de quartier avec les premiers établissements.</td></tr>
+<tr><td>Meta coupe la redirection <code>wa.me</code></td><td>Garder le catalogue en propre, construire une base directe avant qu'il soit trop tard.</td></tr>
+<tr><td>Départ des restaurants</td><td>Prioriser les meublés (rétention meilleure). Prix bas et honnête.</td></tr>
+</table>
+
+<h2>8. Grille de décision</h2>
+
+<p>Pour trancher la question « d'où vient le trafic ? », réponds à ces quatre questions.</p>
+
+<table>
+<tr><th>Question</th><th>Si OUI</th><th>Si NON</th></tr>
+<tr><td><strong>Combien de mois de trésorerie peuvent être consacrés sans revenue ?</strong></td><td>T1 (SEO) en premier, budget gratuit</td><td><strong>T5 uniquement, et c'est un suicide économique. Change le prix de vente.</strong></td></tr>
+<tr><td><strong>As-tu accès à des groupes WhatsApp de quartier ?</strong></td><td>T4 immédiatement : c'est rapide et gratuit</td><td>T1 et T2 en priorité</td></tr>
+<tr><td><strong>Acceptes-tu de ne rien encaisser pendant 4 mois ?</strong></td><td>T1 peut être le moteur</td><td>Il faut T4 pour générer du revenu, et T1 en parallèle</td></tr>
+<tr><td><strong>Le prix de vente est-il vraiment 50 FCFA ?</strong></td><td>Change à 350 (restaurant) et 1 500 (meublé) par conversation, sinon T5 est mort-né</td><td>T1 à T4 seulement</td></tr>
+</table>
+
+<h3>La synthèse finale</h3>
+
+<p><strong>Points forts :</strong> la pré-qualification du catalogue, le canal WhatsApp sans friction, l'absence totale de risque financier et réglementaire, le prépaiement qui résout la confiance, et une offre de plus de 3 600 établissements immédiatement accessible.</p>
+
+<p><strong>Points faibles :</strong> la condition d'existence en trafic organique non démontrée, la non-possession de tous les maillons de la chaîne, des restaurants qui ne peuvent pas absorber le coût d'acquisition, un prix qui plafonne la scalabilité, une barrière à l'entrée quasi nulle, et un marché numérique adressable de 2,1 M d'internautes et non de 3,9 M d'habitants.</p>
+
+<p><strong>La question du trafic, une fois documentée :</strong> le modèle est <strong>par construction</strong> compatible avec le coût d'acquisition nul. Ce n'est ni le marché, ni la technologie, ni le produit qui le limitent — c'est le recours à l'achat de trafic.</p>
+
+<blockquote><strong>En une phrase :</strong> tu as trouvé un bon canal, un vrai différenciateur produit, et une absence totale de risque financier — sur un modèle dont la seule condition de survie est la trajectoire d'acquisition la plus difficile à démontrer. Et cette trajectoire est documentée dans la section 4 : <strong>quatre sources sur six sont gratuites, aucune ne suffit seule, et le mixte est obligatoire.</strong></blockquote>
+
+<h2>9. Annexe A — Sources</h2>
+
+<h3>9.1 Marché numérique camerounais <span class="tag">SOURCE</span></h3>
+
+<table>
+<tr><th>Indicateur</th><th>Valeur</th><th>Source</th></tr>
+<tr><td>Population</td><td>28 à 29,5 M</td><td>Banque mondiale, DataReportal 2025</td></tr>
+<tr><td>Internautes</td><td>12,4 M (41,9 %)</td><td>Econuma / UIT, début 2025</td></tr>
+<tr><td>Utilisateurs de réseaux sociaux</td><td>5,45 M (18,5 %)</td><td>We Are Social / Meltwater, Digital Report 2025</td></tr>
+<tr><td>Facebook Cameroun</td><td>4,2 à 5,45 M</td><td>We Are Social / Agence Ecofin</td></tr>
+<tr><td>Instagram</td><td>600 000 à 611 000</td><td>Agence Ecofin, fin 2025</td></tr>
+<tr><td>LinkedIn</td><td>1,4 M</td><td>Digital Report 2025</td></tr>
+<tr><td>X (Twitter)</td><td>185 000 à 199 000</td><td>Agence Ecofin / Digital Report</td></tr>
+<tr><td>Messenger</td><td>665 000</td><td>Digital Report 2025</td></tr>
+<tr><td>WhatsApp</td><td>85 % ou plus des prospects internet</td><td>BeonWeb 2026</td></tr>
+<tr><td>Partage moyen</td><td>environ 2 fois plus qu'en Europe</td><td>Neurone Digital 2026</td></tr>
+<tr><td>Connexion mobile</td><td>92 %</td><td>BeonWeb 2026</td></tr>
+<tr><td>Part du PC</td><td>moins de 8 %</td><td>BeonWeb 2026</td></tr>
+<tr><td>Couverture 3G et 4G</td><td>environ 75 %</td><td>GSMA / DataReportal 2024</td></tr>
+<tr><td>Douala — internautes</td><td>environ 2,1 M</td><td>BeonWeb 2026</td></tr>
+<tr><td>Population de Douala</td><td>environ 4 M</td><td>BeonWeb 2026</td></tr>
+<tr><td>Coût de la data</td><td>5 Go environ 5 000 FCFA</td><td>BeonWeb 2026</td></tr>
+<tr><td>Smartphone d'entrée de gamme</td><td>40 000 à 80 000 FCFA, Android à 95 %</td><td>BeonWeb 2026</td></tr>
+<tr><td>Couverture des PME avec un site web</td><td>moins de 15 %, 60 % n'ont que Facebook</td><td>BeonWeb 2026</td></tr>
+</table>
+
+<h3>9.2 Catalogue de référence <span class="tag">SOURCE</span></h3>
+
+<ul>
+<li><strong>Ayila'a Cameroun</strong> (ayilaa.com) : restauration 2 265, hébergement 1 368 dont 662 appartements et studios meublés, divertissements 437, total environ 3 840, 5 offres B2B, aucune commission, trafic revendiqué de 1 M par mois sur le web et 200 000 par mois sur l'application (déclaration commerciale, <strong>non vérifiée</strong>).</li>
+<li><strong>Uniresa</strong> : 288 établissements, 226 propriétaires, 573 chambres, 10 villes, commission de 10 % à la réservation confirmée, 70 logements à Douala et 149 à Yaoundé. Meublés uniquement.</li>
+<li><strong>Camhebergement</strong> : meublés à Douala, 15 000 à 45 000 FCFA par nuit.</li>
+<li><strong>Zuma Eats</strong> : Douala « Launching soon », Cameroun tier 2.</li>
+<li><strong>Wakalooka</strong> : site hors service.</li>
+<li><strong>Meta / WhatsApp Business</strong> : « messaging conversations started », Ads that click-to-WhatsApp, Conversions API.</li>
+</ul>
+
+<h3>9.3 Estimations de ce document <span class="tag">ESTIMATION</span></h3>
+
+<table>
+<tr><th>Chiffre</th><th>Hypothèse</th></tr>
+<tr><td>Coût du clic publicitaire 50 à 150 FCFA</td><td>Ordre de grandeur Meta à Douala, non vérifié auprès d'un annonceur réel</td></tr>
+<tr><td>Taux clic vers conversation de 20 %</td><td>Hypothèse de travail, à mesurer</td></tr>
+<tr><td>Taux conversation vers visite de 20 %</td><td>Hypothèse de travail, à mesurer</td></tr>
+<tr><td>Marge de contribution 3 500 FCFA (restaurant) et 15 000 FCFA (meublé)</td><td>Ticket moins le coût matière et service</td></tr>
+<tr><td>Prix de 350 à 420 FCFA et 1 500 à 1 800 FCFA par conversation</td><td>10 à 12 % de la marge de contribution</td></tr>
+<tr><td>Volumétrie et délais des trajectoires T1 à T6</td><td>Jugement d'expert, pas des données publiées</td></tr>
+<tr><td>Répartition cible du trafic à 12 mois</td><td>Objectif de planification</td></tr>
+</table>
+
+<h2>10. Annexe B — Ce qui n'a pas été tranché</h2>
+
+<table>
+<tr><th>#</th><th>Question ouverte</th><th>Pourquoi c'est important</th></tr>
+<tr><td><strong>O1</strong></td><td><strong>Quel prix de vente ?</strong> 50 FCFA au clic, ou 350 à 420 et 1 500 à 1 800 à la conversation ?</td><td>Détermine si la trajectoire T5 est viable ou mort-née.</td></tr>
+<tr><td><strong>O2</strong></td><td><strong>Quelle trajectoire de trafic en priorité ?</strong></td><td>Détermine le séquencement et le budget.</td></tr>
+<tr><td><strong>O3</strong></td><td><strong>Modèle juridique et fiscal</strong>, même sans encaissement</td><td>Si tu fais de la publicité, il y a des obligations fiscales (impôt sur les revenus d'une activité commerciale, registre unique). Moins lourd que le merchant of record, mais non nul.</td></tr>
+<tr><td><strong>O4</strong></td><td><strong>Quel statut pour les établissements sans RCS ni NIF ?</strong></td><td>C'est le premier obstacle terrain.</td></tr>
+<tr><td><strong>O5</strong></td><td><strong>Application mobile ou web ?</strong></td><td>Question à trancher tôt, coûteuse à corriger tard.</td></tr>
+<tr><td><strong>O6</strong></td><td><strong>Quel budget, et sur quel horizon ?</strong></td><td>Détermine si T1 est finançable en 3 mois ou doit être raccourci.</td></tr>
+</table>
+
+<hr>
+<p><em>Fin du document. Prochaine étape : trancher O1 et O2, puis lancer les étapes 1 à 4 de la section 7, qui ne dépendent d'aucune décision stratégique.</em></p>
+
+</body>
+</html>

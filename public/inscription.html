@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscription établissement — Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-logo-placeholder" role="img" aria-label="Emplacement du logo"></div>
+          <small>Restaurants & meublés</small>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+          <a href="/login">Espace admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="inscription-page">
+      <section class="auth-card">
+        <div class="inscription-header">
+          <div class="brand-mark-small">D</div>
+          <h2>Créer votre profil établissement</h2>
+          <p class="auth-sub">Inscrivez votre restaurant ou meublé pour apparaître sur Douala Discovery et recevoir des conversations WhatsApp attribuées.</p>
+        </div>
+
+        <!-- Barre de progression -->
+        <div class="stepper">
+          <div class="step active" id="step-1-badge"><span class="step-number">1</span></div>
+          <div class="step-divider"></div>
+          <div class="step" id="step-2-badge"><span class="step-number">2</span></div>
+        </div>
+        <div class="step-labels">
+          <span class="step-label active" id="step-1-label">Votre compte</span>
+          <span class="step-label" id="step-2-label">Votre établissement</span>
+        </div>
+
+        <div id="msg-inscription" class="msg auth-error"></div>
+
+        <!-- ÉTAPE 1 : Compte -->
+        <form id="form-inscription-1" class="step-form active">
+          <div class="field">
+            <span class="field-label">Votre email</span>
+            <div class="field-input-wrapper">
+              <span class="field-icon">@</span>
+              <input type="email" name="email" required placeholder="contact@exemple.cm" />
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Mot de passe</span>
+            <div class="field-input-wrapper">
+              <span class="field-icon">🔒</span>
+              <input type="password" name="password" required minlength="12" maxlength="1024" placeholder="12 caractères minimum" />
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Nom de l'établissement</span>
+            <div class="field-input-wrapper">
+              <span class="field-icon">🏢</span>
+              <input type="text" name="nom" required placeholder="Ex: Akwaba Grill" />
+            </div>
+          </div>
+
+          <div class="form-actions step-nav">
+            <button type="button" class="ghost-btn" id="btn-next-1">Suivant <span class="arrow">›</span></button>
+          </div>
+        </form>
+
+        <!-- ÉTAPE 2 : Établissement -->
+        <form id="form-inscription-2" class="step-form hidden">
+          <div class="field">
+            <span class="field-label">Type</span>
+            <div class="field-input-wrapper">
+              <select name="type" required>
+                <option value="restaurant">Restaurant</option>
+                <option value="meuble">Meublé</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Quartier</span>
+            <div class="field-input-wrapper">
+              <span class="field-icon">📍</span>
+              <input type="text" name="quartier" required placeholder="Ex: Bonanjo" />
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Téléphone WhatsApp</span>
+            <div class="field-input-wrapper">
+              <span class="field-icon">📱</span>
+              <input type="tel" name="whatsapp" required placeholder="Ex: 237655000001" />
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Adresse (optionnel)</span>
+            <div class="field-input-wrapper">
+              <span class="field-icon">🏠</span>
+              <input type="text" name="adresse" placeholder="Ex: Rue des Griffons, Bonanjo" />
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Catégorie (optionnel)</span>
+            <div class="field-input-wrapper">
+              <input type="text" name="categorie" placeholder="Ex: Cuisine locale" />
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Description courte</span>
+            <div class="field-input-wrapper">
+              <textarea name="description" rows="3" placeholder="Présentez votre établissement…"></textarea>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Photo de l'établissement</span>
+            <div class="field-input-wrapper file-wrapper">
+              <label class="file-label">
+                <span class="field-icon">📷</span>
+                Choisir une photo
+                <input type="file" name="photo" accept="image/*" />
+              </label>
+            </div>
+            <small class="field-hint">JPG, PNG, WEBP — 5 Mo maximum</small>
+          </div>
+          <fieldset class="field field-full signup-product">
+            <legend>Votre première offre</legend>
+            <p class="field-hint">Ajoutez au moins un produit ou une offre pour que votre établissement apparaisse dans le catalogue.</p>
+            <label class="field">
+              <span>Nom du produit ou de l’offre *</span>
+              <input type="text" name="produit_nom" required maxlength="120" placeholder="Ex. Poulet braisé ou Studio meublé" />
+            </label>
+            <label class="field">
+              <span>Prix en FCFA *</span>
+              <input type="number" name="produit_prix" required min="1" max="100000000" step="1" placeholder="Ex. 3500" />
+            </label>
+            <label class="field">
+              <span>Disponibilité</span>
+              <input type="text" name="produit_disponibilite" maxlength="160" value="Disponible" />
+            </label>
+            <label class="field">
+              <span>Description de l’offre</span>
+              <textarea name="produit_description" rows="2" maxlength="2000" placeholder="Détaillez votre produit ou votre offre…"></textarea>
+            </label>
+          </fieldset>
+
+          <div class="form-actions step-nav">
+            <button type="button" class="ghost-btn" id="btn-prev-2"><span class="arrow">‹</span> Précédent</button>
+            <button type="submit" class="primary-btn" id="btn-submit-2">S'inscrire <span class="arrow">›</span></button>
+          </div>
+          <p class="auth-link">Vous avez déjà un compte ? <a href="/login">Se connecter</a></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/inscription.js"></script>
+    <script src="/nav.js"></script>
+  </body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mon profil — Douala Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand-wrap">
+          <div class="brand-logo-placeholder" role="img" aria-label="Emplacement du logo"></div>
+          <small>Mon établissement</small>
+        </div>
+        <nav>
+          <a href="/">Accueil</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page">
+      <section class="auth-card profile-card">
+        <h2>Mon profil établissement</h2>
+        <p class="auth-sub">Gérez les informations de votre établissement. Vos clients vous retrouveront via ce profil.</p>
+
+        <div id="msg-profil" class="msg auth-error"></div>
+
+        <form id="form-profil">
+          <input type="hidden" name="id" />
+
+          <div class="field">
+            <span>Nom de l'établissement</span>
+            <input type="text" name="nom" required />
+          </div>
+          <div class="field">
+            <span>Type</span>
+            <select name="type" required>
+              <option value="restaurant">Restaurant</option>
+              <option value="meuble">Meublé</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span>Quartier</span>
+            <input type="text" name="quartier" required />
+          </div>
+          <div class="field">
+            <span>Téléphone WhatsApp</span>
+            <input type="tel" name="whatsapp" required />
+          </div>
+
+          <div class="field">
+            <span>Adresse</span>
+            <input type="text" name="adresse" />
+          </div>
+          <div class="field">
+            <span>Catégorie</span>
+            <input type="text" name="categorie" />
+          </div>
+
+          <div class="field">
+            <span>Description courte</span>
+            <textarea name="description" rows="3"></textarea>
+          </div>
+
+          <div class="field">
+            <span>Photo de l’établissement</span>
+            <label class="file-label profile-photo-label">
+              <span class="field-icon" aria-hidden="true">📷</span>
+              Choisir une photo
+              <input type="file" name="photo" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" />
+            </label>
+            <input type="hidden" name="photoUrl" />
+            <small class="field-hint">JPG, PNG, WEBP, GIF ou AVIF — 5 Mo maximum. Laissez vide pour conserver la photo actuelle.</small>
+            <img id="profile-photo-preview" class="photo-preview" alt="Aperçu de la photo de l’établissement" hidden />
+          </div>
+          <div class="field">
+            <span>Statut</span>
+            <select name="statut">
+              <option value="actif">Actif</option>
+              <option value="suspendu">Suspendu</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">Enregistrer les modifications</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel profile-products-panel">
+        <h2>Mes produits et offres</h2>
+        <p class="panel-sub">Seuls les établissements ayant au moins un produit ou une offre apparaissent dans le catalogue public.</p>
+        <div id="profile-products" class="profile-products-list" aria-live="polite"></div>
+        <form id="profile-product-form" class="profile-product-form">
+          <h3>Ajouter une offre</h3>
+          <label class="field">
+            <span>Nom du produit ou de l’offre *</span>
+            <input type="text" name="nom" maxlength="120" required />
+          </label>
+          <label class="field">
+            <span>Prix en FCFA *</span>
+            <input type="number" name="prix" min="1" max="100000000" step="1" required />
+          </label>
+          <label class="field">
+            <span>Disponibilité</span>
+            <input type="text" name="disponibilite" maxlength="160" value="Disponible" />
+          </label>
+          <label class="field">
+            <span>Description</span>
+            <textarea name="description" rows="2" maxlength="2000"></textarea>
+          </label>
+          <button class="primary-btn" type="submit">Ajouter au catalogue</button>
+          <p id="profile-products-msg" class="msg" role="status" hidden></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/profil-etablissement.js"></script>
+    <script src="/nav.js"></script>
+  </body>
+</html>
