@@ -18,6 +18,7 @@ const seedEstablishments = [
     adresse: 'Rue des Griffons, Bonanjo, Douala',
     whatsapp: '237655000001',
     categorie: 'Cuisine locale',
+    photos: ['/images/restaurant-dining.jpg', '/images/restaurant-table.jpg', '/images/restaurant-ndole.jpg'],
     visibilites: ['home_feed', 'restaurants'],
     date_ajout: '2026-10-12T08:00:00.000Z',
     date_maj: '2026-10-12T08:00:00.000Z',
@@ -47,6 +48,7 @@ const seedEstablishments = [
     adresse: 'Boulevard de la Liberté, Akwa, Douala',
     whatsapp: '237655000002',
     categorie: 'Restaurant',
+    photos: ['/images/restaurant-grill.jpg', '/images/restaurant-ndole.jpg', '/images/restaurant-table.jpg'],
     visibilites: ['home_feed', 'restaurants'],
     date_ajout: '2026-10-12T08:00:00.000Z',
     date_maj: '2026-10-12T08:00:00.000Z',
@@ -76,6 +78,7 @@ const seedEstablishments = [
     adresse: 'Carrefour Makepe, Douala',
     whatsapp: '237655000003',
     categorie: 'Fast food',
+    photos: ['/images/restaurant-burger.jpg', '/images/restaurant-table.jpg', '/images/restaurant-grill.jpg'],
     visibilites: ['home_feed', 'restaurants'],
     date_ajout: '2026-10-12T08:00:00.000Z',
     date_maj: '2026-10-12T08:00:00.000Z',
@@ -105,6 +108,7 @@ const seedEstablishments = [
     adresse: 'Carrefour Bonamoussadi, Douala',
     whatsapp: '237655000007',
     categorie: 'Cuisine maison',
+    photos: ['/images/restaurant-ndole.jpg', '/images/restaurant-dining.jpg', '/images/restaurant-grill.jpg'],
     visibilites: ['home_feed', 'restaurants'],
     date_ajout: '2026-10-13T08:00:00.000Z',
     date_maj: '2026-10-13T08:00:00.000Z',
@@ -134,6 +138,7 @@ const seedEstablishments = [
     adresse: 'New-Bell, Douala',
     whatsapp: '237655000008',
     categorie: 'Grillades',
+    photos: ['/images/restaurant-table.jpg', '/images/restaurant-grill.jpg', '/images/restaurant-dining.jpg'],
     visibilites: ['home_feed', 'restaurants'],
     date_ajout: '2026-10-13T08:00:00.000Z',
     date_maj: '2026-10-13T08:00:00.000Z',
@@ -163,6 +168,7 @@ const seedEstablishments = [
     adresse: 'Boulevard de la Liberté, Akwa, Douala',
     whatsapp: '237655000009',
     categorie: 'Café & snacks',
+    photos: ['/images/cafe-breakfast.jpg', '/images/restaurant-dining.jpg', '/images/restaurant-table.jpg'],
     visibilites: ['home_feed', 'restaurants'],
     date_ajout: '2026-10-13T08:00:00.000Z',
     date_maj: '2026-10-13T08:00:00.000Z',
@@ -192,6 +198,7 @@ const seedEstablishments = [
     adresse: 'Bonapriso, Douala',
     whatsapp: '237655000004',
     categorie: 'Studio',
+    photos: ['/images/bedroom-light.jpg', '/images/apartment-kitchen.jpg', '/images/studio-interior.jpg'],
     visibilites: ['home_feed', 'meubles'],
     date_ajout: '2026-10-12T08:00:00.000Z',
     date_maj: '2026-10-12T08:00:00.000Z',
@@ -221,6 +228,7 @@ const seedEstablishments = [
     adresse: 'Ndokoti, Douala',
     whatsapp: '237655000005',
     categorie: 'Appartement',
+    photos: ['/images/studio-bedroom.jpg', '/images/apartment-kitchen.jpg', '/images/apartment-bright.jpg'],
     visibilites: ['home_feed', 'meubles'],
     date_ajout: '2026-10-12T08:00:00.000Z',
     date_maj: '2026-10-12T08:00:00.000Z',
@@ -250,6 +258,7 @@ const seedEstablishments = [
     adresse: 'Bepanda, Douala',
     whatsapp: '237655000006',
     categorie: 'Chambre',
+    photos: ['/images/apartment-kitchen.jpg', '/images/bedroom-light.jpg', '/images/studio-interior.jpg'],
     visibilites: ['home_feed', 'meubles'],
     date_ajout: '2026-10-12T08:00:00.000Z',
     date_maj: '2026-10-12T08:00:00.000Z',
@@ -279,6 +288,7 @@ const seedEstablishments = [
     adresse: 'Bonamoussadi, Douala',
     whatsapp: '237655000010',
     categorie: 'Studio',
+    photos: ['/images/studio-interior.jpg', '/images/apartment-bright.jpg', '/images/standing-apartment.jpg'],
     visibilites: ['home_feed', 'meubles'],
     date_ajout: '2026-10-13T08:00:00.000Z',
     date_maj: '2026-10-13T08:00:00.000Z',
@@ -308,6 +318,7 @@ const seedEstablishments = [
     adresse: 'Bonaberi, Douala',
     whatsapp: '237655000011',
     categorie: 'Chambre',
+    photos: ['/images/bedroom-light.jpg', '/images/studio-bedroom.jpg', '/images/apartment-bright.jpg'],
     visibilites: ['home_feed', 'meubles'],
     date_ajout: '2026-10-13T08:00:00.000Z',
     date_maj: '2026-10-13T08:00:00.000Z',
@@ -337,6 +348,7 @@ const seedEstablishments = [
     adresse: 'Bonapriso, Douala',
     whatsapp: '237655000012',
     categorie: 'Appartement',
+    photos: ['/images/standing-apartment.jpg', '/images/apartment-kitchen.jpg', '/images/studio-interior.jpg'],
     visibilites: ['home_feed', 'meubles'],
     date_ajout: '2026-10-13T08:00:00.000Z',
     date_maj: '2026-10-13T08:00:00.000Z',
@@ -357,6 +369,22 @@ const seedEstablishments = [
   },
 ];
 
+function applySeedPhotos(establishments) {
+  const photosById = new Map(seedEstablishments.map((establishment) => [establishment.id, establishment.photos]));
+  let changed = false;
+
+  establishments.forEach((establishment) => {
+    const seedPhotos = photosById.get(establishment.id);
+    if (seedPhotos && (!Array.isArray(establishment.photos) || establishment.photos.length === 0)) {
+      establishment.photos = [...seedPhotos];
+      changed = true;
+    }
+  });
+
+  return changed;
+}
+
 module.exports = {
   seedEstablishments,
+  applySeedPhotos,
 };

@@ -5,7 +5,7 @@ const fs = require('fs');
 const multer = require('multer');
 
 const { loadCollection, saveCollection } = require('./src/store');
-const { seedEstablishments } = require('./src/seed');
+const { seedEstablishments, applySeedPhotos } = require('./src/seed');
 const attribution = require('./src/attribution');
 const { buildWhatsappUrl } = require('./src/whatsapp');
 const antifraud = require('./src/antifraud');
@@ -92,6 +92,7 @@ const persistEstablishments = () => saveCollection('establishments', establishme
 const persistClicks = () => saveCollection('clickLogs', clickLogs);
 const persistBlocks = () => saveCollection('blocks', blocks);
 const persistUsers = () => saveCollection('users', users);
+if (applySeedPhotos(establishments)) persistEstablishments();
 let pointsBalanceMigrated = false;
 establishments.forEach((establishment) => {
   if (!Number.isSafeInteger(establishment.points_solde) || establishment.points_solde < 0) {

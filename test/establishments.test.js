@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const establishments = require('../src/establishments');
-const { seedEstablishments } = require('../src/seed');
+const { seedEstablishments, applySeedPhotos } = require('../src/seed');
 
 const validEstablishment = {
   nom: 'Test',
@@ -82,6 +82,11 @@ test('note provisoire must be boolean and is stored only with a note', () => {
 
 test('seed catalog photos are local files', () => {
   for (const establishment of seedEstablishments) {
+    assert.equal(establishment.photos.length, 3);
+    for (const photo of establishment.photos) {
+      assert.match(photo, /^\/images\/[^/]+$/);
+      assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', photo.slice(1))));
+    }
     for (const product of establishment.products || []) {
       assert.match(product.photo, /^\/images\/[^/]+$/);
       assert.ok(
@@ -90,4 +95,18 @@ test('seed catalog photos are local files', () => {
       );
     }
   }
+});
+
+test('applySeedPhotos fills empty demo galleries without replacing custom photos', () => {
+  const existing = [
+    { id: 'rest-1', photos: [] },
+    { id: 'rest-2', photos: ['/uploads/custom.jpg'] },
+    { id: 'custom-id' },
+  ];
+
+  assert.equal(applySeedPhotos(existing), true);
+  assert.deepEqual(existing[0].photos, seedEstablishments[0].photos);
+  assert.deepEqual(existing[1].photos, ['/uploads/custom.jpg']);
+  assert.equal(existing[2].photos, undefined);
+  assert.equal(applySeedPhotos(existing), false);
 });
